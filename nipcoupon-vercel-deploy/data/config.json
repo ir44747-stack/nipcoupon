@@ -1,0 +1,16 @@
+{
+  "brand": {
+    "name": "NipCoupon",
+    "tagline": "Global Deals. Sniper Precision."
+  },
+  "attribution": {
+    "utm_source": "nipcoupon",
+    "utm_medium": "affiliate"
+  },
+  "pageSize": 9,
+  "feed": {
+    "enabled": false,
+    "url": "",
+    "note": "Set the DEALS_FEED_URL env var (or flip enabled + url here) to merge a remote deals feed at request time."
+  }
+}

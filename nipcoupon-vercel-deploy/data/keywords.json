@@ -1,0 +1,168 @@
+{
+  "version": 1,
+  "note": "Seed bank for scripts/keyword-sync.js. 'longTail' and 'history' are rewritten by the script; everything else is safe to hand-edit.",
+  "updatedAt": "",
+
+  "modifiers": [
+    "promo code",
+    "discount code",
+    "coupon code",
+    "voucher code",
+    "coupon",
+    "voucher",
+    "deal",
+    "offer",
+    "sale",
+    "discount"
+  ],
+
+  "qualifiers": [
+    "free delivery",
+    "free shipping",
+    "first order",
+    "student discount",
+    "sitewide",
+    "up to 50% off",
+    "extra 10% off",
+    "clearance",
+    "bundle deal",
+    "flash sale"
+  ],
+
+  "categories": [
+    "tech deals",
+    "electronics offers",
+    "fashion discounts",
+    "travel deals",
+    "hotel booking offers",
+    "gaming deals",
+    "software discounts",
+    "vpn deals",
+    "web hosting coupons"
+  ],
+
+  "seasonal": [
+    {
+      "id": "new-year",
+      "name": "New Year sales",
+      "start": "12-26",
+      "end": "01-07",
+      "terms": ["new year sale", "new year offers", "january sale"],
+      "weight": 1.2
+    },
+    {
+      "id": "valentines",
+      "name": "Valentine's Day",
+      "start": "02-01",
+      "end": "02-14",
+      "terms": ["valentines day offers", "valentines gifts discount", "flowers promo code"],
+      "weight": 1.1
+    },
+    {
+      "id": "ramadan",
+      "name": "Ramadan",
+      "start": "02-17",
+      "end": "03-19",
+      "terms": ["ramadan offers", "ramadan deals", "ramadan sale"],
+      "weight": 1.5,
+      "regions": ["GLOBAL", "AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO"]
+    },
+    {
+      "id": "eid-fitr",
+      "name": "Eid al-Fitr",
+      "start": "03-19",
+      "end": "03-29",
+      "terms": ["eid offers", "eid al fitr sale", "eid discounts"],
+      "weight": 1.5,
+      "regions": ["GLOBAL", "AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO"]
+    },
+    {
+      "id": "mothers-day",
+      "name": "Mother's Day",
+      "start": "03-10",
+      "end": "03-21",
+      "terms": ["mothers day gifts discount", "mothers day offers"],
+      "weight": 1.0
+    },
+    {
+      "id": "prime-day",
+      "name": "Mid-year mega sale",
+      "start": "07-08",
+      "end": "07-18",
+      "terms": ["prime day deals", "mid year sale", "july offers"],
+      "weight": 1.3
+    },
+    {
+      "id": "back-to-school",
+      "name": "Back to School",
+      "start": "08-10",
+      "end": "09-15",
+      "terms": ["back to school deals", "student offers", "laptop student discount"],
+      "weight": 1.4
+    },
+    {
+      "id": "eid-adha",
+      "name": "Eid al-Adha",
+      "start": "05-26",
+      "end": "06-05",
+      "terms": ["eid al adha offers", "eid adha sale"],
+      "weight": 1.4,
+      "regions": ["GLOBAL", "AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO"]
+    },
+    {
+      "id": "singles-day",
+      "name": "Singles Day 11.11",
+      "start": "11-05",
+      "end": "11-12",
+      "terms": ["11.11 sale", "singles day deals", "11 11 offers"],
+      "weight": 1.4
+    },
+    {
+      "id": "white-friday",
+      "name": "White Friday (Middle East)",
+      "start": "11-20",
+      "end": "12-02",
+      "terms": ["white friday", "white friday offers", "yaum al jumaa al abyad"],
+      "weight": 1.5,
+      "regions": ["AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO"]
+    },
+    {
+      "id": "black-friday",
+      "name": "Black Friday / Cyber Monday",
+      "start": "11-20",
+      "end": "12-03",
+      "terms": ["black friday", "black friday deals", "cyber monday", "cyber week"],
+      "weight": 2.0
+    },
+    {
+      "id": "qatar-national-day",
+      "name": "Qatar National Day",
+      "start": "12-10",
+      "end": "12-19",
+      "terms": ["qatar national day offers", "qatar national day deals"],
+      "weight": 1.2,
+      "regions": ["QA"]
+    },
+    {
+      "id": "uae-national-day",
+      "name": "UAE National Day",
+      "start": "11-25",
+      "end": "12-04",
+      "terms": ["uae national day offers", "uae national day deals"],
+      "weight": 1.2,
+      "regions": ["AE"]
+    },
+    {
+      "id": "christmas",
+      "name": "Christmas & Boxing Day",
+      "start": "12-14",
+      "end": "12-31",
+      "terms": ["christmas offers", "christmas deals", "boxing day sale"],
+      "weight": 1.5
+    }
+  ],
+
+  "longTail": [],
+
+  "history": []
+}
