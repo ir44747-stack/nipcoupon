@@ -10,3 +10,7 @@ backups/
 logs/
 # runtime lock
 .cj-fetch.lock
+
+# Vercel auto-builds any root middleware.js. This one imports `next/server`,
+# which does not resolve on a framework:null project and fails the whole build.
+middleware.js
