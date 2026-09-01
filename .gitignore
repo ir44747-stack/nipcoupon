@@ -16,3 +16,6 @@ node_modules/
 # runtime lock
 .cj-fetch.lock
 data/sovrn-links.json
+
+# generated review artefact
+logo-preview.html

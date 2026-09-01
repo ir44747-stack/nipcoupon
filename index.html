@@ -372,7 +372,7 @@ button{cursor:pointer;background:none;border:0}
 .suggest.open{opacity:1;visibility:visible;transform:none}
 .sg-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:11px;cursor:pointer}
 .sg-row:hover,.sg-row.sel{background:rgba(59,130,246,.14)}
-.sg-badge{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:.8rem;flex:none;color:#fff}
+.sg-badge{--sl-scale:.62}
 .sg-row b{display:block;font-size:.9rem}
 .sg-row span{display:block;font-size:.76rem;color:var(--muted)}
 .sg-empty{padding:18px 14px;color:var(--muted);font-size:.88rem;text-align:center}
@@ -420,13 +420,51 @@ button{cursor:pointer;background:none;border:0}
 .store-card:hover{transform:translateY(-6px);border-color:rgba(16,185,129,.4);box-shadow:0 22px 40px -24px rgba(16,185,129,.55)}
 .store-card:hover::before{opacity:1}
 .store-card.on{border-color:rgba(59,130,246,.65);box-shadow:0 0 0 3px rgba(59,130,246,.16),0 22px 40px -24px rgba(59,130,246,.6)}
-.store-logo{
-  width:52px;height:52px;border-radius:14px;display:grid;place-items:center;
-  font-weight:900;font-size:1.05rem;letter-spacing:-.02em;color:#fff;flex:none;
-  box-shadow:0 10px 22px -12px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.18);
-  transition:transform .3s cubic-bezier(.2,.7,.3,1);
+/* ── Merchant logo tiles ──────────────────────────────────────────────────
+   Most stores have no logo file, so the mark is typographic: the abbreviation
+   on the brand colour. Treated like a real badge — three-stop gradient for
+   depth, a gloss sheen on top, a hairline ring so pale tiles still read
+   against the dark card, and layered shadow instead of one heavy black blur.
+   Type is sized optically: fewer characters set larger, 4-letter marks get
+   tighter tracking so they never crowd the tile.
+   --sl-fs / --sl-ls are written per-store by logoVars(); --sl-scale lets a
+   smaller context (e.g. a coupon card) shrink the type proportionally. */
+.store-logo,.sg-badge{
+  position:relative;display:grid;place-items:center;flex:none;
+  overflow:hidden;isolation:isolate;
+  font-weight:900;line-height:1;color:#fff;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.45),
+    0 10px 20px -12px rgba(0,0,0,.8),
+    inset 0 1px 0 rgba(255,255,255,.30),
+    inset 0 0 0 1px rgba(255,255,255,.10);
 }
-.store-card:hover .store-logo{transform:scale(1.08) rotate(-3deg)}
+.store-logo{
+  width:52px;height:52px;border-radius:15px;
+  transition:transform .32s cubic-bezier(.2,.7,.3,1),box-shadow .32s ease;
+}
+.sg-badge{width:36px;height:36px;border-radius:11px}
+.store-logo::after,.sg-badge::after{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg,
+    rgba(255,255,255,.22) 0%,
+    rgba(255,255,255,.04) 42%,
+    rgba(0,0,0,.10) 100%);
+}
+.store-logo>*,.sg-badge>*{position:relative;z-index:2;display:block;line-height:1}
+.sl-in{
+  font-size:calc(var(--sl-fs,1.05rem) * var(--sl-scale,1));
+  letter-spacing:var(--sl-ls,-.03em);
+}
+.store-logo svg,.sg-badge svg{width:58%;height:58%;display:block}
+.store-card:hover .store-logo{
+  transform:scale(1.08) rotate(-3deg);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.5),
+    0 14px 26px -12px rgba(0,0,0,.85),
+    inset 0 1px 0 rgba(255,255,255,.38),
+    inset 0 0 0 1px rgba(255,255,255,.16);
+}
 .store-name{font-weight:700;font-size:.92rem}
 .store-count{
   font-size:.74rem;font-weight:700;color:#6ee7b7;
@@ -479,7 +517,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
 .card:hover{transform:translateY(-6px);border-color:rgba(16,185,129,.42);box-shadow:0 28px 55px -28px rgba(2,6,23,1)}
 .card:hover::after{opacity:1}
 .card-top{display:flex;align-items:flex-start;gap:14px}
-.card-top .store-logo{width:50px;height:50px;font-size:1rem}
+.card-top .store-logo{width:50px;height:50px;--sl-scale:.96}
 .card-brand{flex:1;min-width:0}
 .card-brand b{display:block;font-size:1.02rem;font-weight:800;letter-spacing:-.01em}
 .card-brand .cat{font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px}
@@ -1355,10 +1393,40 @@ select.sel option{background:#0f172a;color:#e2e8f0}
   function storeMeta(name) {
     return STORES[name] || { abbr:(name || '?').slice(0, 2).toUpperCase(), color:'#334155', fg:'#fff' };
   }
+  /* Per-store logo styling, shared by the big tiles and the search badges so a
+     brand looks identical wherever it appears.
+
+     --sl-fs  optical type size: 1 char reads best large, 4 chars need the room
+     --sl-ls  tracking tightens as the mark gets longer
+
+     The gradient runs light → brand → dark so every tile has volume; the sheen
+     and ring are painted in CSS (see .store-logo / .sg-badge). */
+  function logoVars(m) {
+    const raw = String(m.abbr || '?');
+    const n = raw.length;
+    const fs = m.glyph ? '1.2rem'
+      : n <= 1 ? '1.55rem'
+      : n === 2 ? '1.3rem'
+      : n === 3 ? '1.02rem'
+      : '0.8rem';
+    const ls = m.glyph ? '0'
+      : n <= 2 ? '0.01em'
+      : n === 3 ? '-0.01em'
+      : '-0.02em';
+    return 'background:linear-gradient(150deg,' +
+      shade(m.color, 16) + ' 0%,' + m.color + ' 48%,' + shade(m.color, -30) + ' 100%);' +
+      'color:' + m.fg + ';--sl-fs:' + fs + ';--sl-ls:' + ls;
+  }
+  /* Uppercase normalises the catalogue: "amz", "AE" and "noon" all read as
+     wordmarks. Stores with a real SVG keep it, sized by CSS. */
+  function logoInner(m) {
+    if (m.glyph) return m.glyph;
+    return '<span class="sl-in">' + esc(String(m.abbr || '?').toUpperCase()) + '</span>';
+  }
   function logoHTML(name, cls) {
     const m = storeMeta(name);
-    const style = 'background:linear-gradient(150deg,' + m.color + ',' + shade(m.color, -28) + ');color:' + m.fg;
-    return '<div class="' + (cls || 'store-logo') + '" style="' + style + '" aria-hidden="true">' + (m.glyph || esc(m.abbr)) + '</div>';
+    return '<div class="' + (cls || 'store-logo') + '" style="' + logoVars(m) + '" aria-hidden="true">' +
+      logoInner(m) + '</div>';
   }
   function shade(hex, pct) {
     const n = parseInt(hex.slice(1), 16);
@@ -2148,7 +2216,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
       suggestBox.innerHTML = sgItems.map(function (it, i) {
         const m = storeMeta(it.store || it.label);
         return '<div class="sg-row" role="option" data-i="' + i + '">' +
-          '<span class="sg-badge" style="background:linear-gradient(150deg,' + m.color + ',' + shade(m.color, -28) + ')">' + (m.glyph || esc(m.abbr)) + '</span>' +
+          '<span class="sg-badge" style="' + logoVars(m) + '">' + logoInner(m) + '</span>' +
           '<span><b>' + esc(it.label) + '</b><span>' + esc(it.sub) + '</span></span></div>';
       }).join('');
     }
