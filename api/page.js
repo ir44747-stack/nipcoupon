@@ -12,8 +12,19 @@
  *
  * Why server-rendered and not just another client route:
  *   The canonical URLs we hand to Google (/coupon/<id>) must return real HTML —
- *   title, meta description, canonical, Open Graph, JSON-LD — without executing
- *   JavaScript. A crawler that hits a JS-only shell indexes an empty page.
+ *   title, meta description, keywords, canonical, Open Graph, hreflang, JSON-LD
+ *   — without executing JavaScript. A crawler that hits a JS-only shell indexes
+ *   an empty page.
+ *
+ * What this file adds on top of a plain template:
+ *   • dynamic keywords  — the rotated long-tail set from api/_keywords.js,
+ *     written server-side so the crawler sees them
+ *   • hreflang          — en / ar / x-default alternates for every URL
+ *   • geo-localisation  — the "Get this deal" button points at the visitor's
+ *     own storefront (amazon.ae in the Gulf, amazon.com in the US), resolved
+ *     from the edge header with the original URL as the fallback
+ *   • Sovrn Commerce    — the tracking loader is injected before </body> so a
+ *     crawler-rendered page is monetised too, not just the SPA
  *
  * Security: this endpoint only ever emits data that is already public. Store
  * URLs are resolved through api/_secrets.js, so a ${…} placeholder is expanded
@@ -23,8 +34,12 @@
 
 const D = require('./_data.js');
 const S = require('./_secrets.js');
+const K = require('./_keywords.js');
+const G = require('./_geo.js');
 
 const SITE = (S.env('SITE_URL', 'https://nipcoupon.vercel.app').trim() || 'https://nipcoupon.vercel.app').replace(/\/+$/, '');
+const LOCALES = ['en', 'ar'];   // must match locales/*.json
+const DEFAULT_LOCALE = 'en';
 
 function esc(s) {
   return String(s == null ? '' : s)
@@ -32,27 +47,62 @@ function esc(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-function page({ title, description, canonical, body, jsonLd, ogImage, robots }) {
+/**
+ * The Sovrn Commerce loader, inlined.
+ * Identical in intent to GET /api/sovrn.js but rendered here so the crawler's
+ * copy of the page carries it too. Emits nothing when the key is unset.
+ */
+function sovrnScript() {
+  const key = S.env('SOVRN_API_KEY').trim();
+  if (!key) {
+    return '\n<!-- Sovrn Commerce disabled: SOVRN_API_KEY is not set. -->';
+  }
+  const cuid = S.env('SOVRN_CUID', 'nipcoupon').trim();
+  return '\n<script>' +
+    'window.vglnk=window.vglnk||{};' +
+    'window.vglnk.key=' + JSON.stringify(key) + ';' +
+    (cuid ? 'window.vglnk.cuid=' + JSON.stringify(cuid) + ';' : '') +
+    '(function(d,t){var s=d.createElement(t);s.type="text/javascript";s.async=true;' +
+    's.src="//cdn.viglink.com/api/vglnk.js";' +
+    'var r=d.getElementsByTagName(t)[0];if(r&&r.parentNode)r.parentNode.insertBefore(s,r);' +
+    '}(document,"script"));' +
+    '</script>';
+}
+
+/** hreflang alternates. Query-param locales keep the SPA on one canonical URL. */
+function alternates(path) {
+  const base = SITE + path;
+  const out = LOCALES.map(l =>
+    '<link rel="alternate" hreflang="' + l + '" href="' + esc(base + (path.indexOf('?') === -1 ? '?' : '&') + 'lang=' + l) + '" />'
+  );
+  out.push('<link rel="alternate" hreflang="x-default" href="' + esc(base) + '" />');
+  return out.join('\n');
+}
+
+function page({ title, description, keywords, canonical, path, body, jsonLd, ogImage, robots, lang }) {
   const ld = jsonLd ? '\n<script type="application/ld+json">' + JSON.stringify(jsonLd) + '</script>' : '';
+  const kw = keywords ? '\n<meta name="keywords" content="' + esc(keywords) + '">' : '';
   return `<!doctype html>
-<html lang="en">
+<html lang="${esc(lang || DEFAULT_LOCALE)}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
-<meta name="description" content="${esc(description)}">
+<meta name="description" content="${esc(description)}">${kw}
 <link rel="canonical" href="${esc(canonical)}">
+${alternates(path || '/')}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NipCoupon">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}">
+<meta property="og:locale" content="${esc((lang || DEFAULT_LOCALE) === 'ar' ? 'ar_AE' : 'en_US')}">
 ${ogImage ? '<meta property="og:image" content="' + esc(ogImage) + '">' : ''}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="robots" content="${esc(robots || 'index,follow')}">
-<link rel="stylesheet" href="/styles.css">
+<link rel="preconnect" href="https://cdn.viglink.com" crossorigin>
 <style>
   body{max-width:820px;margin:0 auto;padding:48px 20px;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#090d16;color:#e2e8f0}
   a{color:#10b981}
@@ -66,7 +116,7 @@ ${ogImage ? '<meta property="og:image" content="' + esc(ogImage) + '">' : ''}
 </head>
 <body>
 <p class="meta"><a href="/">← NipCoupon</a></p>
-${body}
+${body}${sovrnScript()}
 </body>
 </html>`;
 }
@@ -76,10 +126,12 @@ function notFound(res, what) {
   // Vercel's response object and the local preview adapter.
   if (typeof res.status === 'function') res.status(404); else res.statusCode = 404;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
   res.end(page({
     title: 'Not found — NipCoupon',
     description: 'That page does not exist.',
-    canonical: SITE + '/coupon/',
+    canonical: SITE + '/',
+    path: '/',
     body: '<h1>Not found</h1><p>We could not find that ' + esc(what) + '.</p><p><a class="btn" href="/">Browse all deals</a></p>'
   }));
 }
@@ -103,7 +155,7 @@ module.exports = async function handler(req, res) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.end(page({
       title: 'NipCoupon', description: 'Deals are temporarily unavailable.',
-      canonical: SITE + '/',
+      canonical: SITE + '/', path: '/',
       body: '<h1>Temporarily unavailable</h1><p>We could not load deals just now. Please try again shortly.</p>'
     }));
   }
@@ -112,8 +164,23 @@ module.exports = async function handler(req, res) {
   const coupons = catalog.coupons || [];
   const categories = catalog.categories || [];
 
+  /* ── Geo: which storefront should the button point at? ───────────────────
+   * The edge middleware has already resolved this; we only honour it. A
+   * crawler sending no header simply gets the global storefront, which is
+   * what should be indexed anyway. */
+  const regionCode = G.countryFromHeaders(req.headers, q) || G.FALLBACK;
+  const region = G.resolveRegion(regionCode, (catalog.regions || []).map(r => r.code));
+  const profile = region.profile;
+
+  const lang = LOCALES.indexOf(String(q.lang || '').toLowerCase()) !== -1
+    ? String(q.lang).toLowerCase()
+    : (LOCALES.indexOf(profile.lang) !== -1 ? profile.lang : DEFAULT_LOCALE);
+
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
+  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400');
+  /* The HTML varies by market, so a shared cache must not serve one country's
+     links to another. */
+  res.setHeader('Vary', 'x-nc-country, Accept-Language');
 
   /* ── /coupon/:id ───────────────────────────────────────────────────────── */
   if (type === 'coupon') {
@@ -125,10 +192,21 @@ module.exports = async function handler(req, res) {
     const title = (c.title || storeName + ' offer') + ' — ' + storeName + ' | NipCoupon';
     const desc = (c.code ? 'Use code ' + c.code + ' — ' : '') +
       (c.title || 'Verified offer') + ' at ' + storeName + '. Verified and updated daily by NipCoupon.';
-    const canonical = SITE + '/coupon/' + encodeURIComponent(c.id);
+    const path = '/coupon/' + encodeURIComponent(c.id);
+    const canonical = SITE + path;
 
-    // Resolve through the secrets layer; fall back to the store's plain URL.
-    const target = S.resolveUrl(c.landingUrl, '') || S.resolveUrl(store.url, store.originalUrl || '');
+    const kw = K.generate(catalog, { store: store.id || storeName, limit: 12 }).meta;
+
+    // Resolve through the secrets layer, then localise for the visitor's
+    // market. Localisation rewrites the URL *inside* the Sovrn wrapper so the
+    // commission survives; if anything fails we keep the plain resolved URL.
+    const base = S.resolveUrl(c.landingUrl, '') || S.resolveUrl(store.url, store.originalUrl || '');
+    const loc = G.localizeUrl(base, region.code);
+    const target = loc.url || base;
+
+    const geoNote = loc.changed && profile.label
+      ? '<p class="meta">Showing the ' + esc(profile.label) + ' storefront (' + esc(profile.currency) + ').</p>'
+      : '';
 
     const body = `
 <div class="card">
@@ -139,18 +217,20 @@ module.exports = async function handler(req, res) {
   ${target
     ? '<p><a class="btn" rel="nofollow sponsored noopener" target="_blank" href="' + esc(target) + '">Get this deal at ' + esc(storeName) + '</a></p>'
     : '<p class="meta">This deal is temporarily unavailable.</p>'}
+  ${geoNote}
   ${c.terms && c.terms.length ? '<div class="terms">Terms: ' + esc(c.terms.join(' · ')) + '</div>' : ''}
   <p class="meta" style="margin-top:18px">NipCoupon may earn a commission on qualifying purchases.</p>
 </div>`;
 
     return res.end(page({
-      title, description: desc, canonical, body,
+      title, description: desc, keywords: kw, canonical, path, lang, body,
       jsonLd: {
         '@context': 'https://schema.org', '@type': 'Offer',
         name: c.title || storeName + ' offer',
         description: desc, url: canonical,
         availability: 'https://schema.org/InStock',
         ...(c.expires ? { priceValidUntil: c.expires } : {}),
+        ...(profile.currency ? { priceCurrency: profile.currency } : {}),
         seller: { '@type': 'Organization', name: storeName }
       }
     }));
@@ -165,7 +245,9 @@ module.exports = async function handler(req, res) {
     const desc = list.length
       ? list.length + ' verified ' + s.name + ' promo codes and deals, updated daily. Save at ' + s.name + ' with NipCoupon.'
       : 'Browse the latest ' + s.name + ' offers on NipCoupon.';
-    const canonical = SITE + '/store/' + encodeURIComponent(s.id);
+    const path = '/store/' + encodeURIComponent(s.id);
+    const canonical = SITE + path;
+    const kw = K.generate(catalog, { store: s.id, limit: 12 }).meta;
 
     const body = `
 <div class="card">
@@ -181,7 +263,7 @@ ${list.map(c => `<div class="card">
 </div>`).join('\n')}`;
 
     // A store page with no deals is thin content — keep it out of the index.
-    return res.end(page({ title, description: desc, canonical, body, robots: list.length ? 'index,follow' : 'noindex,follow' }));
+    return res.end(page({ title, description: desc, keywords: kw, canonical, path, lang, body, robots: list.length ? 'index,follow' : 'noindex,follow' }));
   }
 
   /* ── /category/:id ─────────────────────────────────────────────────────── */
@@ -191,7 +273,9 @@ ${list.map(c => `<div class="card">
     const list = coupons.filter(c => c.categoryId === cat.id);
     const title = (cat.name || id) + ' promo codes & deals (' + list.length + ') | NipCoupon';
     const desc = list.length + ' verified ' + (cat.name || id) + ' promo codes and deals, updated daily on NipCoupon.';
-    const canonical = SITE + '/category/' + encodeURIComponent(cat.id);
+    const path = '/category/' + encodeURIComponent(cat.id);
+    const canonical = SITE + path;
+    const kw = K.generate(catalog, { category: cat.id, limit: 12 }).meta;
 
     const body = `
 <div class="card">
@@ -208,7 +292,7 @@ ${list.map(c => {
 </div>`;
 }).join('\n')}`;
 
-    return res.end(page({ title, description: desc, canonical, body, robots: list.length ? 'index,follow' : 'noindex,follow' }));
+    return res.end(page({ title, description: desc, keywords: kw, canonical, path, lang, body, robots: list.length ? 'index,follow' : 'noindex,follow' }));
   }
 
   return notFound(res, 'page');

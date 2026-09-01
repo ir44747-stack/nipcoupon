@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "note": "Geo-targeting rules consumed by api/_geo.js. Safe by design: every rule is optional, and anything that cannot be resolved falls back to the store's original URL. A bad rule can never produce a broken or unmonetised link.",
+  "updatedAt": "",
+
+  "defaultRegion": "GLOBAL",
+  "fallbackRegion": "GLOBAL",
+
+  "profiles": {
+    "GLOBAL": { "label": "Global", "flag": "🌐", "currency": "USD", "locale": "en_US", "lang": "en", "dir": "ltr", "tld": ".com", "networks": ["sovrn"] },
+    "US":     { "label": "United States",  "flag": "🇺🇸", "currency": "USD", "locale": "en_US", "lang": "en", "dir": "ltr", "tld": ".com",    "networks": ["sovrn"] },
+    "GB":     { "label": "United Kingdom", "flag": "🇬🇧", "currency": "GBP", "locale": "en_GB", "lang": "en", "dir": "ltr", "tld": ".co.uk",  "networks": ["sovrn"] },
+    "DE":     { "label": "Germany",        "flag": "🇩🇪", "currency": "EUR", "locale": "de_DE", "lang": "de", "dir": "ltr", "tld": ".de",     "networks": ["sovrn"] },
+    "IN":     { "label": "India",          "flag": "🇮🇳", "currency": "INR", "locale": "en_IN", "lang": "en", "dir": "ltr", "tld": ".in",     "networks": ["sovrn"] },
+    "SG":     { "label": "Singapore",      "flag": "🇸🇬", "currency": "SGD", "locale": "en_SG", "lang": "en", "dir": "ltr", "tld": ".sg",     "networks": ["sovrn"] },
+    "AU":     { "label": "Australia",      "flag": "🇦🇺", "currency": "AUD", "locale": "en_AU", "lang": "en", "dir": "ltr", "tld": ".com.au", "networks": ["sovrn"] },
+    "AE":     { "label": "United Arab Emirates", "flag": "🇦🇪", "currency": "AED", "locale": "ar_AE", "lang": "ar", "dir": "rtl", "tld": ".ae", "networks": ["sovrn"] },
+    "SA":     { "label": "Saudi Arabia",   "flag": "🇸🇦", "currency": "SAR", "locale": "ar_SA", "lang": "ar", "dir": "rtl", "tld": ".sa", "networks": ["sovrn"] },
+    "QA":     { "label": "Qatar",          "flag": "🇶🇦", "currency": "QAR", "locale": "ar_QA", "lang": "ar", "dir": "rtl", "tld": ".qa", "networks": ["sovrn"] },
+    "KW":     { "label": "Kuwait",         "flag": "🇰🇼", "currency": "KWD", "locale": "ar_KW", "lang": "ar", "dir": "rtl", "tld": ".kw", "networks": ["sovrn"] },
+    "BH":     { "label": "Bahrain",        "flag": "🇧🇭", "currency": "BHD", "locale": "ar_BH", "lang": "ar", "dir": "rtl", "tld": ".bh", "networks": ["sovrn"] },
+    "OM":     { "label": "Oman",           "flag": "🇴🇲", "currency": "OMR", "locale": "ar_OM", "lang": "ar", "dir": "rtl", "tld": ".om", "networks": ["sovrn"] },
+    "JO":     { "label": "Jordan",         "flag": "🇯🇴", "currency": "JOD", "locale": "ar_JO", "lang": "ar", "dir": "rtl", "tld": ".jo", "networks": ["sovrn"] },
+    "EG":     { "label": "Egypt",          "flag": "🇪🇬", "currency": "EGP", "locale": "ar_EG", "lang": "ar", "dir": "rtl", "tld": ".eg", "networks": ["sovrn"] }
+  },
+
+  "comment_domainVariants": "Host-level swap: 'amazon.com' becomes 'amazon.ae' for an Emirates visitor. Only high-confidence mappings are listed — anything absent keeps its original host, so a wrong guess can never ship.",
+  "domainVariants": {
+    "amazon.com": {
+      "US": "www.amazon.com", "GB": "www.amazon.co.uk", "DE": "www.amazon.de",
+      "IN": "www.amazon.in", "SG": "www.amazon.sg", "AU": "www.amazon.com.au",
+      "AE": "www.amazon.ae", "SA": "www.amazon.sa", "EG": "www.amazon.eg",
+      "QA": "www.amazon.ae", "KW": "www.amazon.ae", "BH": "www.amazon.ae",
+      "OM": "www.amazon.ae", "JO": "www.amazon.ae"
+    },
+    "aliexpress.com": {
+      "US": "www.aliexpress.us"
+    },
+    "shein.com": {
+      "US": "us.shein.com", "AE": "ae.shein.com", "SA": "sa.shein.com",
+      "GB": "uk.shein.com", "DE": "de.shein.com", "AU": "au.shein.com",
+      "QA": "ae.shein.com", "KW": "ae.shein.com", "BH": "ae.shein.com", "OM": "ae.shein.com"
+    },
+    "booking.com":  { "US": "www.booking.com", "GB": "www.booking.com", "DE": "www.booking.com" },
+    "asos.com":     { "US": "www.asos.com", "GB": "www.asos.com" }
+  },
+
+  "comment_pathVariants": "Path-prefix swap for single-domain multi-market storefronts, e.g. noon.com/saudi-en. The path is inserted before any existing path.",
+  "pathVariants": {
+    "noon.com": {
+      "AE": "/uae-en", "SA": "/saudi-en", "EG": "/egypt-en"
+    },
+    "namshi.com": {
+      "AE": "/uae-en", "SA": "/saudi-en", "KW": "/kuwait-en",
+      "BH": "/bahrain-en", "OM": "/oman-en", "QA": "/qatar-en"
+    },
+    "talabat.com": {
+      "AE": "/uae", "SA": "/saudi", "QA": "/qatar", "KW": "/kuwait",
+      "BH": "/bahrain", "OM": "/oman", "EG": "/egypt", "JO": "/jordan"
+    }
+  },
+
+  "comment_currencyParams": "Query parameters appended so prices render in the visitor's currency. Applied only to hosts that are known to honour them.",
+  "currencyParams": {
+    "booking.com": { "param": "selected_currency" },
+    "agoda.com":   { "param": "currency" },
+    "asos.com":    { "param": "currency" }
+  },
+
+  "comment_priority": "Merchants to promote per market. Drives ordering and substitution: a store whose regions[] excludes the visitor's country is swapped for the highest-ranked store that does serve it.",
+  "priority": {
+    "US": ["amazon", "walmart", "zappos", "wayfair", "jcpenney", "cabela-s", "skechers", "glassesusa", "petcarerx", "1ink"],
+    "GB": ["amazon", "asos", "hm", "zara", "booking-com", "agoda"],
+    "DE": ["amazon", "asos", "hm", "zara", "videobuster-de", "booking-com"],
+    "IN": ["amazon", "agoda", "booking-com", "shein", "nike"],
+    "SG": ["amazon", "agoda", "booking-com", "shein", "apple"],
+    "AU": ["amazon", "booking-com", "agoda", "shein", "apple"],
+    "AE": ["noon", "amazon", "namshi", "ounass", "careem", "talabat", "emirates", "shein"],
+    "SA": ["noon", "amazon", "namshi", "ounass", "careem", "talabat", "shein"],
+    "QA": ["namshi", "amazon", "ounass", "careem", "talabat", "noon", "qatar-airways", "shein"],
+    "KW": ["namshi", "amazon", "ounass", "careem", "talabat", "shein"],
+    "BH": ["namshi", "amazon", "ounass", "careem", "talabat", "shein"],
+    "OM": ["namshi", "amazon", "ounass", "talabat", "careem", "shein"],
+    "JO": ["namshi", "amazon", "careem", "talabat", "shein"],
+    "EG": ["noon", "amazon", "namshi", "careem", "talabat", "shein"],
+    "GLOBAL": ["amazon", "aliexpress", "shein", "nike", "noon", "namshi", "booking-com", "agoda"]
+  },
+
+  "comment_explicitSubstitutes": "Hard swaps for merchants with no presence in a market, e.g. a US visitor seeing Noon gets Walmart. Only used when the store genuinely does not serve the region.",
+  "substitutes": {
+    "US": { "noon": "walmart", "namshi": "zappos", "careem": "uber", "talabat": "uber", "ounass": "farfetch", "qatar-airways": "expedia" },
+    "GB": { "noon": "asos", "careem": "uber", "talabat": "uber" },
+    "DE": { "noon": "asos", "careem": "uber", "talabat": "uber" },
+    "IN": { "noon": "amazon", "careem": "uber", "talabat": "uber" },
+    "SG": { "noon": "amazon", "careem": "uber", "talabat": "uber" },
+    "AU": { "noon": "amazon", "careem": "uber", "talabat": "uber" },
+    "QA": { "walmart": "namshi", "jcpenney": "ounass", "cabela-s": "namshi" },
+    "AE": { "walmart": "noon", "jcpenney": "namshi" },
+    "SA": { "walmart": "noon", "jcpenney": "namshi" },
+    "KW": { "walmart": "namshi", "jcpenney": "ounass" },
+    "BH": { "walmart": "namshi", "jcpenney": "ounass" },
+    "OM": { "walmart": "namshi", "jcpenney": "ounass" },
+    "JO": { "walmart": "namshi", "jcpenney": "ounass" },
+    "EG": { "walmart": "noon", "jcpenney": "namshi" }
+  }
+}

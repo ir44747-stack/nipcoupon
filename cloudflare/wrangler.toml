@@ -1,0 +1,38 @@
+# Cloudflare Worker config for NipCoupon.
+#
+# This is OPTIONAL. Vercel's own edge already does geo-detection and CDN
+# delivery. Deploy this worker only if you want Cloudflare in front of the
+# site — to own DNS, add a WAF, or cache at Cloudflare's edge.
+#
+#   npm i -g wrangler
+#   wrangler login
+#   wrangler deploy --config cloudflare/wrangler.toml --env production
+
+name = "nipcoupon-edge"
+main = "worker.js"
+compatibility_date = "2024-09-01"
+
+# Free plan: 100,000 requests/day, 10 ms CPU per request.
+# Geo-detection + header rewriting uses well under 1 ms of that.
+
+[vars]
+# Origin that the worker proxies to. Change this to your production domain
+# once nipcoupon.com is live.
+ORIGIN = "https://nipcoupon.vercel.app"
+
+# ── Routes ────────────────────────────────────────────────────────────────
+# `routes` only applies to a Custom Domain / zone you own in Cloudflare.
+# The *.workers.dev preview URL is ALWAYS published, routes or not.
+
+[[env.production.vars]]
+ORIGIN = "https://nipcoupon.vercel.app"
+
+# Uncomment and edit once your domain is on Cloudflare:
+# [[env.production.routes]]
+# pattern = "nipcoupon.com/*"
+# zone_name = "nipcoupon.com"
+
+# ── Assets already cached by the worker ───────────────────────────────────
+# og.png, sitemap.xml, and anything under /assets/ are cached immutably at
+# the edge. HTML is deliberately NOT cached here: it must stay fresh so
+# geo-localised links and rotated keywords are never stale.

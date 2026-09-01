@@ -24,6 +24,22 @@
 <meta name="twitter:image" content="https://nipcoupon.vercel.app/og.png" />
 <meta name="robots" content="index,follow" />
 <link rel="canonical" href="https://nipcoupon.vercel.app/" />
+
+<!-- Multi-language: the storefront is one canonical URL and switches language
+     client-side, so hreflang uses ?lang= rather than /en/ /ar/ path prefixes.
+     x-default points at the bare URL so Google knows which one to lead with. -->
+<link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/?lang=en" />
+<link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/?lang=ar" />
+<link rel="alternate" hreflang="x-default" href="https://nipcoupon.vercel.app/" />
+
+<!-- Performance: warm the two third-party origins we touch before they are
+     needed. cdn.viglink.com serves the Sovrn Commerce loader (async, last in
+     <body>); sovrn.co is where monetised outbound links resolve. Neither can
+     block first paint — these just remove the DNS+TLS round trip from the
+     click path. -->
+<link rel="preconnect" href="https://cdn.viglink.com" crossorigin />
+<link rel="dns-prefetch" href="https://cdn.viglink.com" />
+<link rel="dns-prefetch" href="https://sovrn.co" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f172a'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='none' stroke='%2310b981' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%2310b981'/%3E%3Cpath d='M16 2v5M16 25v5M2 16h5M25 16h5' stroke='%233b82f6' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" />
 
 <style>
@@ -1614,6 +1630,16 @@ select.sel option{background:#0f172a;color:#e2e8f0}
   }
   /* 1) saved preference  2) browser languages  3) English */
   function detectLang() {
+    /* A ?lang=ar link (the hreflang alternates use it) must win over a stored
+       preference, otherwise sharing an Arabic URL hands the recipient English. */
+    try {
+      const q = new URLSearchParams(location.search).get('lang');
+      if (q) {
+        const lc = String(q).toLowerCase().split('-')[0];
+        if (I18N[lc]) return lc;
+      }
+    } catch (e) { /* ignore malformed query */ }
+
     const saved = storedLang();
     if (saved && I18N[saved]) return saved;
     const wanted = (navigator.languages || [navigator.language] || []).filter(Boolean)
@@ -1943,6 +1969,11 @@ select.sel option{background:#0f172a;color:#e2e8f0}
     renderHeroChips();
     render(true);
 
+    /* Refresh the localisation rules for the new market so every "Get deal"
+       button points at the right storefront from the next click onward.
+       Fire-and-forget: if it fails, links simply stay as they were. */
+    if (changed) loadGeoRules(next);
+
     if (changed && !o.silent) {
       const cur = regionByCode(next);
       toast(t('toast.region_title', 'Region set to {region}', { region: regionLabel(cur) }),
@@ -1955,14 +1986,31 @@ select.sel option{background:#0f172a;color:#e2e8f0}
     try { return localStorage.getItem(REGION_KEY) || ''; } catch (e) { return ''; }
   }
 
-  /* 1) serverless /api/geo (Vercel edge header → IP lookup)  2) browser timezone
+  /* 0) the nc_country cookie written by the edge middleware (instant, zero
+        latency, already correct on first paint)
+     1) serverless /api/geo (Vercel edge header → IP lookup)
+     2) browser timezone
      3) GLOBAL — never blocks rendering, never fails hard. */
   async function detectRegion() {
     let code = '', source = 'fallback';
-    try {
-      const g = await fetchJSON('api/geo');
-      if (g && g.country) { code = String(g.country).toUpperCase(); source = g.source || 'api'; }
-    } catch (e) { /* no API (static hosting) — fall through */ }
+
+    /* The edge already resolved this before the page was served. Trusting it
+       skips a network round trip entirely and, more importantly, means
+       localisation is right the moment the first link is rendered. */
+    const ck = geoCookie();
+    if (ck && REGIONS.some(r => r.code === ck)) { code = ck; source = 'edge-cookie'; }
+
+    if (!code) {
+      try {
+        const g = await fetchJSON('api/geo');
+        if (g && g.country) {
+          code = String(g.country).toUpperCase();
+          source = g.source || 'api';
+          // Take the localisation rules the API returns — one request, two jobs.
+          if (g.rules) { GEO.rules = g.rules; GEO.profile = g.profile || null; GEO.loaded = true; }
+        }
+      } catch (e) { /* no API (static hosting) — fall through */ }
+    }
 
     if (!REGIONS.some(r => r.code === code)) {
       const tz = ((Intl.DateTimeFormat().resolvedOptions().timeZone) || '').toLowerCase();
@@ -2019,8 +2067,145 @@ select.sel option{background:#0f172a;color:#e2e8f0}
      ============================================================ */
   function getCoupon(id) { return COUPONS.find(c => c.id === id); }
 
+  /* ============================================================
+     GEO LOCALISATION — client half
+     ============================================================
+     The server does the heavy lifting: the edge middleware resolves the
+     visitor's country, sets the nc_country cookie, and /api/catalog returns
+     store URLs already pointed at the right storefront (amazon.ae in the Gulf,
+     amazon.com in the US).
+
+     This client half covers the two cases the server cannot:
+       1. the HTML came from a cache or disk, so no server-side localisation
+          ran, and
+       2. the visitor switches region in the UI, which must be instant with no
+          reload.
+
+     It mirrors api/_geo.js exactly: unwrap the Sovrn wrapper, rewrite the
+     INNER target, re-wrap. Getting that backwards would produce sovrn.ae — a
+     dead link with the commission stripped — so every step is guarded and any
+     failure returns the input untouched. A visitor seeing the global
+     storefront is a minor miss; a broken or unmonetised link is not.
+     ============================================================ */
+  const GEO = { code:'', profile:null, rules:null, loaded:false };
+  const GEO_COOKIE = 'nc_country';
+
+  /** The edge middleware writes this before the first byte — reading it costs
+      nothing and means localisation is correct on the very first paint. */
+  function geoCookie() {
+    try {
+      const m = document.cookie.match(/(?:^|;\s*)nc_country=([^;]*)/);
+      return m ? decodeURIComponent(m[1] || '').toUpperCase() : '';
+    } catch (e) { return ''; }
+  }
+
+  function hostKey(h) { return String(h || '').toLowerCase().replace(/^www\./, ''); }
+
+  /** Sovrn wrapper → the wrapper URL, or null when the URL is not wrapped. */
+  function unwrapSovrn(raw) {
+    try {
+      const u = new URL(raw, location.href);
+      if (!/(^|\.)sovrn\.co$/i.test(u.hostname)) return null;
+      return u.searchParams.get('u') ? u : null;
+    } catch (e) { return null; }
+  }
+
+  /**
+   * Rewrite a merchant URL for the active region.
+   * Safe to apply twice: the host swap is a no-op once already localised, the
+   * path prefix checks before inserting, and the currency param checks before
+   * setting. That matters because the server may already have localised it.
+   */
+  function clientLocalizeUrl(raw) {
+    const src = String(raw || '');
+    if (!src || !GEO.rules || !GEO.code) return src;
+    const code = GEO.code;
+    try {
+      const wrapper = unwrapSovrn(src);
+      let u;
+      try {
+        u = new URL(wrapper ? wrapper.searchParams.get('u') : src, location.href);
+      } catch (e) { return src; }
+
+      const key = hostKey(u.hostname);
+      const R = GEO.rules || {};
+
+      const hv = R.domainVariants && (R.domainVariants[key] || R.domainVariants[u.hostname]);
+      if (hv && hv[code]) { try { u.hostname = hv[code]; } catch (e) {} }
+
+      const pv = R.pathVariants && (R.pathVariants[key] || R.pathVariants[u.hostname]);
+      if (pv && pv[code]) {
+        const prefix = String(pv[code]).replace(/^\/+|\/+$/g, '');
+        if (prefix && u.pathname.toLowerCase().indexOf('/' + prefix.toLowerCase()) !== 0) {
+          u.pathname = '/' + prefix + (u.pathname === '/' ? '' : u.pathname);
+        }
+      }
+
+      const cp = R.currencyParams && (R.currencyParams[key] || R.currencyParams[u.hostname]);
+      if (cp && cp.param && GEO.profile && GEO.profile.currency) {
+        if (!u.searchParams.has(cp.param)) u.searchParams.set(cp.param, GEO.profile.currency);
+      }
+
+      /* Same locale hint api/_geo.js adds, so a link localised in the browser
+         is byte-identical to one localised on the server. */
+      if (GEO.profile && GEO.profile.locale && /booking\.com$|agoda\.com$/.test(key)) {
+        if (!u.searchParams.has('lang')) {
+          u.searchParams.set('lang', GEO.profile.locale.replace('_', '-').toLowerCase());
+        }
+      }
+
+      let out = u.toString();
+      if (wrapper) {
+        const w = new URL(wrapper.toString());
+        w.searchParams.set('u', out);
+        out = w.toString();
+      }
+      return out;
+    } catch (e) {
+      return src;                                   // never break a link
+    }
+  }
+
+  /**
+   * Fetch the localisation rules. Fire-and-forget: localisation is an
+   * enhancement, so a failure here changes nothing except that links stay
+   * global. Pass a code to ask for a specific market instead of the detected
+   * one — that is how switching region in the UI stays instant.
+   */
+  /** Persist the resolved market so the NEXT page view is localised on first
+      paint, with no request at all. This is what replaces the server-set
+      cookie the Vercel/Cloudflare edge middleware would write — same result,
+      no build dependency, and it cannot break a deploy. */
+  function rememberGeo(code) {
+    try {
+      document.cookie = GEO_COOKIE + '=' + encodeURIComponent(code) +
+        '; max-age=' + (60 * 60 * 24 * 180) + '; path=/; samesite=lax';
+    } catch (e) { /* private mode, cookies off — detection just runs again */ }
+  }
+
+  async function loadGeoRules(forceCode) {
+    const code = String(forceCode || '').toUpperCase();
+    try {
+      const g = await fetchJSON('api/geo' + (code ? '?country=' + encodeURIComponent(code) : ''));
+      if (!g) return;
+      if (g.country) GEO.code = String(g.country).toUpperCase();
+      else if (code) GEO.code = code;
+      GEO.profile = g.profile || null;
+      GEO.rules = g.rules || null;
+      GEO.loaded = true;
+      document.documentElement.dataset.geo = GEO.code;
+      if (g.source) document.documentElement.dataset.geoSource = g.source;
+      /* An explicit ?country= preview must NOT overwrite the visitor's real
+         market — otherwise previewing one country silently rewrites everyone's. */
+      if (GEO.code && !code) rememberGeo(GEO.code);
+    } catch (e) {
+      GEO.loaded = false;
+    }
+  }
+
   /* Build the outbound (affiliate) URL for a coupon: store domain + your
-     affiliate tag + attribution params. Returns '' if the store has no link. */
+     affiliate tag + attribution params, localised for the visitor's market.
+     Returns '' if the store has no link. */
   function buildStoreUrl(c) {
     const store = STORES[c.s] || {};
     const base = c.landingUrl || store.url || '';
@@ -2038,7 +2223,9 @@ select.sel option{background:#0f172a;color:#e2e8f0}
           if (k) u.searchParams.set(decodeURIComponent(k), decodeURIComponent((bits[1] || '').trim()));
         });
       }
-      return u.toString();
+      // Point at the visitor's own storefront (amazon.ae, noon.com/saudi-en…)
+      // while keeping the Sovrn wrapper — and therefore the commission — intact.
+      return clientLocalizeUrl(u.toString());
     } catch (e) { return ''; }
   }
 
@@ -2649,14 +2836,32 @@ select.sel option{background:#0f172a;color:#e2e8f0}
       state.lang = detectLang();
       try { localStorage.setItem(LANG_KEY, state.lang); } catch (e) {}
 
-      // saved choice applies instantly — no flash, no network
-      const saved = storedRegion();
+      /* ?country=QA (or ?region=QA) forces a market — it is how you preview
+         another country, and how the hreflang / geo links can be shared.
+         Otherwise a saved choice applies instantly: no flash, no network. */
+      let qCountry = '';
+      try {
+        const qp = new URLSearchParams(location.search);
+        qCountry = String(qp.get('country') || qp.get('region') || '').toUpperCase();
+      } catch (e) { /* ignore */ }
+
+      const saved = (qCountry && REGIONS.some(r => r.code === qCountry))
+        ? qCountry
+        : storedRegion();
       state.region = (saved && REGIONS.some(r => r.code === saved))
         ? saved
         : (REGIONS.filter(r => r.default)[0] || DEFAULT_REGION).code;
+
+      // Localise with what we already know, before any rules have been fetched.
+      GEO.code = state.region;
       boot(info);
 
-      // first visit: auto-detect (API → timezone → GLOBAL) and re-render in place
+      // Pull the localisation rules for this market. Fire-and-forget: if it
+      // fails, outbound links simply stay global rather than breaking.
+      loadGeoRules(state.region);
+
+      // first visit: auto-detect (edge cookie → API → timezone → GLOBAL)
+      // and re-render in place
       if (!saved) {
         detectRegion().then(function (res) {
           document.documentElement.dataset.geoSource = res.source;
@@ -2674,5 +2879,25 @@ select.sel option{background:#0f172a;color:#e2e8f0}
   document.addEventListener('DOMContentLoaded', init);
 })();
 </script>
+
+<!-- ============================================================
+     SOVRN COMMERCE — publisher tracking
+     ============================================================
+     Your campaign API key is deliberately NOT in this file. It is injected
+     server-side by /api/sovrn.js from the SOVRN_API_KEY environment variable,
+     so it never sits in git, in the deploy zip, or in a backup — rotating it
+     is one field in Vercel, not a repo-wide find-and-replace.
+
+     The loader Sovrn returns scans the rendered page and converts qualifying
+     merchant links into affiliate links ("Convert"). That is the dynamic half
+     of monetisation; the static half is the sovrn.co/?key=… wrapping already
+     applied server-side to all 70 stores in data/stores.json. Sovrn skips
+     links it has already wrapped, so there is no double attribution.
+
+     async + last element in <body> ⇒ it cannot block first paint.
+     If SOVRN_API_KEY is unset the endpoint returns an empty script and every
+     link keeps working, just unmonetised.
+     ============================================================ -->
+<script async src="/api/sovrn.js"></script>
 </body>
 </html>
