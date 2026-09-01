@@ -126,7 +126,44 @@ window.gtag('js',new Date());window.gtag('config','${GA_ID}');
 </head>
 <body>
 <p class="meta"><a href="/">← NipCoupon</a></p>
-${body}${sovrnScript()}
+${body}
+<script>
+/* GA4 outbound-click attribution for the server-rendered pages. Delegated so
+   it costs one listener regardless of how many links the page carries. */
+document.addEventListener('click', function (e) {
+  var a = e.target && e.target.closest ? e.target.closest('a[data-ga-store]') : null;
+  if (!a || typeof window.gtag !== 'function') return;
+  var url = a.getAttribute('href') || '', domain = '';
+  /* Unwrap the Sovrn wrapper so store_domain is the merchant, not sovrn.co. */
+  try {
+    var u = new URL(url, location.href);
+    if (/(^|\\.)sovrn\\.co$/i.test(u.hostname)) {
+      var inner = u.searchParams.get('u');
+      if (inner) { try { u = new URL(inner); } catch (e2) {} }
+    }
+    domain = u.hostname.replace(/^www\\./, '');
+  } catch (err) {}
+  var code = a.getAttribute('data-ga-code') || '';
+  var params = {
+    store_name: a.getAttribute('data-ga-store') || '',
+    store_domain: domain,
+    coupon_id: a.getAttribute('data-ga-coupon') || '',
+    coupon_code: code,
+    has_code: !!code,
+    affiliate_network: /sovrn\\.co|viglink/i.test(url) ? 'sovrn' : 'direct',
+    page_type: 'ssr',
+    link_url: url,
+    outbound: true
+  };
+  window.gtag('event', 'click_affiliate', params);
+  window.gtag('event', 'select_content', {
+    content_type: 'affiliate_link',
+    item_id: params.coupon_id || params.store_name,
+    store_name: params.store_name,
+    store_domain: domain
+  });
+});
+</script>${sovrnScript()}
 </body>
 </html>`;
 }
@@ -225,7 +262,9 @@ module.exports = async function handler(req, res) {
   <p class="meta">${esc(storeName)}${c.expires ? ' · expires ' + esc(c.expires) : ''}${c.linkVerdict ? ' · link ' + esc(c.linkVerdict) : ''}</p>
   ${c.code ? '<div>Coupon code</div><div class="code">' + esc(c.code) + '</div>' : ''}
   ${target
-    ? '<p><a class="btn" rel="nofollow sponsored noopener" target="_blank" href="' + esc(target) + '">Get this deal at ' + esc(storeName) + '</a></p>'
+    ? '<p><a class="btn" rel="nofollow sponsored noopener" target="_blank" href="' + esc(target) + '"' +
+      ' data-ga-store="' + esc(storeName) + '" data-ga-coupon="' + esc(c.id || '') + '"' +
+      ' data-ga-code="' + esc(c.code || '') + '">Get this deal at ' + esc(storeName) + '</a></p>'
     : '<p class="meta">This deal is temporarily unavailable.</p>'}
   ${geoNote}
   ${c.terms && c.terms.length ? '<div class="terms">Terms: ' + esc(c.terms.join(' · ')) + '</div>' : ''}

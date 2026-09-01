@@ -2251,7 +2251,58 @@ select.sel option{background:#0f172a;color:#e2e8f0}
        * the handle is kept so a blocked pop-up can be detected, then `win.opener`
          is nulled — the same reverse-tabnabbing protection as rel="noopener";
        * the referrer is deliberately kept, since affiliate networks rely on it. */
-  function openStore(rawUrl, store) {
+  /* GA4 outbound-click attribution.
+     Fired from openStore(), the single chokepoint every affiliate click passes
+     through, so card buttons and the modal CTA are both covered without
+     duplicate events.
+
+     Uses the recommended GA4 outbound shape: event name 'select_content' plus a
+     'click_affiliate' custom event, so the data shows up in both the standard
+     Engagement reports and any custom exploration keyed on store.
+
+     Non-blocking and failure-tolerant by design: if GA is blocked by an ad
+     blocker, window.gtag is simply undefined and this is a no-op. The outbound
+     navigation must never depend on an analytics call succeeding. */
+  function trackOutbound(store, url, coupon, code) {
+    try {
+      if (typeof window.gtag !== 'function') return;
+      /* Report the MERCHANT domain, not the affiliate wrapper. Every link is
+         https://sovrn.co/?u=<encoded destination>, so without unwrapping, the
+         store_domain dimension would read "sovrn.co" for all 70 stores and tell
+         you nothing. */
+      let domain = '';
+      try {
+        let u = new URL(url, location.href);
+        if (/(^|\.)sovrn\.co$/i.test(u.hostname)) {
+          const inner = u.searchParams.get('u');
+          if (inner) { try { u = new URL(inner); } catch (e) { /* keep wrapper */ } }
+        }
+        domain = u.hostname.replace(/^www\./, '');
+      } catch (e) { /* ignore */ }
+      const params = {
+        store_name:    store || '(unknown)',
+        store_domain:  domain,
+        coupon_id:     coupon || '',
+        coupon_code:   code || '',
+        has_code:      !!code,
+        affiliate_network: /sovrn\.co|viglink/i.test(url) ? 'sovrn' : 'direct',
+        region:        (state && state.region) || '',
+        language:      (state && state.lang) || document.documentElement.lang || '',
+        link_url:      url,
+        outbound:      true
+      };
+      window.gtag('event', 'click_affiliate', params);
+      /* Standard GA4 engagement event so this also lands in the built-in reports. */
+      window.gtag('event', 'select_content', {
+        content_type: 'affiliate_link',
+        item_id:      coupon || store || '',
+        store_name:   params.store_name,
+        store_domain: domain
+      });
+    } catch (e) { /* analytics must never break an outbound click */ }
+  }
+
+  function openStore(rawUrl, store, coupon, code) {
     if (!rawUrl) { toast(t('toast.link_soon_title', 'Link coming soon'), t('toast.link_soon_text', 'This store link is not wired up yet.'), '', true); return false; }
     try {
       const u = new URL(rawUrl, location.href);
@@ -2262,6 +2313,8 @@ select.sel option{background:#0f172a;color:#e2e8f0}
         return false;
       }
       try { win.opener = null; } catch (e) { /* older browsers */ }
+      /* Fire only on a genuinely opened tab — a blocked pop-up is not a click-through. */
+      trackOutbound(store, u.href, coupon, code);
       return true;
     } catch (err) {
       toast(t('toast.link_bad_title', 'Link unavailable'), t('toast.link_bad_text', 'That store link could not be opened safely.'), '', true);
@@ -2299,7 +2352,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
     if (isCode) revealOnCard(c);
 
     function finish(copied) {
-      const opened = openStore(url, c.s);
+      const opened = openStore(url, c.s, c.id, isCode ? c.c : '');
       if (isCode) {
         if (copied) toast(t('toast.code_copied_title', 'Code copied — {store} opened', { store: c.s }),
                           t('toast.code_copied_text', 'Paste {code} at checkout in the new tab.', { code: c.c }), c.c);
@@ -2328,7 +2381,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
         ? '<div class="modal-code"><div class="lab">' + esc(t('modal.your_code', 'Your promo code')) + '</div><div class="val">' + esc(c.c) + '</div>' +
           '<button class="btn btn-primary" data-copy="' + esc(c.c) + '">' + svg('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>') + esc(t('modal.copy_code', 'Copy code')) + '</button></div>'
         : '<div class="modal-code"><div class="lab">' + esc(t('modal.no_code_req', 'No code required')) + '</div><div class="val" style="font-size:1.15rem;letter-spacing:.04em">' + esc(c.b) + '</div>' +
-          '<button class="btn btn-primary" data-visit="' + esc(c.s) + '" data-url="' + esc(buildStoreUrl(c)) + '" data-code="">' +
+          '<button class="btn btn-primary" data-visit="' + esc(c.s) + '" data-url="' + esc(buildStoreUrl(c)) + '" data-visit-id="' + esc(c.id) + '" data-code="">' +
             esc(t('modal.activate_on', 'Activate on {store}', { store: c.s })) + ' <svg class="btn-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4L11 13"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg></button></div>') +
       '<ul class="modal-steps">' +
         '<li><span class="n">1</span><span>' + (c.t === 'code'
@@ -2346,7 +2399,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
       '<div class="modal-actions">' +
         '<button class="btn btn-outline" data-fav="' + c.id + '">' + esc(t('modal.save', 'Save coupon')) + '</button>' +
         '<a class="btn btn-blue" href="' + esc(buildStoreUrl(c)) + '" target="_blank" rel="noopener noreferrer" ' +
-          'data-visit="' + esc(c.s) + '" data-url="' + esc(buildStoreUrl(c)) + '" data-code="' + esc(c.t === 'code' ? c.c : '') + '">' +
+          'data-visit="' + esc(c.s) + '" data-url="' + esc(buildStoreUrl(c)) + '" data-visit-id="' + esc(c.id) + '" data-code="' + esc(c.t === 'code' ? c.c : '') + '">' +
           esc(t('modal.open', 'Open {store}', { store: c.s })) + ' <svg class="btn-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4L11 13"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg></a>' +
       '</div>';
     openModal($('#couponModal'));
@@ -2564,8 +2617,10 @@ select.sel option{background:#0f172a;color:#e2e8f0}
         const store = visitBtn.dataset.visit;
         const url = visitBtn.getAttribute('data-url') || visitBtn.getAttribute('href') || '';
         const vcode = visitBtn.getAttribute('data-code') || '';
+        const vid = visitBtn.getAttribute('data-visit-id') ||
+                    (visitBtn.closest('.card') && visitBtn.closest('.card').getAttribute('data-id')) || '';
         const go = function (copied) {
-          const opened = openStore(url, store);
+          const opened = openStore(url, store, vid, vcode);
           if (opened) {
             toast(store + ' opened in a new tab',
               vcode ? (copied ? 'Code ' + vcode + ' is copied — paste it at checkout.' : 'Copy ' + vcode + ' manually with ⌘/Ctrl + C.')
