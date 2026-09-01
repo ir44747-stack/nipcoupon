@@ -40,6 +40,9 @@ const G = require('./_geo.js');
 const SITE = (S.env('SITE_URL', 'https://nipcoupon.vercel.app').trim() || 'https://nipcoupon.vercel.app').replace(/\/+$/, '');
 const LOCALES = ['en', 'ar'];   // must match locales/*.json
 const DEFAULT_LOCALE = 'en';
+/* Google Analytics 4 measurement ID. Public by design (it ships in the HTML),
+   but env-overridable so staging can point at a different property. */
+const GA_ID = (S.env('GA_MEASUREMENT_ID', 'G-MSF77ECT4G').trim() || 'G-MSF77ECT4G');
 
 function esc(s) {
   return String(s == null ? '' : s)
@@ -103,6 +106,13 @@ ${ogImage ? '<meta property="og:image" content="' + esc(ogImage) + '">' : ''}
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="robots" content="${esc(robots || 'index,follow')}">
 <link rel="preconnect" href="https://cdn.viglink.com" crossorigin>
+<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
+<script>
+window.dataLayer=window.dataLayer||[];
+window.gtag=function gtag(){window.dataLayer.push(arguments);};
+window.gtag('js',new Date());window.gtag('config','${GA_ID}');
+</script>
 <style>
   body{max-width:820px;margin:0 auto;padding:48px 20px;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#090d16;color:#e2e8f0}
   a{color:#10b981}
