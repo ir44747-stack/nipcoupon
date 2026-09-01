@@ -40,7 +40,9 @@ const SECRET_KEYS = new Set([
   'FEED_TOKEN',
   'GOOGLE_SERVICE_ACCOUNT_JSON',
   'INDEXNOW_KEY',
-  'CRON_SECRET'
+  'CRON_SECRET',
+  'GITHUB_TOKEN',
+  'GH_TOKEN'
 ]);
 
 /* Non-secret config we also read from the environment. */
