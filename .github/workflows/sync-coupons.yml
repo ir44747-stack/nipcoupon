@@ -1,0 +1,122 @@
+name: Sync coupons (Sovrn)
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'monetize = re-wrap store links · offers = ingest new deals'
+        type: choice
+        default: monetize
+        options: [monetize, offers]
+      target:
+        description: 'stores = store URLs only · coupons = also per-deal URLs'
+        type: choice
+        default: stores
+        options: [stores, coupons]
+      dry_run:
+        description: 'Dry run — report changes without writing or committing'
+        type: boolean
+        default: false
+
+concurrency:
+  group: sync-coupons
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Guard — SOVRN_API_KEY must be present
+        env:
+          SOVRN_API_KEY: ${{ secrets.SOVRN_API_KEY }}
+        run: |
+          if [ -z "$SOVRN_API_KEY" ]; then
+            echo "::error::SOVRN_API_KEY is not set."
+            exit 1
+          fi
+
+      - name: Fetch Sovrn data
+        id: fetch
+        env:
+          SOVRN_API_KEY: ${{ secrets.SOVRN_API_KEY }}
+          SOVRN_SECRET_KEY: ${{ secrets.SOVRN_SECRET_KEY }}
+          MODE: ${{ inputs.mode || 'monetize' }}
+          TARGET: ${{ inputs.target || 'stores' }}
+          DRY: ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: |
+          set +e
+          node scripts/fetch-sovrn.js --mode="$MODE" --target="$TARGET" $DRY
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          case $code in
+            0) echo "fetch ok" ;;
+            2) echo "::warning::fetch-sovrn.js exited 2 — nothing to commit." ;;
+            *) echo "::error::fetch-sovrn.js failed with exit code $code"; exit $code ;;
+          esac
+
+      - name: Validate data before committing
+        if: steps.fetch.outputs.exit_code == '0' && !inputs.dry_run
+        run: npm run validate
+
+      - name: Detect changes to tracked data
+        id: diff
+        if: ${{ !inputs.dry_run }}
+        run: |
+          if git diff --quiet -- data/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes to data/."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat -- data/
+          fi
+
+      - name: Guard — no secrets in the diff
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          SOVRN_API_KEY: ${{ secrets.SOVRN_API_KEY }}
+          SOVRN_SECRET_KEY: ${{ secrets.SOVRN_SECRET_KEY }}
+        run: |
+          if git diff -- data/ | grep -qF "$SOVRN_API_KEY"; then
+            echo "::error::Refusing to commit — live API key in diff."
+            exit 1
+          fi
+          if [ -n "$SOVRN_SECRET_KEY" ] && git diff -- data/ | grep -qF "$SOVRN_SECRET_KEY"; then
+            echo "::error::Refusing to commit — live Secret key in diff."
+            exit 1
+          fi
+
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODE: ${{ inputs.mode || 'monetize' }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/
+          git commit -m "chore(data): sync Sovrn coupon data (${MODE})" -m "[skip ci]"
+          git pull --rebase --autostash "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" main
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
