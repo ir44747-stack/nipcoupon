@@ -1,0 +1,18 @@
+# secrets — never commit
+.env
+.env.*
+!.env.example
+
+# local data snapshots / backups
+backups/
+data/cj-links.json
+data/cj-feed.json
+logs/
+
+node_modules/
+.DS_Store
+*.log
+
+# runtime lock
+.cj-fetch.lock
+data/sovrn-links.json

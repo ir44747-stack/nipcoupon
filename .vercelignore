@@ -1,0 +1,12 @@
+.shots/
+.DS_Store
+*.log
+node_modules/
+# secrets must never be uploaded
+.env
+.env.*
+# local backups and raw network snapshots
+backups/
+logs/
+# runtime lock
+.cj-fetch.lock
