@@ -1,0 +1,1150 @@
+{
+  "coupons": [
+    {
+      "id": "c1",
+      "storeId": "amazon",
+      "categoryId": "tech",
+      "type": "code",
+      "badge": "30% OFF",
+      "value": 30,
+      "title": "Up to 30% off Amazon devices & accessories",
+      "verifiedHoursAgo": 1,
+      "expires": "2026-12-14",
+      "uses": 4820,
+      "rating": 4.8,
+      "addedDaysAgo": 30,
+      "code": "SNIPE30",
+      "hot": true,
+      "terms": [
+        "Applies to selected Amazon-branded devices",
+        "Max discount QAR 400 per order",
+        "Not valid on renewals or gift cards"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c1",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c1",
+      "categoryPath": "/category/tech",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c2",
+      "storeId": "nike",
+      "categoryId": "fashion",
+      "type": "code",
+      "badge": "30% OFF",
+      "value": 30,
+      "title": "30% off members: sneakers & training gear",
+      "verifiedHoursAgo": 2,
+      "expires": "2026-12-19",
+      "uses": 9310,
+      "rating": 4.9,
+      "addedDaysAgo": 29,
+      "code": "NIKE30",
+      "hot": true,
+      "terms": [
+        "Free Nike Membership required",
+        "Excludes SNKRS launches and gift cards",
+        "One redemption per member"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c2",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c2",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c3",
+      "storeId": "aliexpress",
+      "categoryId": "tech",
+      "type": "code",
+      "badge": "$8 OFF",
+      "value": 8,
+      "title": "$8 off every $60 spent — tech & gadget drops",
+      "verifiedHoursAgo": 4,
+      "expires": "2026-12-29",
+      "uses": 12600,
+      "rating": 4.5,
+      "addedDaysAgo": 28,
+      "code": "AE8NOW",
+      "terms": [
+        "Valid on orders over $60",
+        "Not stackable with select seller coupons",
+        "Limited to 3 uses per account"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c3",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c3",
+      "categoryPath": "/category/tech",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c4",
+      "storeId": "booking-com",
+      "categoryId": "travel",
+      "type": "deal",
+      "badge": "25% OFF",
+      "value": 25,
+      "title": "Genius members: up to 25% off stays worldwide",
+      "verifiedHoursAgo": 3,
+      "expires": "2026-10-31",
+      "uses": 7410,
+      "rating": 4.7,
+      "addedDaysAgo": 27,
+      "terms": [
+        "Genius account required",
+        "Participating properties only",
+        "Discount applied at property checkout"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c4",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c4",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c5",
+      "storeId": "adobe",
+      "categoryId": "software",
+      "type": "code",
+      "badge": "40% OFF",
+      "value": 40,
+      "title": "40% off Creative Cloud All Apps — first year",
+      "verifiedHoursAgo": 6,
+      "expires": "2026-12-24",
+      "uses": 3180,
+      "rating": 4.4,
+      "addedDaysAgo": 26,
+      "code": "ADOBE40",
+      "hot": true,
+      "terms": [
+        "New subscribers only",
+        "Billed monthly, cancel anytime",
+        "Discount applies to first 12 months"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c5",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c5",
+      "categoryPath": "/category/software",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c6",
+      "storeId": "steam",
+      "categoryId": "gaming",
+      "type": "deal",
+      "badge": "75% OFF",
+      "value": 75,
+      "title": "Summer sale: up to 75% off 6,000+ titles",
+      "verifiedHoursAgo": 1,
+      "expires": "2026-12-04",
+      "uses": 21400,
+      "rating": 4.9,
+      "addedDaysAgo": 25,
+      "hot": true,
+      "terms": [
+        "Sale ends at 10am PT on the end date",
+        "Regional pricing may vary",
+        "No code required — discount auto-applies"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c6",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c6",
+      "categoryPath": "/category/gaming",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c7",
+      "storeId": "noon",
+      "categoryId": "tech",
+      "type": "code",
+      "badge": "20% OFF",
+      "value": 20,
+      "title": "Extra 20% off electronics (min. spend 300)",
+      "verifiedHoursAgo": 5,
+      "expires": "2026-12-11",
+      "uses": 5620,
+      "rating": 4.6,
+      "addedDaysAgo": 24,
+      "code": "NOON20",
+      "terms": [
+        "Applies to Noon Express items",
+        "Minimum basket 300 in local currency",
+        "Excludes Noon Food and digital vouchers"
+      ],
+      "regions": [
+        "SA",
+        "AE",
+        "EG"
+      ],
+      "canonicalPath": "/coupon/c7",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c7",
+      "categoryPath": "/category/tech",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c8",
+      "storeId": "shein",
+      "categoryId": "fashion",
+      "type": "code",
+      "badge": "20% OFF",
+      "value": 20,
+      "title": "20% off everything + free shipping over $29",
+      "verifiedHoursAgo": 8,
+      "expires": "2026-12-27",
+      "uses": 15300,
+      "rating": 4.3,
+      "addedDaysAgo": 23,
+      "code": "SHEIN20",
+      "terms": [
+        "Cannot combine with other coupon codes",
+        "Free shipping threshold $29",
+        "Excludes SHEIN Exchange items"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c8",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c8",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c9",
+      "storeId": "nordvpn",
+      "categoryId": "software",
+      "type": "code",
+      "badge": "68% OFF",
+      "value": 68,
+      "title": "68% off the 2-year plan + 3 extra months free",
+      "verifiedHoursAgo": 2,
+      "expires": "2026-10-15",
+      "uses": 6740,
+      "rating": 4.8,
+      "addedDaysAgo": 22,
+      "code": "NORD68",
+      "hot": true,
+      "terms": [
+        "New customers only",
+        "30-day money-back guarantee",
+        "Auto-renews at standard rate"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c9",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c9",
+      "categoryPath": "/category/software",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c10",
+      "storeId": "samsung",
+      "categoryId": "tech",
+      "type": "code",
+      "badge": "25% OFF",
+      "value": 25,
+      "title": "25% off Galaxy S25 series + free Buds FE",
+      "verifiedHoursAgo": 3,
+      "expires": "2026-12-21",
+      "uses": 3910,
+      "rating": 4.7,
+      "addedDaysAgo": 21,
+      "code": "GALAXY25",
+      "terms": [
+        "Trade-in bonus not included",
+        "Gift while stocks last",
+        "Select regional stores only"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c10",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c10",
+      "categoryPath": "/category/tech",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c11",
+      "storeId": "adidas",
+      "categoryId": "fashion",
+      "type": "code",
+      "badge": "40% OFF",
+      "value": 40,
+      "title": "Extra 40% off outlet — app-exclusive drop",
+      "verifiedHoursAgo": 7,
+      "expires": "2026-12-08",
+      "uses": 8250,
+      "rating": 4.6,
+      "addedDaysAgo": 20,
+      "code": "ADIDAS40",
+      "hot": true,
+      "terms": [
+        "adiClub membership required",
+        "Outlet items only",
+        "Redeem in the Adidas app"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c11",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c11",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c12",
+      "storeId": "playstation",
+      "categoryId": "gaming",
+      "type": "code",
+      "badge": "20% OFF",
+      "value": 20,
+      "title": "20% off PS Plus Premium 12-month membership",
+      "verifiedHoursAgo": 5,
+      "expires": "2026-12-29",
+      "uses": 4460,
+      "rating": 4.5,
+      "addedDaysAgo": 19,
+      "code": "PSN20",
+      "terms": [
+        "New PS Plus subscribers only",
+        "Auto-renewal can be turned off anytime",
+        "Region locked to account country"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c12",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c12",
+      "categoryPath": "/category/gaming",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c13",
+      "storeId": "qatar-airways",
+      "categoryId": "travel",
+      "type": "code",
+      "badge": "20% OFF",
+      "value": 20,
+      "title": "Up to 20% off international fares from Doha",
+      "verifiedHoursAgo": 2,
+      "expires": "2026-12-17",
+      "uses": 2870,
+      "rating": 4.7,
+      "addedDaysAgo": 18,
+      "code": "QATAR20",
+      "hot": true,
+      "terms": [
+        "Select routes and travel windows",
+        "Privilege Club member login needed",
+        "Seats subject to availability"
+      ],
+      "regions": [
+        "QA",
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c13",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c13",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c14",
+      "storeId": "hostinger",
+      "categoryId": "software",
+      "type": "code",
+      "badge": "78% OFF",
+      "value": 78,
+      "title": "Up to 78% off web hosting + free domain",
+      "verifiedHoursAgo": 9,
+      "expires": "2026-10-05",
+      "uses": 5120,
+      "rating": 4.6,
+      "addedDaysAgo": 17,
+      "code": "HOST78",
+      "hot": true,
+      "terms": [
+        "48-month plan for maximum saving",
+        "Free domain for the first year",
+        "Renews at regular price"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c14",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c14",
+      "categoryPath": "/category/software",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c15",
+      "storeId": "namshi",
+      "categoryId": "fashion",
+      "type": "code",
+      "badge": "15% OFF",
+      "value": 15,
+      "title": "Extra 15% off on top of the 60% sale edit",
+      "verifiedHoursAgo": 4,
+      "expires": "2026-12-10",
+      "uses": 3380,
+      "rating": 4.4,
+      "addedDaysAgo": 16,
+      "code": "NAMSHI15",
+      "terms": [
+        "Stacks with sale prices",
+        "No minimum spend in GCC",
+        "Excludes premium international brands"
+      ],
+      "regions": [
+        "AE",
+        "SA",
+        "QA",
+        "KW",
+        "BH",
+        "OM"
+      ],
+      "canonicalPath": "/coupon/c15",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c15",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c16",
+      "storeId": "dell",
+      "categoryId": "tech",
+      "type": "code",
+      "badge": "$250 OFF",
+      "value": 24,
+      "title": "Up to $250 off XPS & Alienware configurations",
+      "verifiedHoursAgo": 6,
+      "expires": "2026-12-25",
+      "uses": 2140,
+      "rating": 4.5,
+      "addedDaysAgo": 15,
+      "code": "DEAL250",
+      "terms": [
+        "Select configurations only",
+        "Limited to 2 units per customer",
+        "Cannot be combined with employee pricing"
+      ],
+      "regions": [
+        "US",
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c16",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c16",
+      "categoryPath": "/category/tech",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c17",
+      "storeId": "agoda",
+      "categoryId": "travel",
+      "type": "code",
+      "badge": "12% OFF",
+      "value": 12,
+      "title": "12% off hotels worldwide with VIP member code",
+      "verifiedHoursAgo": 3,
+      "expires": "2026-10-20",
+      "uses": 4930,
+      "rating": 4.4,
+      "addedDaysAgo": 14,
+      "code": "AGODA12",
+      "terms": [
+        "Applies to prepaid bookings",
+        "Excludes taxes and service fees",
+        "Capped at $60 per booking"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c17",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c17",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c18",
+      "storeId": "razer",
+      "categoryId": "gaming",
+      "type": "code",
+      "badge": "30% OFF",
+      "value": 30,
+      "title": "30% off peripherals for Razer ID members",
+      "verifiedHoursAgo": 5,
+      "expires": "2026-12-18",
+      "uses": 2760,
+      "rating": 4.6,
+      "addedDaysAgo": 13,
+      "code": "RAZER30",
+      "terms": [
+        "Razer ID login required",
+        "Excludes new-release items",
+        "One code per household"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c18",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c18",
+      "categoryPath": "/category/gaming",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c19",
+      "storeId": "canva",
+      "categoryId": "software",
+      "type": "code",
+      "badge": "60% OFF",
+      "value": 60,
+      "title": "60% off Canva Pro annual for new teams",
+      "verifiedHoursAgo": 8,
+      "expires": "2026-10-10",
+      "uses": 6210,
+      "rating": 4.7,
+      "addedDaysAgo": 12,
+      "code": "CANVA60",
+      "terms": [
+        "New Canva Pro customers only",
+        "Annual billing required",
+        "Team plan seats limited to 5"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c19",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c19",
+      "categoryPath": "/category/software",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c20",
+      "storeId": "hm",
+      "categoryId": "fashion",
+      "type": "deal",
+      "badge": "3 FOR 2",
+      "value": 33,
+      "title": "Buy 2 get 1 free across all basics",
+      "verifiedHoursAgo": 10,
+      "expires": "2026-12-07",
+      "uses": 7180,
+      "rating": 4.2,
+      "addedDaysAgo": 11,
+      "terms": [
+        "Cheapest item free",
+        "In-store and online",
+        "Excludes H&M Home"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c20",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c20",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c21",
+      "storeId": "lenovo",
+      "categoryId": "tech",
+      "type": "code",
+      "badge": "40% OFF",
+      "value": 40,
+      "title": "40% off ThinkPad & Legion with student verification",
+      "verifiedHoursAgo": 6,
+      "expires": "2026-10-01",
+      "uses": 1890,
+      "rating": 4.5,
+      "addedDaysAgo": 10,
+      "code": "THINK40",
+      "terms": [
+        "Student status verification required",
+        "Excludes clearance and refurbished",
+        "Limited to 1 unit per student"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c21",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c21",
+      "categoryPath": "/category/tech",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c22",
+      "storeId": "emirates",
+      "categoryId": "travel",
+      "type": "code",
+      "badge": "10% OFF",
+      "value": 10,
+      "title": "10% off flex fares + extra baggage allowance",
+      "verifiedHoursAgo": 7,
+      "expires": "2026-10-12",
+      "uses": 1620,
+      "rating": 4.3,
+      "addedDaysAgo": 9,
+      "code": "EK10",
+      "terms": [
+        "Flex and Flex Plus fares only",
+        "Emirates Skywards number required",
+        "Blackout dates apply"
+      ],
+      "regions": [
+        "AE",
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c22",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c22",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c23",
+      "storeId": "xbox",
+      "categoryId": "gaming",
+      "type": "deal",
+      "badge": "3 MO FREE",
+      "value": 70,
+      "title": "3 months of Game Pass Ultimate for $1",
+      "verifiedHoursAgo": 2,
+      "expires": "2026-12-29",
+      "uses": 11200,
+      "rating": 4.8,
+      "addedDaysAgo": 8,
+      "hot": true,
+      "terms": [
+        "New subscribers only",
+        "Auto-renews at $16.99/mo unless cancelled",
+        "One offer per Microsoft account"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c23",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c23",
+      "categoryPath": "/category/gaming",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c24",
+      "storeId": "microsoft-365",
+      "categoryId": "software",
+      "type": "code",
+      "badge": "3 MO FREE",
+      "value": 35,
+      "title": "3 months free on annual Microsoft 365 plans",
+      "verifiedHoursAgo": 9,
+      "expires": "2026-10-08",
+      "uses": 3040,
+      "rating": 4.4,
+      "addedDaysAgo": 7,
+      "code": "M365FREE",
+      "terms": [
+        "New and returning subscribers",
+        "Annual commitment required",
+        "Family plan limited to 6 people"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c24",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c24",
+      "categoryPath": "/category/software",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c25",
+      "storeId": "airbnb",
+      "categoryId": "travel",
+      "type": "deal",
+      "badge": "20% OFF",
+      "value": 20,
+      "title": "20% off your first stay as a new guest",
+      "verifiedHoursAgo": 11,
+      "expires": "2026-11-30",
+      "uses": 3980,
+      "rating": 4.2,
+      "addedDaysAgo": 6,
+      "terms": [
+        "New Airbnb accounts only",
+        "Max discount $150",
+        "Excludes long-term stays"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c25",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c25",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c26",
+      "storeId": "zara",
+      "categoryId": "fashion",
+      "type": "deal",
+      "badge": "50% OFF",
+      "value": 50,
+      "title": "Mid-season sale: up to 50% off selected lines",
+      "verifiedHoursAgo": 4,
+      "expires": "2026-12-05",
+      "uses": 6040,
+      "rating": 4.1,
+      "addedDaysAgo": 5,
+      "terms": [
+        "In-app early access at midnight",
+        "Final markdowns are non-returnable",
+        "Stock varies by store"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c26",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c26",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c27",
+      "storeId": "logitech",
+      "categoryId": "tech",
+      "type": "code",
+      "badge": "25% OFF",
+      "value": 25,
+      "title": "25% off MX Master series & mechanical keyboards",
+      "verifiedHoursAgo": 5,
+      "expires": "2026-12-23",
+      "uses": 2210,
+      "rating": 4.6,
+      "addedDaysAgo": 4,
+      "code": "LOGITECH25",
+      "terms": [
+        "Excludes limited-edition colours",
+        "Max 3 items per order",
+        "Free shipping over $49"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c27",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c27",
+      "categoryPath": "/category/tech",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c28",
+      "storeId": "expedia",
+      "categoryId": "travel",
+      "type": "code",
+      "badge": "15% OFF",
+      "value": 15,
+      "title": "Save an extra 15% on flight + hotel bundles",
+      "verifiedHoursAgo": 8,
+      "expires": "2026-10-18",
+      "uses": 2530,
+      "rating": 4.3,
+      "addedDaysAgo": 3,
+      "code": "BUNDLE15",
+      "terms": [
+        "Both flight and hotel must be booked together",
+        "Coupon applied before taxes",
+        "Not valid on package holidays"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c28",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c28",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c29",
+      "storeId": "epic-games",
+      "categoryId": "gaming",
+      "type": "code",
+      "badge": "10% OFF",
+      "value": 10,
+      "title": "10% off any game or add-on over $14.99",
+      "verifiedHoursAgo": 6,
+      "expires": "2026-10-25",
+      "uses": 5340,
+      "rating": 4.5,
+      "addedDaysAgo": 2,
+      "code": "EPIC10",
+      "terms": [
+        "One code per purchase",
+        "Excludes in-game currency",
+        "Valid on pre-orders"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c29",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c29",
+      "categoryPath": "/category/gaming",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c30",
+      "storeId": "apple",
+      "categoryId": "tech",
+      "type": "deal",
+      "badge": "15% OFF",
+      "value": 15,
+      "title": "Education pricing: up to 15% off + gift card",
+      "verifiedHoursAgo": 12,
+      "expires": "2026-11-15",
+      "uses": 3120,
+      "rating": 4.4,
+      "addedDaysAgo": 1,
+      "terms": [
+        "Students, teachers and staff eligible",
+        "Verification via UNiDAYS or student ID",
+        "Gift card value varies by product"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c30",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c30",
+      "categoryPath": "/category/tech",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c31",
+      "storeId": "asos",
+      "categoryId": "fashion",
+      "type": "code",
+      "badge": "20% OFF",
+      "value": 20,
+      "title": "20% student discount + free next-day delivery",
+      "verifiedHoursAgo": 3,
+      "expires": "2026-10-02",
+      "uses": 4610,
+      "rating": 4.4,
+      "addedDaysAgo": 30,
+      "code": "ASOS20",
+      "terms": [
+        "Valid student email required",
+        "Premier delivery signup needed",
+        "Excludes sale items over 70% off"
+      ],
+      "regions": [
+        "GB",
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c31",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c31",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c32",
+      "storeId": "careem",
+      "categoryId": "travel",
+      "type": "code",
+      "badge": "50% OFF",
+      "value": 50,
+      "title": "50% off your first 5 rides this month",
+      "verifiedHoursAgo": 2,
+      "expires": "2026-12-15",
+      "uses": 5890,
+      "rating": 4.6,
+      "addedDaysAgo": 29,
+      "code": "RIDE50",
+      "hot": true,
+      "terms": [
+        "New Careem users in GCC",
+        "Max discount QAR 15 per ride",
+        "Excludes Careem Bike and Food"
+      ],
+      "regions": [
+        "AE",
+        "SA",
+        "QA",
+        "KW",
+        "JO",
+        "EG"
+      ],
+      "canonicalPath": "/coupon/c32",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c32",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c33",
+      "storeId": "instant-gaming",
+      "categoryId": "gaming",
+      "type": "code",
+      "badge": "18% OFF",
+      "value": 18,
+      "title": "18% off Steam, Epic and Ubisoft game keys",
+      "verifiedHoursAgo": 7,
+      "expires": "2026-12-28",
+      "uses": 3270,
+      "rating": 4.3,
+      "addedDaysAgo": 28,
+      "code": "KEYS18",
+      "terms": [
+        "Keys delivered instantly by email",
+        "Non-refundable once revealed",
+        "Region restrictions may apply"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c33",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c33",
+      "categoryPath": "/category/gaming",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c34",
+      "storeId": "notion",
+      "categoryId": "software",
+      "type": "deal",
+      "badge": "FREE",
+      "value": 100,
+      "title": "Notion Plus free for students & educators",
+      "verifiedHoursAgo": 14,
+      "expires": "2026-12-31",
+      "uses": 2880,
+      "rating": 4.7,
+      "addedDaysAgo": 27,
+      "terms": [
+        "Valid .edu email required",
+        "Renews free while enrolled",
+        "Excludes AI add-on credits"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c34",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c34",
+      "categoryPath": "/category/software",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c35",
+      "storeId": "ounass",
+      "categoryId": "fashion",
+      "type": "code",
+      "badge": "10% OFF",
+      "value": 10,
+      "title": "Extra 10% off luxury & designer edits",
+      "verifiedHoursAgo": 9,
+      "expires": "2026-12-20",
+      "uses": 1240,
+      "rating": 4.5,
+      "addedDaysAgo": 26,
+      "code": "OUNASS10",
+      "terms": [
+        "Applies to full-price items",
+        "Excludes beauty and watches",
+        "Same-day delivery in Doha"
+      ],
+      "regions": [
+        "AE",
+        "SA",
+        "QA",
+        "KW",
+        "BH",
+        "OM"
+      ],
+      "canonicalPath": "/coupon/c35",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c35",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c36",
+      "storeId": "talabat",
+      "categoryId": "travel",
+      "type": "code",
+      "badge": "FREE DELIVERY",
+      "value": 12,
+      "title": "Free delivery on 10 orders + 20% off first",
+      "verifiedHoursAgo": 4,
+      "expires": "2026-12-26",
+      "uses": 4320,
+      "rating": 4.2,
+      "addedDaysAgo": 25,
+      "code": "TBFREE",
+      "terms": [
+        "Talabat Pro trial activation",
+        "Minimum order QAR 25",
+        "Delivery cap QAR 8 per order"
+      ],
+      "regions": [
+        "QA",
+        "AE",
+        "SA",
+        "KW",
+        "BH",
+        "OM",
+        "JO",
+        "EG"
+      ],
+      "canonicalPath": "/coupon/c36",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c36",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c37",
+      "storeId": "shopify",
+      "categoryId": "software",
+      "type": "deal",
+      "badge": "$1/MO",
+      "value": 75,
+      "title": "$1/month for your first 3 months of Shopify",
+      "verifiedHoursAgo": 10,
+      "expires": "2026-10-22",
+      "uses": 1980,
+      "rating": 4.5,
+      "addedDaysAgo": 24,
+      "terms": [
+        "New stores only",
+        "Then standard plan pricing",
+        "Payment gateway fees still apply"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c37",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c37",
+      "categoryPath": "/category/software",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c38",
+      "storeId": "uber",
+      "categoryId": "travel",
+      "type": "deal",
+      "badge": "1 MO FREE",
+      "value": 60,
+      "title": "One month of Uber One free — zero delivery fees",
+      "verifiedHoursAgo": 5,
+      "expires": "2026-10-09",
+      "uses": 5150,
+      "rating": 4.4,
+      "addedDaysAgo": 23,
+      "terms": [
+        "New Uber One members",
+        "Auto-renews unless cancelled",
+        "Minimum order value applies"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c38",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c38",
+      "categoryPath": "/category/travel",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c39",
+      "storeId": "spotify",
+      "categoryId": "software",
+      "type": "deal",
+      "badge": "3 MO FREE",
+      "value": 70,
+      "title": "3 months of Spotify Premium Individual free",
+      "verifiedHoursAgo": 6,
+      "expires": "2026-10-30",
+      "uses": 8960,
+      "rating": 4.6,
+      "addedDaysAgo": 22,
+      "hot": true,
+      "terms": [
+        "Users new to Premium only",
+        "Payment method required",
+        "One offer per account, ever"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c39",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c39",
+      "categoryPath": "/category/software",
+      "source": "local",
+      "verified": true
+    },
+    {
+      "id": "c40",
+      "storeId": "farfetch",
+      "categoryId": "fashion",
+      "type": "code",
+      "badge": "15% OFF",
+      "value": 15,
+      "title": "15% off your first order across 1,400 boutiques",
+      "verifiedHoursAgo": 11,
+      "expires": "2026-10-14",
+      "uses": 1470,
+      "rating": 4.3,
+      "addedDaysAgo": 21,
+      "code": "FFNEW15",
+      "terms": [
+        "New Farfetch customers"
+      ],
+      "regions": [
+        "GLOBAL"
+      ],
+      "canonicalPath": "/coupon/c40",
+      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c40",
+      "categoryPath": "/category/fashion",
+      "source": "local",
+      "verified": true
+    }
+  ]
+}

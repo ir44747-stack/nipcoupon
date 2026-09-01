@@ -1,0 +1,28 @@
+{
+  "name": "nipcoupon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NipCoupon — Global Deals. Sniper Precision. A static coupon aggregator with a serverless deals API.",
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "validate:links": "node scripts/validate.js --links",
+    "validate:strict": "node scripts/validate.js --strict",
+    "prune": "node scripts/validate.js --prune",
+    "predeploy": "node scripts/predeploy.js",
+    "preview": "node scripts/preview-server.js",
+    "dev": "npx --yes serve . -l 3000",
+    "dev:api": "npx --yes vercel dev",
+    "fetch:cj": "node scripts/fetch-cj.js",
+    "fetch:cj:dry": "node scripts/fetch-cj.js --dry-run",
+    "fetch:sovrn": "node scripts/fetch-sovrn.js",
+    "fetch:sovrn:dry": "node scripts/fetch-sovrn.js --dry-run",
+    "sovrn:revert": "node scripts/fetch-sovrn.js --revert",
+    "sync:offers": "node scripts/sync-offers.js",
+    "sync:offers:dry": "node scripts/sync-offers.js --dry-run",
+    "links:guard": "node scripts/link-guard.js",
+    "secrets:audit": "node scripts/purge-secrets.js",
+    "secrets:purge": "node scripts/purge-secrets.js --fix",
+    "build:sitemap": "node scripts/build-sitemap.js",
+    "build:sitemap:dry": "node scripts/build-sitemap.js --dry-run"
+  }
+}

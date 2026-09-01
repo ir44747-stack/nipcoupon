@@ -1,0 +1,95 @@
+{
+  "regions": [
+    {
+      "code": "GLOBAL",
+      "name": "Global",
+      "flag": "🌐",
+      "default": true,
+      "name_ar": "كل دول العالم"
+    },
+    {
+      "code": "QA",
+      "name": "Qatar",
+      "flag": "🇶🇦",
+      "name_ar": "قطر"
+    },
+    {
+      "code": "SA",
+      "name": "Saudi Arabia",
+      "flag": "🇸🇦",
+      "name_ar": "السعودية"
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates",
+      "flag": "🇦🇪",
+      "name_ar": "الإمارات"
+    },
+    {
+      "code": "KW",
+      "name": "Kuwait",
+      "flag": "🇰🇼",
+      "name_ar": "الكويت"
+    },
+    {
+      "code": "BH",
+      "name": "Bahrain",
+      "flag": "🇧🇭",
+      "name_ar": "البحرين"
+    },
+    {
+      "code": "OM",
+      "name": "Oman",
+      "flag": "🇴🇲",
+      "name_ar": "عُمان"
+    },
+    {
+      "code": "JO",
+      "name": "Jordan",
+      "flag": "🇯🇴",
+      "name_ar": "الأردن"
+    },
+    {
+      "code": "EG",
+      "name": "Egypt",
+      "flag": "🇪🇬",
+      "name_ar": "مصر"
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "flag": "🇺🇸",
+      "name_ar": "الولايات المتحدة"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "flag": "🇬🇧",
+      "name_ar": "المملكة المتحدة"
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "flag": "🇩🇪",
+      "name_ar": "ألمانيا"
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "flag": "🇮🇳",
+      "name_ar": "الهند"
+    },
+    {
+      "code": "SG",
+      "name": "Singapore",
+      "flag": "🇸🇬",
+      "name_ar": "سنغافورة"
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "flag": "🇦🇺",
+      "name_ar": "أستراليا"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "categories": [
+    {
+      "id": "tech",
+      "name": "Tech & Electronics",
+      "icon": "cpu",
+      "blurb": "Laptops, phones, gadgets, home tech.",
+      "name_ar": "التقنية والإلكترونيات",
+      "blurb_ar": "حواسيب، هواتف، أجهزة ذكية وإلكترونيات المنزل."
+    },
+    {
+      "id": "fashion",
+      "name": "Fashion",
+      "icon": "shirt",
+      "blurb": "Sneakers, streetwear, luxury edits.",
+      "name_ar": "الأزياء",
+      "blurb_ar": "أزياء، أحذية، حقائب وإكسسوارات من أبرز العلامات."
+    },
+    {
+      "id": "travel",
+      "name": "Travel",
+      "icon": "plane",
+      "blurb": "Flights, hotels, rides & experiences.",
+      "name_ar": "السفر",
+      "blurb_ar": "رحلات طيران، فنادق، تأجير سيارات وباقات العطلات."
+    },
+    {
+      "id": "gaming",
+      "name": "Gaming",
+      "icon": "game",
+      "blurb": "Consoles, game keys, rigs & gear.",
+      "name_ar": "الألعاب",
+      "blurb_ar": "ألعاب، أجهزة تحكّم، اشتراكات وحزم اللاعبين."
+    },
+    {
+      "id": "software",
+      "name": "Software",
+      "icon": "code",
+      "blurb": "SaaS, creative suites & subscriptions.",
+      "name_ar": "البرمجيات",
+      "blurb_ar": "أدوات العمل، التصميم، الحماية والاشتراكات السحابية."
+    }
+  ]
+}
