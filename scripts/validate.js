@@ -283,6 +283,26 @@ stores.forEach(s => {
   if (!s.originalUrl) warn('stores.json', s.id + ': no originalUrl fallback if the key is unset');
 });
 
+/* Coupon landingUrl overrides store.url in page.js, so a raw merchant link
+   written here by sync-offers.js / fetch-cj.js silently bypasses the wrapper.
+   api/_data.js now monetises these at request time; flag them anyway so the
+   data on disk stays honest about what it is. Links belonging to another
+   affiliate network are legitimate and deliberately left unwrapped. */
+const FOREIGN_AFFILIATE = /(^|\.)(dpbolvw\.net|anrdoezrs\.net|kqzyfj\.com|jdoqocy\.com|tkqlhce\.com|emjcd\.com|linksynergy\.com|awin1\.com|zenaps\.com|impact\.com|7eer\.net|evyy\.net|partnerize\.com|prf\.hn|shareasale\.com|rakuten\.com|cj\.com|amazon-adsystem\.com)$/i;
+let rawLanding = 0, foreignLanding = 0;
+coupons.forEach(c => {
+  const raw = String(c.landingUrl || '');
+  if (!raw || raw.indexOf('${') !== -1) return;
+  let host;
+  try { host = new URL(raw).hostname.toLowerCase(); }
+  catch (e) { err('coupons.json', c.id + ': unparseable landingUrl'); return; }
+  if (SOVRN_HOSTS.has(host)) return;
+  if (FOREIGN_AFFILIATE.test(host)) { foreignLanding++; return; }
+  rawLanding++;
+  warn('coupons.json', c.id + ': landingUrl is a bare merchant URL (' + host +
+    ') — monetised at request time, but store it wrapped to be safe');
+});
+
 /* A non-2xx is NOT proof of a dead link: most retailers block bots (403/503 on
    HEAD, 200 on GET). Only a confirmed 404/410 or a dead hostname counts as
    "dead", and even then it is re-checked before anything is deleted. */
@@ -451,7 +471,8 @@ say('top stores  : ' + Object.entries(perStore).sort((a, b) => b[1] - a[1]).slic
 say('affiliate   : ' + urlCoupons.size + ' unique tracked links · attribution ' + JSON.stringify(attribution));
 say('expiry      : ' + expiredCoupons.length + ' expired · ' + expiringSoon.length + ' expiring within 7 days');
 say('monetisation: ' + (stores.length - unmonetised) + '/' + stores.length +
-    ' stores route through the Sovrn wrapper with a key placeholder + cuid');
+    ' stores route through the Sovrn wrapper with a key placeholder + cuid' +
+    ' · coupon landingUrl: ' + rawLanding + ' bare, ' + foreignLanding + ' other-network');
 if (LINKS) {
   say('links       : ' + linkReport.checked + ' checked · ' + linkReport.ok + ' ok · ' +
       linkReport.dead + ' dead · ' + linkReport.suspect + ' suspect · ' + linkReport.unknown + ' unverifiable');

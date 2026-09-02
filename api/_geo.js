@@ -203,12 +203,36 @@ function wrapSovrn(target, wrapper) {
   }
 }
 
+/* Hosts belonging to affiliate networks OTHER than Sovrn. A link on one of
+   these is already carrying somebody's tracking — normally our own CJ
+   publisher ID, written by scripts/fetch-cj.js. Wrapping it in sovrn.co would
+   not add a second commission; it would bury the first one behind a redirect
+   the originating network cannot attribute, so we would lose the sale we had
+   already earned. Leave these strictly alone. */
+const FOREIGN_AFFILIATE_HOSTS = [
+  /(^|\.)dpbolvw\.net$/i, /(^|\.)anrdoezrs\.net$/i, /(^|\.)kqzyfj\.com$/i,
+  /(^|\.)jdoqocy\.com$/i, /(^|\.)tkqlhce\.com$/i, /(^|\.)emjcd\.com$/i,
+  /(^|\.)linksynergy\.com$/i, /(^|\.)awin1\.com$/i, /(^|\.)zenaps\.com$/i,
+  /(^|\.)impact(-cdn)?\.com$/i, /(^|\.)7eer\.net$/i, /(^|\.)evyy\.net$/i,
+  /(^|\.)partnerize\.com$/i, /(^|\.)prf\.hn$/i, /(^|\.)shareasale\.com$/i,
+  /(^|\.)rakuten\.com$/i, /(^|\.)cj\.com$/i, /(^|\.)amazon-adsystem\.com$/i
+];
+
+/** True when the URL already belongs to a non-Sovrn affiliate network. */
+function isForeignAffiliate(url) {
+  try {
+    const h = new URL(url).hostname.toLowerCase();
+    return FOREIGN_AFFILIATE_HOSTS.some(re => re.test(h));
+  } catch (e) { return false; }
+}
+
 /** Wrap a bare merchant URL for monetisation (server-side only). */
 function monetise(url) {
   if (!url) return '';
   const key = S.env('SOVRN_API_KEY').trim();
   if (!key) return url;
   if (unwrapSovrn(url)) return url;                 // already wrapped
+  if (isForeignAffiliate(url)) return url;          // another network owns this click
   try {
     const base = new URL(S.env('SOVRN_LINK_BASE', 'https://sovrn.co') || 'https://sovrn.co');
     base.searchParams.set('key', key);
@@ -395,6 +419,7 @@ module.exports = {
   unwrapSovrn,
   wrapSovrn,
   monetise,
+  isForeignAffiliate,
   localizeUrl,
   localizeStore,
   storeComparator,

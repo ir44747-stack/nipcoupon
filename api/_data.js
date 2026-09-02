@@ -73,10 +73,23 @@ function resolveStore(s) {
 }
 
 function resolveCoupon(c) {
-  if (!c || !c.landingUrl || c.landingUrl.indexOf('${') === -1) return c;
-  const url = S.resolveUrl(c.landingUrl, '');
-  // Unresolved placeholder → drop the link rather than publish a broken one.
-  return Object.assign({}, c, { landingUrl: url, linkUnresolved: !url });
+  if (!c || !c.landingUrl) return c;
+
+  if (c.landingUrl.indexOf('${') !== -1) {
+    const url = S.resolveUrl(c.landingUrl, '');
+    // Unresolved placeholder → drop the link rather than publish a broken one.
+    if (!url) return Object.assign({}, c, { landingUrl: '', linkUnresolved: true });
+    return Object.assign({}, c, { landingUrl: G.monetise(url) });
+  }
+
+  /* No placeholder does NOT mean the link is monetised. Coupons written to
+     data/coupons.json by scripts/sync-offers.js and scripts/fetch-cj.js carry
+     the provider's raw landing URL, which is a bare merchant link. Those went
+     out uncommissioned: page.js renders c.landingUrl in preference to
+     store.url, so a single provider offer silently bypassed the wrapper.
+     monetise() is idempotent — already-wrapped links (Sovrn deeplinks, or a
+     CJ tracking URL we should not touch) are returned unchanged. */
+  return Object.assign({}, c, { landingUrl: G.monetise(c.landingUrl) });
 }
 
 /* ============================================================
