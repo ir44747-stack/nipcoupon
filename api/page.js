@@ -482,11 +482,25 @@ ${(function () {
       .map(x => '<a href="/store/' + encodeURIComponent(x.id) + '">' + esc(x.name) + '</a>')
       .join(' · ');
 
+    /* Monetised outbound link for the store page itself. Without this the
+       server-rendered /store/* page had no affiliate link at all: every
+       visitor who landed here from search and clicked through to the merchant
+       via the coupon list was attributed, but anyone wanting the storefront
+       directly had no monetised path. Resolve through the secrets layer, then
+       localise inside the wrapper so the commission survives the host swap. */
+    const storeBase = S.resolveUrl(s.url, s.originalUrl || '');
+    const storeLoc = G.localizeUrl(storeBase, region.code);
+    const storeTarget = storeLoc.url || storeBase;
+
     const body = `
 <div class="card">
   <span class="badge">${list.length} deal${list.length === 1 ? '' : 's'}</span>
   <h1>${esc(s.name)} discount codes &amp; promo codes — ${esc(stamp)}</h1>
   <p>${esc(desc)}</p>
+  ${storeTarget
+    ? '<p><a class="btn" rel="nofollow sponsored noopener" target="_blank" href="' + esc(storeTarget) + '"' +
+      ' data-ga-store="' + esc(s.name) + '">Visit ' + esc(s.name) + '</a></p>'
+    : ''}
 </div>
 ${list.map(c => `<div class="card">
   <span class="badge">${esc(c.badge || (c.type === 'code' ? 'CODE' : 'DEAL'))}</span>

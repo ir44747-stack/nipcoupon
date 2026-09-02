@@ -2284,6 +2284,23 @@ select.sel option{background:#0f172a;color:#e2e8f0}
     if (!base) return '';
     try {
       const u = new URL(base);
+
+      /* An unexpanded ${SOVRN_API_KEY} means we are on the static fallback
+         path: /api/catalog was unreachable, so the catalogue came straight
+         from data/stores.json where the key is only a placeholder. Sending
+         the visitor to sovrn.co with key=${SOVRN_API_KEY} is the worst of
+         both worlds — the click is unattributable AND Sovrn rejects it, so
+         the user may not reach the merchant at all. Unwrap to the plain
+         merchant URL instead: the click still converts for the user, it is
+         simply not commissioned. The page-level Sovrn Commerce loader
+         (/api/sovrn.js) may still monetise it client-side. */
+      const rawKey = u.searchParams.get('key') || '';
+      if (rawKey.indexOf('${') !== -1 || rawKey.indexOf('%24%7B') !== -1) {
+        const inner = u.searchParams.get('u') || store.originalUrl || '';
+        if (!inner) return '';
+        try { return clientLocalizeUrl(new URL(inner, location.href).toString()); }
+        catch (e) { return ''; }
+      }
       Object.keys(CONFIG.attribution).forEach(function (k) { u.searchParams.set(k, CONFIG.attribution[k]); });
       u.searchParams.set('utm_campaign', (c.c || 'deal').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
       u.searchParams.set('utm_content', c.id);

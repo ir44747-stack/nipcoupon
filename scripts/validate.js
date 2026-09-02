@@ -247,6 +247,42 @@ function outboundUrl(c) {
 const urlCoupons = new Map();
 coupons.forEach(c => { const u = outboundUrl(c); if (u) urlCoupons.set(u, (urlCoupons.get(u) || []).concat(c.id)); });
 
+/* ---------- affiliate monetisation compliance ----------
+   Every outbound link must route through the Sovrn wrapper carrying BOTH the
+   publisher key and the cuid. A link that silently loses either one still
+   works for the visitor, which is exactly why it goes unnoticed — it just
+   stops earning. Structural checks only: the key is a ${SOVRN_API_KEY}
+   placeholder in the repo by design, so we assert the placeholder is present
+   and correctly shaped, never the literal secret. */
+const SOVRN_HOSTS = new Set(['sovrn.co', 'www.sovrn.co']);
+let unmonetised = 0;
+
+stores.forEach(s => {
+  const raw = String(s.url || '');
+  if (!raw) { err('stores.json', s.id + ': no url — store can never be monetised'); unmonetised++; return; }
+  let u;
+  try { u = new URL(raw); } catch (e) { err('stores.json', s.id + ': unparseable url'); unmonetised++; return; }
+  if (!SOVRN_HOSTS.has(u.hostname.toLowerCase())) {
+    err('stores.json', s.id + ': outbound url bypasses the Sovrn wrapper (host ' + u.hostname + ') — clicks are uncommissioned');
+    unmonetised++; return;
+  }
+  const key = u.searchParams.get('key') || '';
+  const inner = u.searchParams.get('u') || '';
+  const cuid = u.searchParams.get('cuid') || '';
+  if (key !== '${SOVRN_API_KEY}') {
+    // A hard-coded key here would also be a secret leak, not just a rotation problem.
+    err('stores.json', s.id + ': key must be the ${SOVRN_API_KEY} placeholder, found ' +
+      (key ? (/^\$\{/.test(key) ? key : 'a literal value') : '(empty)'));
+    unmonetised++;
+  }
+  if (!inner) { err('stores.json', s.id + ': wrapper has no ?u= destination'); unmonetised++; }
+  else if (!/^https?%3A|^https?:/i.test(inner)) {
+    err('stores.json', s.id + ': ?u= must be an absolute, url-encoded destination');
+  }
+  if (!cuid) warn('stores.json', s.id + ': no cuid — sub-ID reporting will be blank for this store');
+  if (!s.originalUrl) warn('stores.json', s.id + ': no originalUrl fallback if the key is unset');
+});
+
 /* A non-2xx is NOT proof of a dead link: most retailers block bots (403/503 on
    HEAD, 200 on GET). Only a confirmed 404/410 or a dead hostname counts as
    "dead", and even then it is re-checked before anything is deleted. */
@@ -414,6 +450,8 @@ say('by category : ' + Object.entries(perCat).map(([k, v]) => k + '=' + v).join(
 say('top stores  : ' + Object.entries(perStore).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => k + '=' + v).join(', '));
 say('affiliate   : ' + urlCoupons.size + ' unique tracked links · attribution ' + JSON.stringify(attribution));
 say('expiry      : ' + expiredCoupons.length + ' expired · ' + expiringSoon.length + ' expiring within 7 days');
+say('monetisation: ' + (stores.length - unmonetised) + '/' + stores.length +
+    ' stores route through the Sovrn wrapper with a key placeholder + cuid');
 if (LINKS) {
   say('links       : ' + linkReport.checked + ' checked · ' + linkReport.ok + ' ok · ' +
       linkReport.dead + ' dead · ' + linkReport.suspect + ' suspect · ' + linkReport.unknown + ' unverifiable');

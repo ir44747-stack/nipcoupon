@@ -12,6 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const S = require('./_secrets.js');
+const G = require('./_geo.js');
 
 // resolve relative to this module so it works regardless of the process cwd
 // (Vercel sets cwd to /var/task, local dev servers vary)
@@ -313,7 +314,12 @@ function mapFeedItem(raw, index, ctx) {
     addedDaysAgo: Number(raw.addedDaysAgo || 0) || 0,
     hot: truthy(raw.hot) || truthy(raw.featured),
     terms: Array.isArray(raw.terms) ? raw.terms.map(String) : (raw.terms ? [String(raw.terms)] : []),
-    landingUrl: link || store.url || '',
+    /* Feed links arrive as bare merchant URLs. Wrapping them here is the only
+       thing standing between a remote deal and an uncommissioned click:
+       store.url is already wrapped, but `link` comes straight from the feed.
+       monetise() is a no-op on an already-wrapped URL, so double-wrapping
+       cannot happen, and it returns the input unchanged when no key is set. */
+    landingUrl: link ? G.monetise(link) : (store.url || ''),
     regions,
     source: 'feed'
   }, index);
