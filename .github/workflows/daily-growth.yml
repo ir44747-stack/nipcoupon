@@ -8,7 +8,7 @@ on:
       dry_run:
         description: 'Run in dry-run mode (do not commit changes)'
         required: true
-        default: 'true'
+        default: 'false'
         type: choice
         options:
           - 'true'
@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -32,9 +34,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run Keyword Sync
+        run: npm run keywords
+
+      - name: Run Sitemap Builder
+        run: npm run build-sitemap
+
       - name: Run growth script
         env:
-          DRY_RUN: ${{ github.event.inputs.dry_run || 'true' }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           GH_PAT: ${{ secrets.GH_PAT }}
           SOVRN_API_KEY: ${{ secrets.SOVRN_API_KEY }}
           SOVRN_SECRET_KEY: ${{ secrets.SOVRN_SECRET_KEY }}
@@ -45,3 +53,10 @@ jobs:
             echo "auth: using default GITHUB_TOKEN"
           fi
           npm run growth
+
+      - name: Commit and push changes if any
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: automated SEO and growth sync [skip ci]" && git push)
