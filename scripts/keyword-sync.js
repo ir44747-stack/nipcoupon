@@ -57,10 +57,38 @@ function buildSeeds(kw, stores) {
   const seeds = [];
 
   // Brand + modifier — the highest-intent coupon queries.
+  //
+  // The two original modifiers are the head terms: high volume, but every
+  // competitor targets them. The extras below are transactional long-tail —
+  // lower volume each, far lower difficulty, and they convert better because
+  // the searcher is already at checkout looking for a code that works.
+  //
+  // Kept to the top 12 brands × 6 extras so the candidate pool stays inside
+  // the autocomplete fetch budget; the full 30 still get the two head terms.
   names.slice(0, 30).forEach(n => {
     seeds.push(n + ' promo code');
     seeds.push(n + ' discount code');
   });
+
+  const INTENT = [
+    'voucher code',
+    'active promo code',
+    'valid voucher',
+    'working discount code',
+    'free shipping code',
+    'first order discount'
+  ];
+  names.slice(0, 12).forEach(n => {
+    INTENT.forEach(m => seeds.push(n + ' ' + m));
+  });
+
+  // Month-stamped variants — "<brand> promo code september 2026" is a real,
+  // recurring query pattern and signals freshness in the SERP.
+  const now = new Date();
+  const MONTH = ['january', 'february', 'march', 'april', 'may', 'june', 'july',
+    'august', 'september', 'october', 'november', 'december'][now.getUTCMonth()];
+  const stamp = MONTH + ' ' + now.getUTCFullYear();
+  names.slice(0, 10).forEach(n => seeds.push(n + ' promo code ' + stamp));
 
   (kw.categories || []).forEach(c => seeds.push(c));
 

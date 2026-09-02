@@ -100,13 +100,19 @@ categories.filter(c => (perCat[c.id] || 0) > 0).forEach(c => {
   });
 });
 
-/* Stores that have deals — the 30 empty ones stay out by design. */
+/* Stores that have deals — the 30 empty ones stay out by design.
+ *
+ * Priority scales with inventory depth. A store page carrying 5 live offers is
+ * a materially better landing page than one carrying a single offer, and
+ * store pages are the highest-intent long-tail surface on the site
+ * ("<brand> discount codes"), so they outrank category pages when deep. */
 stores.filter(s => (perStore[s.id] || 0) > 0).forEach(s => {
+  const n = perStore[s.id] || 0;
   urls.push({
     loc: SITE + '/store/' + encodeURIComponent(s.id),
     lastmod: today(),
     changefreq: 'daily',
-    priority: '0.7'
+    priority: n >= 5 ? '0.9' : n >= 3 ? '0.8' : '0.7'
   });
 });
 

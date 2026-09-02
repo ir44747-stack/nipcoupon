@@ -72,6 +72,120 @@ function sovrnScript() {
     '</script>';
 }
 
+/* ── SEO helpers ───────────────────────────────────────────────────────────
+ * Long-tail intent metadata. Titles carry the current Month + Year because
+ * "<brand> promo codes september 2026" is the query people actually type, and
+ * a dated title signals freshness in the SERP.
+ *
+ * The stamp is derived per request from the server clock, so it rolls over on
+ * its own — nothing to schedule and nothing to go stale. Pages are cached with
+ * s-maxage=3600, so a month boundary is picked up within the hour.
+ */
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'];
+
+function monthYear(d) {
+  const now = d || new Date();
+  return MONTHS[now.getUTCMonth()] + ' ' + now.getUTCFullYear();
+}
+
+/* Keep <title> under ~60 chars so Google does not truncate it mid-phrase.
+   Measured on the RAW string: esc() later expands & into &amp;, and counting
+   the entity would clamp a compliant title for no reason. */
+function clampTitle(s, max) {
+  const lim = max || 62;
+  const str = String(s || '');
+  if (str.length <= lim) return str;
+  const cut = str.slice(0, lim);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > 30 ? cut.slice(0, sp) : cut).replace(/[\s—·|-]+$/, '') + '…';
+}
+
+/* Meta descriptions: ~155 chars is the desktop snippet limit. */
+function clampDesc(s, max) {
+  const lim = max || 155;
+  const str = String(s || '').replace(/\s+/g, ' ').trim();
+  if (str.length <= lim) return str;
+  const cut = str.slice(0, lim);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > 60 ? cut.slice(0, sp) : cut).replace(/[\s,;]+$/, '') + '…';
+}
+
+/* High-purchase-intent modifiers appended to the keyword set. These are the
+   transactional long-tail variants that convert, as opposed to informational
+   queries. Mirrors the list in scripts/keyword-sync.js. */
+const INTENT_MODIFIERS = [
+  'discount code', 'promo code', 'voucher code', 'coupon code',
+  'active promo code', 'valid voucher', 'working discount code',
+  'free shipping code', 'first order discount', 'student discount',
+  'sale', 'offers today'
+];
+
+/* Merge generated keywords with brand × intent combinations, de-duplicated. */
+function intentKeywords(baseCsv, subject, stamp) {
+  const out = [];
+  const seen = Object.create(null);
+  const push = k => {
+    const v = String(k || '').trim().toLowerCase();
+    if (!v || seen[v]) return;
+    seen[v] = 1; out.push(v);
+  };
+  String(baseCsv || '').split(',').forEach(push);
+  if (subject) {
+    const n = String(subject).toLowerCase();
+    INTENT_MODIFIERS.forEach(m => push(n + ' ' + m));
+    if (stamp) push(n + ' promo code ' + stamp.toLowerCase());
+  }
+  return out.slice(0, 28).join(', ');
+}
+
+/* BreadcrumbList — renders the crumb trail in the SERP instead of a raw URL. */
+function breadcrumbs(trail) {
+  return {
+    '@type': 'BreadcrumbList',
+    itemListElement: trail.map((t, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: t.name,
+      item: t.url
+    }))
+  };
+}
+
+/* WebSite + Organization. Emitted on every route so the knowledge panel and
+   sitelinks searchbox have a consistent source regardless of entry page. */
+function siteSchema() {
+  return [
+    {
+      '@type': 'WebSite',
+      '@id': SITE + '/#website',
+      url: SITE + '/',
+      name: 'NipCoupon',
+      description: 'Verified promo codes, coupons and deals from global brands.',
+      inLanguage: LOCALES,
+      publisher: { '@id': SITE + '/#organization' }
+      /* No SearchAction: the storefront filters client-side and never writes a
+         ?q= parameter to the URL, so advertising a sitelinks searchbox would
+         point Google at a query string the site does not consume. Add it only
+         if search state is ever mirrored into the URL. */
+    },
+    {
+      '@type': 'Organization',
+      '@id': SITE + '/#organization',
+      name: 'NipCoupon',
+      url: SITE + '/',
+      logo: { '@type': 'ImageObject', url: SITE + '/assets/logo.png' },
+      description: 'Global coupon aggregator — verified promo codes and deals.'
+    }
+  ];
+}
+
+/* Wrap everything in one @graph: a single valid JSON-LD block per page beats
+   several competing ones, and lets nodes cross-reference by @id. */
+function graph(nodes) {
+  return { '@context': 'https://schema.org', '@graph': siteSchema().concat(nodes.filter(Boolean)) };
+}
+
 /** hreflang alternates. Query-param locales keep the SPA on one canonical URL. */
 function alternates(path) {
   const base = SITE + path;
@@ -236,13 +350,17 @@ module.exports = async function handler(req, res) {
 
     const store = stores.find(s => s.id === c.storeId) || {};
     const storeName = store.name || c.storeName || 'Store';
-    const title = (c.title || storeName + ' offer') + ' — ' + storeName + ' | NipCoupon';
-    const desc = (c.code ? 'Use code ' + c.code + ' — ' : '') +
-      (c.title || 'Verified offer') + ' at ' + storeName + '. Verified and updated daily by NipCoupon.';
+    const stamp = monthYear();
+    const title = clampTitle((c.code ? storeName + ' Code: ' : storeName + ': ') +
+      (c.title || 'Verified Offer') + ' — ' + stamp);
+    const desc = clampDesc((c.code ? 'Use code ' + c.code + ' — ' : '') +
+      (c.title || 'Verified offer') + ' at ' + storeName + '. Active, tested ' + stamp +
+      '. Free to use, updated daily by NipCoupon.');
     const path = '/coupon/' + encodeURIComponent(c.id);
     const canonical = SITE + path;
 
-    const kw = K.generate(catalog, { store: store.id || storeName, limit: 12 }).meta;
+    const kw = intentKeywords(
+      K.generate(catalog, { store: store.id || storeName, limit: 12 }).meta, storeName, stamp);
 
     // Resolve through the secrets layer, then localise for the visitor's
     // market. Localisation rewrites the URL *inside* the Sovrn wrapper so the
@@ -269,19 +387,50 @@ module.exports = async function handler(req, res) {
   ${geoNote}
   ${c.terms && c.terms.length ? '<div class="terms">Terms: ' + esc(c.terms.join(' · ')) + '</div>' : ''}
   <p class="meta" style="margin-top:18px">NipCoupon may earn a commission on qualifying purchases.</p>
-</div>`;
+</div>
+${(function () {
+  /* Crawl paths out of the leaf. Without these a /coupon/* page is a dead end:
+     Googlebot lands from the sitemap and the only links are outbound affiliate
+     URLs marked nofollow, so no PageRank flows back into the site. */
+  const out = [];
+  if (store.id) {
+    out.push('<a href="/store/' + encodeURIComponent(store.id) + '">All ' + esc(storeName) + ' codes</a>');
+  }
+  const cat = categories.find(x => x.id === c.categoryId);
+  if (cat) {
+    out.push('<a href="/category/' + encodeURIComponent(cat.id) + '">' + esc(cat.name || cat.id) + ' deals</a>');
+  }
+  const related = coupons
+    .filter(x => x.id !== c.id && (x.storeId === c.storeId || x.categoryId === c.categoryId))
+    .slice(0, 6)
+    .map(x => '<a href="/coupon/' + encodeURIComponent(x.id) + '">' + esc(x.title || 'Offer') + '</a>');
+  return '<div class="card"><p class="meta">' + out.join(' · ') + '</p>' +
+    (related.length ? '<p class="meta">Related: ' + related.join(' · ') + '</p>' : '') +
+    '</div>';
+})()}`;
 
     return res.end(page({
       title, description: desc, keywords: kw, canonical, path, lang, body,
-      jsonLd: {
-        '@context': 'https://schema.org', '@type': 'Offer',
-        name: c.title || storeName + ' offer',
-        description: desc, url: canonical,
-        availability: 'https://schema.org/InStock',
-        ...(c.expires ? { priceValidUntil: c.expires } : {}),
-        ...(profile.currency ? { priceCurrency: profile.currency } : {}),
-        seller: { '@type': 'Organization', name: storeName }
-      }
+      jsonLd: graph([
+        {
+          '@type': 'Offer',
+          '@id': canonical + '#offer',
+          name: c.title || storeName + ' offer',
+          description: desc,
+          url: canonical,
+          availability: 'https://schema.org/InStock',
+          ...(c.code ? { category: 'Coupon', identifier: c.code } : {}),
+          ...(c.expires ? { priceValidUntil: c.expires, validThrough: c.expires } : {}),
+          ...(profile.currency ? { priceCurrency: profile.currency } : {}),
+          seller: { '@type': 'Organization', name: storeName },
+          isPartOf: { '@id': SITE + '/#website' }
+        },
+        breadcrumbs([
+          { name: 'Home', url: SITE + '/' },
+          { name: storeName, url: SITE + '/store/' + encodeURIComponent(store.id || '') },
+          { name: c.title || 'Offer', url: canonical }
+        ])
+      ])
     }));
   }
 
@@ -290,18 +439,39 @@ module.exports = async function handler(req, res) {
     const s = stores.find(x => x.id === id);
     if (!s) return notFound(res, 'store');
     const list = coupons.filter(c => c.storeId === s.id);
-    const title = s.name + ' promo codes & deals (' + list.length + ') | NipCoupon';
-    const desc = list.length
-      ? list.length + ' verified ' + s.name + ' promo codes and deals, updated daily. Save at ' + s.name + ' with NipCoupon.'
-      : 'Browse the latest ' + s.name + ' offers on NipCoupon.';
+    const stamp = monthYear();
+    const title = clampTitle(s.name + ' Discount Codes & Promo Codes — ' + stamp);
+    const desc = clampDesc(list.length
+      ? (list.length === 1
+          ? '1 verified ' + s.name + ' discount code for ' + stamp + '.'
+          : list.length + ' verified ' + s.name + ' discount codes, promo codes and voucher codes for ' + stamp + '.') +
+        ' Tested daily — free to use at ' + s.name + '.'
+      : 'Latest ' + s.name + ' discount codes and offers for ' + stamp + ' on NipCoupon.');
     const path = '/store/' + encodeURIComponent(s.id);
     const canonical = SITE + path;
-    const kw = K.generate(catalog, { store: s.id, limit: 12 }).meta;
+    const kw = intentKeywords(K.generate(catalog, { store: s.id, limit: 12 }).meta, s.name, stamp);
+
+    /* Internal linking: the categories this store's deals belong to, plus a
+       few sibling stores. Without these, /store/* pages are crawl dead-ends —
+       Googlebot arrives from the sitemap and finds only outbound links. */
+    const catIds = [];
+    list.forEach(c => { if (c.categoryId && catIds.indexOf(c.categoryId) === -1) catIds.push(c.categoryId); });
+    const catLinks = catIds
+      .map(cid => categories.find(x => x.id === cid))
+      .filter(Boolean)
+      .map(cat => '<a href="/category/' + encodeURIComponent(cat.id) + '">' + esc(cat.name || cat.id) + '</a>')
+      .join(' · ');
+
+    const siblings = stores
+      .filter(x => x.id !== s.id && coupons.some(c => c.storeId === x.id))
+      .slice(0, 8)
+      .map(x => '<a href="/store/' + encodeURIComponent(x.id) + '">' + esc(x.name) + '</a>')
+      .join(' · ');
 
     const body = `
 <div class="card">
   <span class="badge">${list.length} deal${list.length === 1 ? '' : 's'}</span>
-  <h1>${esc(s.name)} promo codes &amp; deals</h1>
+  <h1>${esc(s.name)} discount codes &amp; promo codes — ${esc(stamp)}</h1>
   <p>${esc(desc)}</p>
 </div>
 ${list.map(c => `<div class="card">
@@ -309,10 +479,40 @@ ${list.map(c => `<div class="card">
   <h2 style="margin:8px 0"><a href="/coupon/${encodeURIComponent(c.id)}">${esc(c.title)}</a></h2>
   ${c.code ? '<div class="code">' + esc(c.code) + '</div>' : ''}
   <p class="meta">${c.expires ? 'expires ' + esc(c.expires) : 'no end date'}</p>
-</div>`).join('\n')}`;
+</div>`).join('\n')}
+${catLinks ? '<div class="card"><p class="meta">Browse categories: ' + catLinks + '</p></div>' : ''}
+${siblings ? '<div class="card"><p class="meta">More stores: ' + siblings + '</p></div>' : ''}`;
 
     // A store page with no deals is thin content — keep it out of the index.
-    return res.end(page({ title, description: desc, keywords: kw, canonical, path, lang, body, robots: list.length ? 'index,follow' : 'noindex,follow' }));
+    return res.end(page({
+      title, description: desc, keywords: kw, canonical, path, lang, body,
+      robots: list.length ? 'index,follow' : 'noindex,follow',
+      jsonLd: graph([
+        {
+          '@type': 'CollectionPage',
+          '@id': canonical + '#page',
+          url: canonical,
+          name: title,
+          description: desc,
+          isPartOf: { '@id': SITE + '/#website' },
+          about: { '@type': 'Organization', name: s.name },
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: list.length,
+            itemListElement: list.slice(0, 25).map((c, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              url: SITE + '/coupon/' + encodeURIComponent(c.id),
+              name: c.title || (s.name + ' offer')
+            }))
+          }
+        },
+        breadcrumbs([
+          { name: 'Home', url: SITE + '/' },
+          { name: s.name, url: canonical }
+        ])
+      ])
+    }));
   }
 
   /* ── /category/:id ─────────────────────────────────────────────────────── */
@@ -320,16 +520,37 @@ ${list.map(c => `<div class="card">
     const cat = categories.find(x => x.id === id);
     if (!cat) return notFound(res, 'category');
     const list = coupons.filter(c => c.categoryId === cat.id);
-    const title = (cat.name || id) + ' promo codes & deals (' + list.length + ') | NipCoupon';
-    const desc = list.length + ' verified ' + (cat.name || id) + ' promo codes and deals, updated daily on NipCoupon.';
+    const stamp = monthYear();
+    const catName = cat.name || id;
+    const title = clampTitle(catName + ' Promo Codes & Deals — ' + stamp);
+    const desc = clampDesc((list.length === 1
+        ? '1 verified ' + catName + ' promo code for ' + stamp + '.'
+        : list.length + ' verified ' + catName +
+          ' promo codes, discount codes and voucher codes for ' + stamp + '.') +
+      ' Tested daily and free to use on NipCoupon.');
     const path = '/category/' + encodeURIComponent(cat.id);
     const canonical = SITE + path;
-    const kw = K.generate(catalog, { category: cat.id, limit: 12 }).meta;
+    const kw = intentKeywords(K.generate(catalog, { category: cat.id, limit: 12 }).meta, catName, stamp);
+
+    /* Link out to every store represented in this category, and to sibling
+       categories — the horizontal crawl paths Googlebot needs. */
+    const storeIds = [];
+    list.forEach(c => { if (c.storeId && storeIds.indexOf(c.storeId) === -1) storeIds.push(c.storeId); });
+    const storeLinks = storeIds
+      .map(sid => stores.find(x => x.id === sid))
+      .filter(Boolean)
+      .map(x => '<a href="/store/' + encodeURIComponent(x.id) + '">' + esc(x.name) + '</a>')
+      .join(' · ');
+
+    const otherCats = categories
+      .filter(x => x.id !== cat.id && coupons.some(c => c.categoryId === x.id))
+      .map(x => '<a href="/category/' + encodeURIComponent(x.id) + '">' + esc(x.name || x.id) + '</a>')
+      .join(' · ');
 
     const body = `
 <div class="card">
   <span class="badge">${list.length} deal${list.length === 1 ? '' : 's'}</span>
-  <h1>${esc(cat.name || id)} promo codes &amp; deals</h1>
+  <h1>${esc(catName)} promo codes &amp; discount deals — ${esc(stamp)}</h1>
   <p>${esc(desc)}</p>
 </div>
 ${list.map(c => {
@@ -339,9 +560,38 @@ ${list.map(c => {
   <h2 style="margin:8px 0"><a href="/coupon/${encodeURIComponent(c.id)}">${esc(st.name || c.storeName || 'Store')} — ${esc(c.title)}</a></h2>
   ${c.code ? '<div class="code">' + esc(c.code) + '</div>' : ''}
 </div>`;
-}).join('\n')}`;
+}).join('\n')}
+${storeLinks ? '<div class="card"><p class="meta">Stores in ' + esc(catName) + ': ' + storeLinks + '</p></div>' : ''}
+${otherCats ? '<div class="card"><p class="meta">Other categories: ' + otherCats + '</p></div>' : ''}`;
 
-    return res.end(page({ title, description: desc, keywords: kw, canonical, path, lang, body, robots: list.length ? 'index,follow' : 'noindex,follow' }));
+    return res.end(page({
+      title, description: desc, keywords: kw, canonical, path, lang, body,
+      robots: list.length ? 'index,follow' : 'noindex,follow',
+      jsonLd: graph([
+        {
+          '@type': 'CollectionPage',
+          '@id': canonical + '#page',
+          url: canonical,
+          name: title,
+          description: desc,
+          isPartOf: { '@id': SITE + '/#website' },
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: list.length,
+            itemListElement: list.slice(0, 25).map((c, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              url: SITE + '/coupon/' + encodeURIComponent(c.id),
+              name: c.title || catName + ' offer'
+            }))
+          }
+        },
+        breadcrumbs([
+          { name: 'Home', url: SITE + '/' },
+          { name: catName, url: canonical }
+        ])
+      ])
+    }));
   }
 
   return notFound(res, 'page');
