@@ -36,6 +36,8 @@ jobs:
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'true' }}
           GH_PAT: ${{ secrets.GH_PAT }}
+          SOVRN_API_KEY: ${{ secrets.SOVRN_API_KEY }}
+          SOVRN_SECRET_KEY: ${{ secrets.SOVRN_SECRET_KEY }}
         run: |
           if [ -n "${{ secrets.GH_PAT }}" ]; then
             echo "auth: using secrets.GH_PAT"
