@@ -278,6 +278,10 @@ document.addEventListener('click', function (e) {
   });
 });
 </script>${sovrnScript()}
+<!-- Vercel Web Analytics. Same bundle the SPA loads, so the ~110 server-
+     rendered /store/*, /category/* and /coupon/* routes are measured too;
+     without it the dashboard would only ever show the homepage. -->
+<script defer src="/assets/analytics.js"></script>
 </body>
 </html>`;
 }

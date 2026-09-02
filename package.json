@@ -2,9 +2,11 @@
   "name": "nipcoupon",
   "version": "1.0.0",
   "private": true,
-  "description": "NipCoupon — Global Deals. Sniper Precision. A static coupon aggregator with a serverless deals API.",
+  "description": "NipCoupon \u2014 Global Deals. Sniper Precision. A static coupon aggregator with a serverless deals API.",
   "scripts": {
-    "build": "node scripts/build-sitemap.js && node scripts/minify.js",
+    "build": "node scripts/build-analytics.js && node scripts/build-sitemap.js && node scripts/minify.js",
+    "build:analytics": "node scripts/build-analytics.js",
+    "build:analytics:check": "node scripts/build-analytics.js --check",
     "build:sitemap": "node scripts/build-sitemap.js",
     "build:sitemap:dry": "node scripts/build-sitemap.js --dry-run",
     "cron": "node -e \"fetch('http://localhost:3000/api/cron').then(r=>r.text()).then(t=>console.log(t)).catch(e=>console.error(e.message))\"",
@@ -35,5 +37,8 @@
   },
   "devDependencies": {
     "esbuild": "^0.28.2"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }

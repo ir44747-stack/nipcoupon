@@ -2338,7 +2338,6 @@ select.sel option{background:#0f172a;color:#e2e8f0}
      navigation must never depend on an analytics call succeeding. */
   function trackOutbound(store, url, coupon, code) {
     try {
-      if (typeof window.gtag !== 'function') return;
       /* Report the MERCHANT domain, not the affiliate wrapper. Every link is
          https://sovrn.co/?u=<encoded destination>, so without unwrapping, the
          store_domain dimension would read "sovrn.co" for all 70 stores and tell
@@ -2364,14 +2363,31 @@ select.sel option{background:#0f172a;color:#e2e8f0}
         link_url:      url,
         outbound:      true
       };
-      window.gtag('event', 'click_affiliate', params);
-      /* Standard GA4 engagement event so this also lands in the built-in reports. */
-      window.gtag('event', 'select_content', {
-        content_type: 'affiliate_link',
-        item_id:      coupon || store || '',
-        store_name:   params.store_name,
-        store_domain: domain
-      });
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'click_affiliate', params);
+        /* Standard GA4 engagement event so this also lands in the built-in reports. */
+        window.gtag('event', 'select_content', {
+          content_type: 'affiliate_link',
+          item_id:      coupon || store || '',
+          store_name:   params.store_name,
+          store_domain: domain
+        });
+      }
+
+      /* Mirror the click into Vercel Web Analytics as a custom event. Kept
+         independent of the gtag branch above: an ad blocker that kills GA
+         must not also silence Vercel, and vice versa. Only low-cardinality
+         fields are sent — link_url is deliberately omitted, since it carries
+         affiliate and utm parameters. */
+      if (typeof window.vaTrack === 'function') {
+        window.vaTrack('affiliate_click', {
+          store:   params.store_name || '',
+          domain:  domain || '',
+          coupon:  coupon || '',
+          network: params.affiliate_network,
+          region:  params.region
+        });
+      }
     } catch (e) { /* analytics must never break an outbound click */ }
   }
 
@@ -3043,5 +3059,23 @@ select.sel option{background:#0f172a;color:#e2e8f0}
      link keeps working, just unmonetised.
      ============================================================ -->
 <script async src="/api/sovrn.js"></script>
+
+<!-- ============================================================
+     VERCEL WEB ANALYTICS
+     ============================================================
+     Bundled from src/analytics.js by scripts/build-analytics.js, which
+     resolves the @vercel/analytics package into a standalone IIFE. The
+     package expects a bundler; this project has none for the app itself, so
+     an `import` here would 404 in the browser.
+
+     The script it loads is /_vercel/insights/script.js — first-party, on this
+     domain. Vercel serves that route once Web Analytics is enabled for the
+     project in the dashboard; until then it 404s and the site is unaffected.
+
+     defer, not async: the bundle only registers a pageview and defines
+     window.vaTrack, so there is nothing to race, and defer keeps it off the
+     critical path entirely.
+     ============================================================ -->
+<script defer src="/assets/analytics.js"></script>
 </body>
 </html>
