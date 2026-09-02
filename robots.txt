@@ -7,4 +7,10 @@ Allow: /
 Disallow: /api/
 
 # NipCoupon — global coupon aggregator
+# sitemap.xml is a sitemap index pointing at the three below. Listing the
+# children explicitly too, so crawlers that do not follow an index still find
+# every URL, and Search Console reports coverage per content type.
 Sitemap: https://nipcoupon.vercel.app/sitemap.xml
+Sitemap: https://nipcoupon.vercel.app/sitemap-pages.xml
+Sitemap: https://nipcoupon.vercel.app/sitemap-stores.xml
+Sitemap: https://nipcoupon.vercel.app/sitemap-coupons.xml

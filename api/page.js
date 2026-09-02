@@ -409,8 +409,20 @@ ${(function () {
     '</div>';
 })()}`;
 
+    /* An expired offer is dead content: the code no longer works, so the page
+       cannot satisfy the query that lands on it. Keep it reachable (follow, so
+       the links to the store and related offers still pass value) but out of
+       the index. build-sitemap.js already drops expired coupons; this covers
+       crawlers that arrive from an old SERP entry or an external link. */
+    const expired = (function () {
+      if (!c.expires) return false;
+      const t = Date.parse(c.expires);
+      return !Number.isNaN(t) && t < Date.now();
+    })();
+
     return res.end(page({
       title, description: desc, keywords: kw, canonical, path, lang, body,
+      robots: expired ? 'noindex,follow' : 'index,follow',
       jsonLd: graph([
         {
           '@type': 'Offer',
@@ -418,7 +430,9 @@ ${(function () {
           name: c.title || storeName + ' offer',
           description: desc,
           url: canonical,
-          availability: 'https://schema.org/InStock',
+          availability: expired
+            ? 'https://schema.org/Discontinued'
+            : 'https://schema.org/InStock',
           ...(c.code ? { category: 'Coupon', identifier: c.code } : {}),
           ...(c.expires ? { priceValidUntil: c.expires, validThrough: c.expires } : {}),
           ...(profile.currency ? { priceCurrency: profile.currency } : {}),

@@ -1,0 +1,349 @@
+{
+  "updated": "2026-09-02T11:30:13.481Z",
+  "entries": {
+    "home": {
+      "hash": "a584d07e0b3da71f",
+      "lastmod": "2026-09-02"
+    },
+    "category:tech": {
+      "hash": "d34e86c9f8df3e76",
+      "lastmod": "2026-09-02"
+    },
+    "category:fashion": {
+      "hash": "f5d0aae538a1330e",
+      "lastmod": "2026-09-02"
+    },
+    "category:travel": {
+      "hash": "b52d13defe6150a2",
+      "lastmod": "2026-09-02"
+    },
+    "category:gaming": {
+      "hash": "896af4f1ab21b1fe",
+      "lastmod": "2026-09-02"
+    },
+    "category:software": {
+      "hash": "7534742b25585b76",
+      "lastmod": "2026-09-02"
+    },
+    "store:amazon": {
+      "hash": "f88484f3af26f850",
+      "lastmod": "2026-09-02"
+    },
+    "store:aliexpress": {
+      "hash": "c003e03f28d7f832",
+      "lastmod": "2026-09-02"
+    },
+    "store:noon": {
+      "hash": "e8f61baebd09dd27",
+      "lastmod": "2026-09-02"
+    },
+    "store:namshi": {
+      "hash": "0a1b0650ee97f35b",
+      "lastmod": "2026-09-02"
+    },
+    "store:shein": {
+      "hash": "2c936e4b2aa669a8",
+      "lastmod": "2026-09-02"
+    },
+    "store:nike": {
+      "hash": "0d654ba57ffb3526",
+      "lastmod": "2026-09-02"
+    },
+    "store:adidas": {
+      "hash": "80da0767cc78c55e",
+      "lastmod": "2026-09-02"
+    },
+    "store:hm": {
+      "hash": "bc236c0cf0782722",
+      "lastmod": "2026-09-02"
+    },
+    "store:zara": {
+      "hash": "3b1a7f4c66a854ee",
+      "lastmod": "2026-09-02"
+    },
+    "store:asos": {
+      "hash": "ab6e63bfedf49568",
+      "lastmod": "2026-09-02"
+    },
+    "store:ounass": {
+      "hash": "c53c7547a858e5c2",
+      "lastmod": "2026-09-02"
+    },
+    "store:farfetch": {
+      "hash": "44f7f69375315ef6",
+      "lastmod": "2026-09-02"
+    },
+    "store:samsung": {
+      "hash": "4ead3c0a4cf21560",
+      "lastmod": "2026-09-02"
+    },
+    "store:apple": {
+      "hash": "6ec8508d84536590",
+      "lastmod": "2026-09-02"
+    },
+    "store:dell": {
+      "hash": "6e52dbfda69f607f",
+      "lastmod": "2026-09-02"
+    },
+    "store:lenovo": {
+      "hash": "3df4fbacd437c03e",
+      "lastmod": "2026-09-02"
+    },
+    "store:logitech": {
+      "hash": "358fdecb2f80d74f",
+      "lastmod": "2026-09-02"
+    },
+    "store:booking-com": {
+      "hash": "da5b88b3cf830540",
+      "lastmod": "2026-09-02"
+    },
+    "store:agoda": {
+      "hash": "c331cd02af8cc910",
+      "lastmod": "2026-09-02"
+    },
+    "store:qatar-airways": {
+      "hash": "9fb2ff36171eb0e4",
+      "lastmod": "2026-09-02"
+    },
+    "store:emirates": {
+      "hash": "1712746338c7630d",
+      "lastmod": "2026-09-02"
+    },
+    "store:expedia": {
+      "hash": "33b95e42511e91fb",
+      "lastmod": "2026-09-02"
+    },
+    "store:airbnb": {
+      "hash": "f5b72320121fcfb9",
+      "lastmod": "2026-09-02"
+    },
+    "store:careem": {
+      "hash": "9785c16584346545",
+      "lastmod": "2026-09-02"
+    },
+    "store:uber": {
+      "hash": "7829821a85dcb812",
+      "lastmod": "2026-09-02"
+    },
+    "store:steam": {
+      "hash": "eb33e66244fc639f",
+      "lastmod": "2026-09-02"
+    },
+    "store:playstation": {
+      "hash": "43d6980dc0a1c72d",
+      "lastmod": "2026-09-02"
+    },
+    "store:xbox": {
+      "hash": "2f1e0d69f851a999",
+      "lastmod": "2026-09-02"
+    },
+    "store:razer": {
+      "hash": "425bd05b972ae22d",
+      "lastmod": "2026-09-02"
+    },
+    "store:epic-games": {
+      "hash": "e437388ae64b6363",
+      "lastmod": "2026-09-02"
+    },
+    "store:instant-gaming": {
+      "hash": "109cde2a3dca0347",
+      "lastmod": "2026-09-02"
+    },
+    "store:adobe": {
+      "hash": "17363021fe946526",
+      "lastmod": "2026-09-02"
+    },
+    "store:microsoft-365": {
+      "hash": "c7dc1e8002992ba2",
+      "lastmod": "2026-09-02"
+    },
+    "store:nordvpn": {
+      "hash": "c1c70b3f73df8745",
+      "lastmod": "2026-09-02"
+    },
+    "store:hostinger": {
+      "hash": "8dfff16b5028a683",
+      "lastmod": "2026-09-02"
+    },
+    "store:canva": {
+      "hash": "a1fc858a06837b72",
+      "lastmod": "2026-09-02"
+    },
+    "store:notion": {
+      "hash": "9928dd11a19f6daf",
+      "lastmod": "2026-09-02"
+    },
+    "store:spotify": {
+      "hash": "3d34c1a51c45c147",
+      "lastmod": "2026-09-02"
+    },
+    "store:shopify": {
+      "hash": "96ded1b6694c14db",
+      "lastmod": "2026-09-02"
+    },
+    "store:talabat": {
+      "hash": "c819786047e8792a",
+      "lastmod": "2026-09-02"
+    },
+    "coupon:c1": {
+      "hash": "4ea4d96c50c34811",
+      "lastmod": "2026-08-03"
+    },
+    "coupon:c2": {
+      "hash": "8adae96afe39f2b1",
+      "lastmod": "2026-08-04"
+    },
+    "coupon:c3": {
+      "hash": "96a91314ab5bc328",
+      "lastmod": "2026-08-05"
+    },
+    "coupon:c4": {
+      "hash": "f6a5e434edce99a9",
+      "lastmod": "2026-09-02"
+    },
+    "coupon:c5": {
+      "hash": "16306cff758c1bf4",
+      "lastmod": "2026-08-07"
+    },
+    "coupon:c6": {
+      "hash": "cd227dbcea8a2fea",
+      "lastmod": "2026-08-08"
+    },
+    "coupon:c7": {
+      "hash": "d4949ad95526ef19",
+      "lastmod": "2026-08-09"
+    },
+    "coupon:c8": {
+      "hash": "8bd267bf35aae215",
+      "lastmod": "2026-08-10"
+    },
+    "coupon:c9": {
+      "hash": "db99fae4a7e007cb",
+      "lastmod": "2026-08-11"
+    },
+    "coupon:c10": {
+      "hash": "a603667b39a333e9",
+      "lastmod": "2026-08-12"
+    },
+    "coupon:c11": {
+      "hash": "b30ffc6dbf2a4e77",
+      "lastmod": "2026-08-13"
+    },
+    "coupon:c12": {
+      "hash": "86b8bbbb1b1292b7",
+      "lastmod": "2026-08-14"
+    },
+    "coupon:c13": {
+      "hash": "93cbf7818ab9db34",
+      "lastmod": "2026-08-15"
+    },
+    "coupon:c14": {
+      "hash": "cea3526149d450f0",
+      "lastmod": "2026-08-16"
+    },
+    "coupon:c15": {
+      "hash": "3bf468a55d258a28",
+      "lastmod": "2026-08-17"
+    },
+    "coupon:c16": {
+      "hash": "ee588b46eea0c487",
+      "lastmod": "2026-08-18"
+    },
+    "coupon:c17": {
+      "hash": "449b23e6833cfd9e",
+      "lastmod": "2026-08-19"
+    },
+    "coupon:c18": {
+      "hash": "364d7b71a396c67a",
+      "lastmod": "2026-08-20"
+    },
+    "coupon:c19": {
+      "hash": "4de8ae04f2094671",
+      "lastmod": "2026-08-21"
+    },
+    "coupon:c20": {
+      "hash": "a189a17415e52443",
+      "lastmod": "2026-08-22"
+    },
+    "coupon:c21": {
+      "hash": "77b6b095c64fd2a8",
+      "lastmod": "2026-08-23"
+    },
+    "coupon:c22": {
+      "hash": "60e106d9b2ffb7c9",
+      "lastmod": "2026-08-24"
+    },
+    "coupon:c23": {
+      "hash": "ffa955b714869b92",
+      "lastmod": "2026-08-25"
+    },
+    "coupon:c24": {
+      "hash": "e80721e24ae6fee4",
+      "lastmod": "2026-08-26"
+    },
+    "coupon:c25": {
+      "hash": "911cec24b1adf2db",
+      "lastmod": "2026-08-27"
+    },
+    "coupon:c26": {
+      "hash": "1cc8702a601e5fea",
+      "lastmod": "2026-08-28"
+    },
+    "coupon:c27": {
+      "hash": "3473e14d2caf198d",
+      "lastmod": "2026-08-29"
+    },
+    "coupon:c28": {
+      "hash": "5e6af8a2d21e795d",
+      "lastmod": "2026-08-30"
+    },
+    "coupon:c29": {
+      "hash": "ab859bad0382f2dc",
+      "lastmod": "2026-08-31"
+    },
+    "coupon:c30": {
+      "hash": "cf2cbdb73e6f284e",
+      "lastmod": "2026-09-01"
+    },
+    "coupon:c31": {
+      "hash": "d5a828a2cee0048e",
+      "lastmod": "2026-08-03"
+    },
+    "coupon:c32": {
+      "hash": "a070bf2da9d4753d",
+      "lastmod": "2026-08-04"
+    },
+    "coupon:c33": {
+      "hash": "f0223d65e009186b",
+      "lastmod": "2026-08-05"
+    },
+    "coupon:c34": {
+      "hash": "2da2d9f1a06acfaa",
+      "lastmod": "2026-08-06"
+    },
+    "coupon:c35": {
+      "hash": "bf3a068159856058",
+      "lastmod": "2026-08-07"
+    },
+    "coupon:c36": {
+      "hash": "1e1689c471a199c2",
+      "lastmod": "2026-08-08"
+    },
+    "coupon:c37": {
+      "hash": "32e27aebe4e9b599",
+      "lastmod": "2026-08-09"
+    },
+    "coupon:c38": {
+      "hash": "5a39444907f1c89c",
+      "lastmod": "2026-08-10"
+    },
+    "coupon:c39": {
+      "hash": "a38fc171977e977e",
+      "lastmod": "2026-08-11"
+    },
+    "coupon:c40": {
+      "hash": "64e9766970745d2e",
+      "lastmod": "2026-08-12"
+    }
+  }
+}

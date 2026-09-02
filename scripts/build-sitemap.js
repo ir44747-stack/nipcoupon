@@ -53,6 +53,63 @@ function esc(s) {
 /** Today, YYYY-MM-DD — used as lastmod for pages without a meaningful date. */
 function today() { return new Date().toISOString().slice(0, 10); }
 
+/* ── lastmod state ───────────────────────────────────────────────────────────
+ * A sitemap that stamps every URL with today's date on every build is telling
+ * crawlers "everything changed" daily. Google learns to distrust that and the
+ * signal stops working.
+ *
+ * So: hash the fields that actually affect the rendered page, and only advance
+ * lastmod when the hash moves. State lives in data/.sitemap-state.json —
+ * committed, because a CI runner starts from a fresh checkout and would
+ * otherwise reset every date on every run. */
+const crypto = require('crypto');
+const STATE_FILE = path.join(DATA, '.sitemap-state.json');
+
+const prevState = (function () {
+  try { return JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')); }
+  catch (e) { return { entries: {} }; }
+})();
+const nextState = { updated: new Date().toISOString(), entries: {} };
+
+function hashOf(obj) {
+  return crypto.createHash('sha1').update(JSON.stringify(obj)).digest('hex').slice(0, 16);
+}
+
+/**
+ * lastmod for a URL, advanced only when its content hash changes.
+ *
+ *   unchanged since last build → keep the recorded date
+ *   changed since last build   → today (it just changed)
+ *   never seen before          → `firstSeen`, or today
+ *
+ * The three cases are distinct: a modified entry must read today, not the date
+ * the offer was originally added, or an edit would look older than it is.
+ */
+function trackedLastmod(key, fingerprint, firstSeen) {
+  const h = hashOf(fingerprint);
+  const prev = prevState.entries && prevState.entries[key];
+  let date;
+  if (prev && prev.lastmod) date = prev.hash === h ? prev.lastmod : today();
+  else date = firstSeen || today();
+  if (date > today()) date = today();   // never emit a future lastmod
+  nextState.entries[key] = { hash: h, lastmod: date };
+  return date;
+}
+
+function saveState() {
+  fs.writeFileSync(STATE_FILE, JSON.stringify(nextState, null, 2) + '\n');
+}
+
+/* First-seen date for an offer, from addedDaysAgo. Used only the first time a
+   coupon appears — after that trackedLastmod preserves the recorded date. Never
+   returns a future date. */
+function addedLastmod(c) {
+  const n = Number(c.addedDaysAgo);
+  if (!Number.isFinite(n) || n < 0) return today();
+  const d = new Date(Date.now() - n * 86400000);
+  return d.toISOString().slice(0, 10);
+}
+
 /** lastmod must be a valid date; fall back to today rather than emit junk. */
 function lastmod(value) {
   if (!value) return today();
@@ -82,19 +139,24 @@ fresh.forEach(c => {
 
 const urls = [];
 
-/* Home — the highest-value page. */
+/* Home — the highest-value page. Its fingerprint is the whole live catalogue,
+   so lastmod moves whenever any offer appears, changes or expires. */
 urls.push({
+  kind: 'home',
   loc: SITE + '/',
-  lastmod: today(),
+  lastmod: trackedLastmod('home', fresh.map(c => c.id + ':' + (c.code || '') + ':' + (c.expires || ''))),
   changefreq: 'daily',
   priority: '1.0'
 });
 
 /* Categories that have deals. */
 categories.filter(c => (perCat[c.id] || 0) > 0).forEach(c => {
+  const members = fresh.filter(x => x.categoryId === c.id)
+    .map(x => x.id + ':' + (x.code || '') + ':' + (x.expires || ''));
   urls.push({
+    kind: 'category',
     loc: SITE + '/category/' + encodeURIComponent(c.id),
-    lastmod: today(),
+    lastmod: trackedLastmod('category:' + c.id, { name: c.name, members }),
     changefreq: 'daily',
     priority: '0.8'
   });
@@ -108,19 +170,30 @@ categories.filter(c => (perCat[c.id] || 0) > 0).forEach(c => {
  * ("<brand> discount codes"), so they outrank category pages when deep. */
 stores.filter(s => (perStore[s.id] || 0) > 0).forEach(s => {
   const n = perStore[s.id] || 0;
+  const members = fresh.filter(x => x.storeId === s.id)
+    .map(x => x.id + ':' + (x.code || '') + ':' + (x.expires || ''));
   urls.push({
+    kind: 'store',
     loc: SITE + '/store/' + encodeURIComponent(s.id),
-    lastmod: today(),
+    lastmod: trackedLastmod('store:' + s.id, { name: s.name, url: s.url, members }),
     changefreq: 'daily',
     priority: n >= 5 ? '0.9' : n >= 3 ? '0.8' : '0.7'
   });
 });
 
-/* Individual offers. */
+/* Individual offers. Fingerprint covers everything the rendered page shows, so
+   a re-verified-but-unchanged offer keeps its existing lastmod. */
 fresh.forEach(c => {
   urls.push({
+    kind: 'coupon',
     loc: SITE + '/coupon/' + encodeURIComponent(c.id),
-    lastmod: lastmod(c.expires),
+    /* Fallback is today, NOT c.expires. lastmod means "last modified"; an
+       expiry date is in the future, and a future lastmod is invalid per the
+       sitemap spec — Google ignores the whole element when it sees one. */
+    lastmod: trackedLastmod('coupon:' + c.id, {
+      title: c.title, code: c.code || '', expires: c.expires || '',
+      value: c.value, type: c.type, terms: c.terms || [], storeId: c.storeId
+    }, addedLastmod(c)),
     changefreq: 'weekly',
     priority: c.hot ? '0.6' : '0.5'
   });
@@ -172,7 +245,80 @@ const xml =
   ).join('\n') +
   '\n</urlset>\n';
 
-if (!DRY_RUN) fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), xml);
+/* ── Split sitemaps ──────────────────────────────────────────────────────────
+ * One file per content type, behind a sitemap index:
+ *
+ *   sitemap.xml            index → the three below
+ *   sitemap-pages.xml      home + categories
+ *   sitemap-stores.xml     /store/:id
+ *   sitemap-coupons.xml    /coupon/:id
+ *
+ * Why split. Search Console reports coverage per submitted sitemap, so a split
+ * turns "86 URLs, 3 problems" into "coupons: 3 problems, stores: clean" — you
+ * can see which content type is failing without inspecting URLs one by one.
+ * Coupons also churn far faster than stores; separating them means a crawler
+ * revisiting the coupon file is not re-reading 45 store entries that have not
+ * moved.
+ *
+ * sitemap.xml stays the index, so the reference in robots.txt and anything
+ * already submitted to Search Console keeps working.
+ *
+ * LASTMOD
+ * -------
+ * Per-section lastmod is the max of the entry lastmods in that section, not
+ * "now". Stamping every file with today's date on every build teaches crawlers
+ * the signal is noise. Entry-level lastmod for a coupon comes from a content
+ * hash recorded in data/.sitemap-state.json: if the offer's indexable fields
+ * are unchanged since the last build, the previous date is preserved. */
+function urlsetFor(list) {
+  return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<!-- Generated by scripts/build-sitemap.js — do not edit by hand. -->\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n' +
+    '        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
+    list.map(u =>
+      '  <url>\n' +
+      '    <loc>' + esc(u.loc) + '</loc>\n' +
+      alternates(u.loc) + '\n' +
+      '    <lastmod>' + u.lastmod + '</lastmod>\n' +
+      '    <changefreq>' + u.changefreq + '</changefreq>\n' +
+      '    <priority>' + u.priority + '</priority>\n' +
+      '  </url>'
+    ).join('\n') +
+    '\n</urlset>\n';
+}
+
+const sections = [
+  { file: 'sitemap-pages.xml', list: urls.filter(u => u.kind === 'home' || u.kind === 'category') },
+  { file: 'sitemap-stores.xml', list: urls.filter(u => u.kind === 'store') },
+  { file: 'sitemap-coupons.xml', list: urls.filter(u => u.kind === 'coupon') }
+].filter(s => s.list.length);
+
+function maxLastmod(list) {
+  return list.reduce((a, u) => (u.lastmod > a ? u.lastmod : a), list[0].lastmod);
+}
+
+const indexXml =
+  '<?xml version="1.0" encoding="UTF-8"?>\n' +
+  '<!-- Generated by scripts/build-sitemap.js — do not edit by hand. -->\n' +
+  '<!-- index of ' + sections.length + ' sitemaps · ' + urls.length + ' URLs · ' + new Date().toISOString() + ' -->\n' +
+  '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+  sections.map(s =>
+    '  <sitemap>\n' +
+    '    <loc>' + esc(SITE + '/' + s.file) + '</loc>\n' +
+    '    <lastmod>' + maxLastmod(s.list) + '</lastmod>\n' +
+    '  </sitemap>'
+  ).join('\n') +
+  '\n</sitemapindex>\n';
+
+if (!DRY_RUN) {
+  sections.forEach(s => fs.writeFileSync(path.join(ROOT, s.file), urlsetFor(s.list)));
+  fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), indexXml);
+  /* Flat copy of every URL. Not referenced by the index — kept so anything
+     still pointing at a single full urlset (old Search Console submissions,
+     third-party crawlers) does not 404. */
+  fs.writeFileSync(path.join(ROOT, 'sitemap-all.xml'), xml);
+  saveState();
+}
 
 const summary = {
   written: !DRY_RUN,
