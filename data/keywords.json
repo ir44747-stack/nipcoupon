@@ -1,8 +1,7 @@
 {
   "version": 1,
   "note": "Seed bank for scripts/keyword-sync.js. 'longTail' and 'history' are rewritten by the script; everything else is safe to hand-edit.",
-  "updatedAt": "",
-
+  "updatedAt": "2026-09-02T15:16:08.357Z",
   "modifiers": [
     "promo code",
     "discount code",
@@ -15,7 +14,6 @@
     "sale",
     "discount"
   ],
-
   "qualifiers": [
     "free delivery",
     "free shipping",
@@ -28,7 +26,6 @@
     "bundle deal",
     "flash sale"
   ],
-
   "categories": [
     "tech deals",
     "electronics offers",
@@ -40,14 +37,17 @@
     "vpn deals",
     "web hosting coupons"
   ],
-
   "seasonal": [
     {
       "id": "new-year",
       "name": "New Year sales",
       "start": "12-26",
       "end": "01-07",
-      "terms": ["new year sale", "new year offers", "january sale"],
+      "terms": [
+        "new year sale",
+        "new year offers",
+        "january sale"
+      ],
       "weight": 1.2
     },
     {
@@ -55,7 +55,11 @@
       "name": "Valentine's Day",
       "start": "02-01",
       "end": "02-14",
-      "terms": ["valentines day offers", "valentines gifts discount", "flowers promo code"],
+      "terms": [
+        "valentines day offers",
+        "valentines gifts discount",
+        "flowers promo code"
+      ],
       "weight": 1.1
     },
     {
@@ -63,33 +67,68 @@
       "name": "Ramadan",
       "start": "02-17",
       "end": "03-19",
-      "terms": ["ramadan offers", "ramadan deals", "ramadan sale"],
+      "terms": [
+        "ramadan offers",
+        "ramadan deals",
+        "ramadan sale"
+      ],
       "weight": 1.5,
-      "regions": ["GLOBAL", "AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO"]
+      "regions": [
+        "GLOBAL",
+        "AE",
+        "SA",
+        "QA",
+        "KW",
+        "BH",
+        "OM",
+        "EG",
+        "JO"
+      ]
     },
     {
       "id": "eid-fitr",
       "name": "Eid al-Fitr",
       "start": "03-19",
       "end": "03-29",
-      "terms": ["eid offers", "eid al fitr sale", "eid discounts"],
+      "terms": [
+        "eid offers",
+        "eid al fitr sale",
+        "eid discounts"
+      ],
       "weight": 1.5,
-      "regions": ["GLOBAL", "AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO"]
+      "regions": [
+        "GLOBAL",
+        "AE",
+        "SA",
+        "QA",
+        "KW",
+        "BH",
+        "OM",
+        "EG",
+        "JO"
+      ]
     },
     {
       "id": "mothers-day",
       "name": "Mother's Day",
       "start": "03-10",
       "end": "03-21",
-      "terms": ["mothers day gifts discount", "mothers day offers"],
-      "weight": 1.0
+      "terms": [
+        "mothers day gifts discount",
+        "mothers day offers"
+      ],
+      "weight": 1
     },
     {
       "id": "prime-day",
       "name": "Mid-year mega sale",
       "start": "07-08",
       "end": "07-18",
-      "terms": ["prime day deals", "mid year sale", "july offers"],
+      "terms": [
+        "prime day deals",
+        "mid year sale",
+        "july offers"
+      ],
       "weight": 1.3
     },
     {
@@ -97,7 +136,11 @@
       "name": "Back to School",
       "start": "08-10",
       "end": "09-15",
-      "terms": ["back to school deals", "student offers", "laptop student discount"],
+      "terms": [
+        "back to school deals",
+        "student offers",
+        "laptop student discount"
+      ],
       "weight": 1.4
     },
     {
@@ -105,16 +148,33 @@
       "name": "Eid al-Adha",
       "start": "05-26",
       "end": "06-05",
-      "terms": ["eid al adha offers", "eid adha sale"],
+      "terms": [
+        "eid al adha offers",
+        "eid adha sale"
+      ],
       "weight": 1.4,
-      "regions": ["GLOBAL", "AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO"]
+      "regions": [
+        "GLOBAL",
+        "AE",
+        "SA",
+        "QA",
+        "KW",
+        "BH",
+        "OM",
+        "EG",
+        "JO"
+      ]
     },
     {
       "id": "singles-day",
       "name": "Singles Day 11.11",
       "start": "11-05",
       "end": "11-12",
-      "terms": ["11.11 sale", "singles day deals", "11 11 offers"],
+      "terms": [
+        "11.11 sale",
+        "singles day deals",
+        "11 11 offers"
+      ],
       "weight": 1.4
     },
     {
@@ -122,47 +182,199 @@
       "name": "White Friday (Middle East)",
       "start": "11-20",
       "end": "12-02",
-      "terms": ["white friday", "white friday offers", "yaum al jumaa al abyad"],
+      "terms": [
+        "white friday",
+        "white friday offers",
+        "yaum al jumaa al abyad"
+      ],
       "weight": 1.5,
-      "regions": ["AE", "SA", "QA", "KW", "BH", "OM", "EG", "JO"]
+      "regions": [
+        "AE",
+        "SA",
+        "QA",
+        "KW",
+        "BH",
+        "OM",
+        "EG",
+        "JO"
+      ]
     },
     {
       "id": "black-friday",
       "name": "Black Friday / Cyber Monday",
       "start": "11-20",
       "end": "12-03",
-      "terms": ["black friday", "black friday deals", "cyber monday", "cyber week"],
-      "weight": 2.0
+      "terms": [
+        "black friday",
+        "black friday deals",
+        "cyber monday",
+        "cyber week"
+      ],
+      "weight": 2
     },
     {
       "id": "qatar-national-day",
       "name": "Qatar National Day",
       "start": "12-10",
       "end": "12-19",
-      "terms": ["qatar national day offers", "qatar national day deals"],
+      "terms": [
+        "qatar national day offers",
+        "qatar national day deals"
+      ],
       "weight": 1.2,
-      "regions": ["QA"]
+      "regions": [
+        "QA"
+      ]
     },
     {
       "id": "uae-national-day",
       "name": "UAE National Day",
       "start": "11-25",
       "end": "12-04",
-      "terms": ["uae national day offers", "uae national day deals"],
+      "terms": [
+        "uae national day offers",
+        "uae national day deals"
+      ],
       "weight": 1.2,
-      "regions": ["AE"]
+      "regions": [
+        "AE"
+      ]
     },
     {
       "id": "christmas",
       "name": "Christmas & Boxing Day",
       "start": "12-14",
       "end": "12-31",
-      "terms": ["christmas offers", "christmas deals", "boxing day sale"],
+      "terms": [
+        "christmas offers",
+        "christmas deals",
+        "boxing day sale"
+      ],
       "weight": 1.5
     }
   ],
-
-  "longTail": [],
-
-  "history": []
+  "longTail": [
+    "laptop student discount apple",
+    "laptop student discount best buy",
+    "laptop student discount",
+    "nike first order discount",
+    "laptop student discount uk",
+    "nike first order discount uk",
+    "nike first order discount uae",
+    "nike first order discount app",
+    "laptop student discount india",
+    "nike first order discount code",
+    "laptop student discount canada",
+    "asos discount code first order",
+    "ounass discount code first order",
+    "nike first order discount reddit",
+    "laptop student discount malaysia",
+    "laptop student discount singapore",
+    "laptop student discount australia",
+    "laptop student discount philippines",
+    "nike first order discount code reddit",
+    "nike first order discount south africa",
+    "uber promo code 2026",
+    "agoda promo code 2026",
+    "airbnb promo code 2026",
+    "asos discount code 2026",
+    "airbnb promo code july 2026",
+    "airbnb promo code june 2026",
+    "emirates discount code 2026",
+    "agoda promo code 2026 reddit",
+    "asos discount code june 2026",
+    "asos discount code july 2026",
+    "airbnb promo code 2026 reddit",
+    "valid amazon promo codes 2025",
+    "aliexpress promo code july 2026",
+    "aliexpress promo code june 2026",
+    "agoda promo code 2026 philippines",
+    "aliexpress promo code august 2026",
+    "aliexpress coupon code august 2026",
+    "aliexpress promo code september 2026",
+    "aliexpress discount code august 2026",
+    "aliexpress promo code june 2026 reddit",
+    "aliexpress promo code august 2026 reddit",
+    "uber promo code",
+    "agoda promo code",
+    "airbnb promo code",
+    "asos discount code",
+    "ounass voucher code",
+    "ounass discount code",
+    "uber promo code food",
+    "uber promo code eats",
+    "amazon valid coupons",
+    "ounass promo code ksa",
+    "asos discount code us",
+    "asos discount code uk",
+    "uber promo code today",
+    "agoda promo code today",
+    "agoda promo code hotel",
+    "emirates discount code",
+    "ounass discount code 20",
+    "ounass discount code 30",
+    "ounass discount code 15",
+    "agoda promo code flight",
+    "amazon discount voucher",
+    "amazon valid promo code",
+    "ounass discount code uae",
+    "airbnb promo code reddit",
+    "uber promo code new user",
+    "airbnb promo code student",
+    "agoda promo code malaysia",
+    "asos discount code reddit",
+    "emirates discount code uk",
+    "amazon valid voucher code",
+    "agoda promo code singapore",
+    "asos discount code student",
+    "emirates discount code nhs",
+    "uber promo code first ride",
+    "ounass discount code kuwait",
+    "amazon discount vouchers uk",
+    "current amazon voucher code",
+    "nike first purchase discount",
+    "airbnb promo code first time",
+    "airbnb promo code experience",
+    "emirates discount code dubai",
+    "amazon discount voucher code",
+    "emirates discount code reddit",
+    "amazon valid promo code today",
+    "emirates discount code student",
+    "ounass discount code influencer",
+    "emirates discount code australia",
+    "emirates discount code blue light",
+    "amazon discount voucher australia",
+    "agoda promo code for hotel booking",
+    "uber promo code for existing users",
+    "airbnb promo code for existing users",
+    "asos discount code influencer reddit",
+    "emirates discount code first time user",
+    "aliexpress promo.code july 2026 reddit",
+    "nike first order discount code south africa",
+    "uber promo code 2026 for existing users",
+    "uber promo code today for existing users"
+  ],
+  "history": [
+    {
+      "date": "2026-09-02",
+      "keywords": [
+        "laptop student discount uk",
+        "ounass discount code 30",
+        "aliexpress coupon code august 2026",
+        "amazon valid promo code today",
+        "airbnb promo code first time",
+        "emirates discount code first time user",
+        "ounass promo code ksa",
+        "uber promo code eats",
+        "nike first order discount south africa",
+        "airbnb promo code 2026 reddit",
+        "ounass discount code kuwait",
+        "agoda promo code malaysia"
+      ],
+      "seasonal": [
+        "Back to School"
+      ],
+      "source": "google-autocomplete"
+    }
+  ]
 }
