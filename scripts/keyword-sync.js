@@ -164,14 +164,33 @@ function localCombinations(kw, stores, ctx) {
 
 /* ============================================================ meta tags === */
 
+/* The description is rewritten on every run, so the conversion-focused copy has
+   to be generated here — editing index.html alone would be silently reverted by
+   the next Daily Growth run.
+
+   The previous version led with brand and store counts and then dumped four raw
+   keyword phrases, producing ~240 characters. Google truncates around 155-160,
+   so the call to action never survived to the SERP and the visible tail was
+   comma-separated keyword spam. This leads with the action, keeps the whole
+   sentence inside the truncation limit, and appends a seasonal hook plus at
+   most one keyword only while there is room. */
+const DESC_LIMIT = 155;
+
 function buildDescription(keywords, seasonalNames, storeCount, couponCount) {
-  const lead = seasonalNames.length
-    ? seasonalNames[0] + ' savings, plus '
-    : '';
-  const tail = keywords.slice(0, 4).join(', ');
-  const base = 'NipCoupon — ' + lead + 'verified promo codes and deals from '
-    + storeCount + ' global brands. ' + couponCount + ' live offers updated daily. ' + tail + '.';
-  return (base.length > 320 ? base.slice(0, 317) + '...' : base);
+  const cta = 'Find working promo codes, verified discounts, and save money across '
+    + 'top international brands today with NipCoupon.';
+  if (cta.length > DESC_LIMIT) return cta;
+
+  /* Seasonal relevance is worth more than a keyword: it dates the result and
+     matches intent spikes. Only added when the whole thing still fits. */
+  const season = seasonalNames.length ? ' ' + seasonalNames[0] + ' deals live now.' : '';
+  let out = cta;
+  if ((out + season).length <= DESC_LIMIT) out += season;
+
+  const extra = keywords.length ? ' ' + keywords[0] + '.' : '';
+  if (extra && (out + extra).length <= DESC_LIMIT) out += extra;
+
+  return out;
 }
 
 function patchIndexHtml(description, keywordsCsv) {
