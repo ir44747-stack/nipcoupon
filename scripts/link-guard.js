@@ -144,13 +144,24 @@ async function probe(url, opts) {
   }
 }
 
+/* Statuses that mean "a bot wall turned us away", not "this link is broken".
+   Kept identical to scripts/validate.js so the two never disagree about the
+   same URL. 406 belongs here: uber.com answers 406 to datacenter IPs for every
+   user-agent, browser ones included, while the page is perfectly alive for a
+   real visitor. 405 is a HEAD-not-allowed answer, 451 is a legal geo-block. */
+const BOT_WALL = new Set([401, 403, 405, 406, 429, 451]);
+const DEAD_STATUS = new Set([404, 410]);
+
 /** Map an HTTP status to a verdict. */
 function classify(status) {
   if (status >= 200 && status < 400) return 'ok';
-  if (status === 401 || status === 403 || status === 429) return 'blocked'; // bot wall, not broken
-  if (status === 404 || status === 410) return 'dead';
+  if (BOT_WALL.has(status)) return 'blocked';
+  if (DEAD_STATUS.has(status)) return 'dead';
   if (status === 0) return 'unknown';                                        // timeout / DNS / TLS
-  if (status >= 400 && status < 500) return 'dead';
+  /* Deliberately NOT a blanket 4xx => dead. Only a confirmed 404/410 proves a
+     link is gone; treating every other 4xx as dead is how healthy affiliate
+     revenue gets pruned away on the strength of an anti-bot response. */
+  if (status >= 400 && status < 500) return 'unknown';
   if (status >= 500) return 'unknown';
   return 'unknown';
 }
@@ -259,7 +270,36 @@ if (require.main === module) {
       offers = [{ id: 'single', landingUrl: single }];
     } else {
       const coupons = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'coupons.json'), 'utf8')).coupons || [];
-      offers = coupons;
+
+      /* Coupons do not carry their own URL. Only feed/provider offers set
+         landingUrl; local ones resolve the outbound link through storeId ->
+         stores.json .url, exactly as api/_data.js does at request time.
+         Without this join every local coupon reads as 'empty-url', so the
+         guard rejected all 40 links on a perfectly healthy catalogue and
+         exited 1 — a red CI light that says nothing about link health, which
+         is the fastest way to teach everyone to ignore it. */
+      const storesDoc = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'stores.json'), 'utf8'));
+      const storeById = {};
+      (storesDoc.stores || storesDoc).forEach(s => { storeById[s.id] = s; });
+
+      offers = coupons.map(c => {
+        if (c.landingUrl) return c;
+        const store = storeById[c.storeId];
+        if (!store) return c;
+        /* Use store.url — the wrapped sovrn.co link that actually ships — so
+           the host allowlist sees the affiliate wrapper it was written to
+           check. Passing the bare merchant URL instead would trip
+           'host-not-allowlisted' for all 70 stores, since the allowlist is a
+           list of affiliate networks, not of retailers.
+
+           store.url carries a ${SOVRN_API_KEY} placeholder that only expands
+           server-side, so resolve it through the secrets layer first; with no
+           key configured that falls back to originalUrl, which is still a
+           truthful representation of where the click lands. */
+        const raw = store.url || store.originalUrl || '';
+        const resolved = S.resolveUrl(raw, store.originalUrl || '');
+        return Object.assign({}, c, { landingUrl: resolved, _viaStore: store.id });
+      });
     }
 
     const result = await validateOffers(offers, { concurrency, timeout, allowUnverified: true });

@@ -23,6 +23,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const S = require('../api/_secrets.js');
 
 const ARGS    = new Set(process.argv.slice(2));
 const PRUNE   = ARGS.has('--prune');    // rewrite coupons.json without expired/broken rows
@@ -172,6 +173,34 @@ const couponsFile = read('coupons.json');
 const couponIds = new Set();
 const coupons = (couponsFile && couponsFile.coupons) || [];
 const perStore = {};
+/* data/schema.json documents the shape of every row but nothing loaded it, so
+   it silently drifted behind the data: it was missing categoryId, logo, source,
+   sovrnEpc, sovrnGroupId on stores and name_ar, blurb_ar on categories — all
+   fields the app reads at runtime. A contract nobody enforces stops being a
+   contract, so check the one thing that catches drift cheaply and with no new
+   dependency: a field present in the data that the schema has never heard of.
+   Reported as a warning, not an error — new data should never fail CI just
+   because the docs lag — but --strict promotes it, so the schema cannot rot
+   unnoticed. Full JSON Schema validation would need the jsonschema package;
+   this deliberately stays dependency-free. */
+(function checkSchemaDrift() {
+  const schema = read('schema.json');
+  const defs = (schema && schema.definitions) || null;
+  if (!defs) { warn('schema.json', 'missing or unreadable — row shapes are unverified'); return; }
+  [['store', stores], ['category', cats], ['coupon', coupons]].forEach(([name, rows]) => {
+    const def = defs[name];
+    if (!def || !def.properties) { warn('schema.json', 'no definition for "' + name + '"'); return; }
+    if (def.additionalProperties !== false) return;   // open shape: nothing to drift against
+    const known = new Set(Object.keys(def.properties));
+    const unknown = new Set();
+    rows.forEach(r => Object.keys(r || {}).forEach(k => { if (!known.has(k)) unknown.add(k); }));
+    if (unknown.size) {
+      warn('schema.json', name + ' rows carry field(s) the schema does not define: ' +
+        [...unknown].sort().join(', ') + ' — add them to data/schema.json');
+    }
+  });
+})();
+
 const perCat = {};
 coupons.forEach((c, i) => {
   const at = 'coupons.json[' + i + '] ' + (c.id || c.title || '?');
@@ -306,7 +335,11 @@ coupons.forEach(c => {
 /* A non-2xx is NOT proof of a dead link: most retailers block bots (403/503 on
    HEAD, 200 on GET). Only a confirmed 404/410 or a dead hostname counts as
    "dead", and even then it is re-checked before anything is deleted. */
-const BOT_WALL = new Set([401, 403, 405, 429, 451]);
+/* 406 included: uber.com answers 406 to datacenter IPs for every user-agent,
+   browser ones included, while the page is fine for a real visitor. Kept
+   identical to the set in scripts/link-guard.js so the two never disagree
+   about the same URL. */
+const BOT_WALL = new Set([401, 403, 405, 406, 429, 451]);
 const DEAD_STATUS = new Set([404, 410]);
 const DEAD_DNS = /ENOTFOUND|EAI_AGAIN|NXDOMAIN|ERR_NAME_NOT_RESOLVED/;
 
@@ -404,15 +437,42 @@ if (LINKS) {
   const urls = [...urlCoupons.keys()].concat(
     [...new Set(stores.map(s => s.url).filter(u => !!u))].filter(u => !urlCoupons.has(u))
   );
-  const queue = urls.slice();
+
+  /* stores.json stores the Sovrn key as a literal ${SOVRN_API_KEY} placeholder
+     that only expands at request time. Probing the unexpanded string sends
+     sovrn.co a malformed key, which answers 400 for every store — 12 links
+     read as "suspect" here purely because of that, on a catalogue link-guard
+     confirms is healthy. Resolve exactly as api/_data.js does before probing,
+     and skip anything still unexpanded (no key configured) rather than
+     recording a verdict the URL never earned. This feeds --prune, so a false
+     "suspect" is one config change away from deleting live revenue. */
+  /* outboundUrl() runs the link through URL.searchParams, which percent-encodes
+     the placeholder to %24%7BSOVRN_API_KEY%7D. A literal '${' test misses that
+     form, and so does resolveUrl, so decode before both testing and resolving. */
+  const UNRESOLVED = /\$\{[A-Z0-9_]+\}|%24%7B[A-Z0-9_]+%7D/i;
+  const probeUrl = new Map();   // resolved URL -> original, to report honestly
+  const resolved = [];
+  urls.forEach(u => {
+    const decoded = String(u).replace(/%24%7B([A-Z0-9_]+)%7D/gi, '\u0024{$1}');
+    const r = S.resolveUrl(decoded, decoded);
+    if (UNRESOLVED.test(r)) return;   // unresolved: not checkable, not broken
+    probeUrl.set(r, u);
+    resolved.push(r);
+  });
+  linkReport.skippedUnresolved = urls.length - resolved.length;
+
+  const queue = resolved.slice();
   const workers = new Array(Math.min(LINK_CONCURRENCY, queue.length)).fill(0).map(async () => {
     while (queue.length) {
       const url = queue.shift();
       const r = await checkUrl(url);
+      /* Report and record against the ORIGINAL (placeholder) URL: that is what
+         stores.json holds, and what the --prune matcher below compares to. */
+      const orig = probeUrl.get(url) || url;
       linkReport.checked++;
       linkReport[r.verdict]++;
-      if (r.verdict !== 'ok') linkReport.details.push(url + ' → ' + r.verdict + ' (' + r.detail + ')');
-      if (r.verdict === 'dead') (linkReport.deadUrls = linkReport.deadUrls || new Set()).add(url);
+      if (r.verdict !== 'ok') linkReport.details.push(orig + ' → ' + r.verdict + ' (' + r.detail + ')');
+      if (r.verdict === 'dead') (linkReport.deadUrls = linkReport.deadUrls || new Set()).add(orig);
     }
   });
   await Promise.all(workers);
@@ -475,7 +535,10 @@ say('monetisation: ' + (stores.length - unmonetised) + '/' + stores.length +
     ' · coupon landingUrl: ' + rawLanding + ' bare, ' + foreignLanding + ' other-network');
 if (LINKS) {
   say('links       : ' + linkReport.checked + ' checked · ' + linkReport.ok + ' ok · ' +
-      linkReport.dead + ' dead · ' + linkReport.suspect + ' suspect · ' + linkReport.unknown + ' unverifiable');
+      linkReport.dead + ' dead · ' + linkReport.suspect + ' suspect · ' + linkReport.unknown + ' unverifiable' +
+      (linkReport.skippedUnresolved
+        ? ' · ' + linkReport.skippedUnresolved + ' skipped (unresolved placeholder — set SOVRN_API_KEY)'
+        : ''));
   linkReport.details.slice(0, 12).forEach(d => say('              - ' + d));
 } else {
   say('links       : skipped (run with --links to verify affiliate URLs)');

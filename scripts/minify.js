@@ -229,6 +229,30 @@ function main() {
   const engine = esbuild ? 'esbuild' : 'built-in';
 
   let html = original;
+
+  /* ── GA4 measurement ID ────────────────────────────────────────────────
+     api/page.js reads GA_MEASUREMENT_ID from the environment, but index.html
+     is a static file with the ID written inline. Without this substitution
+     the two disagree the moment the env var is set: server-rendered pages
+     report to the new property while the homepage keeps reporting to the old
+     one, silently splitting the traffic across two properties in a way that
+     looks like a traffic drop rather than a misconfiguration.
+
+     Rewriting at build time keeps one source of truth. Unset → the committed
+     default stays, so local builds and forks behave exactly as before. */
+  const gaEnvRaw = (process.env.GA_MEASUREMENT_ID || '').trim();
+  if (gaEnvRaw) {
+    if (!/^G-[A-Z0-9]+$/.test(gaEnvRaw)) {
+      // A malformed ID would break tracking silently; fail loudly instead.
+      console.error('minify: GA_MEASUREMENT_ID is not a valid GA4 id: ' + gaEnvRaw);
+      process.exit(1);
+    }
+    const found = [...new Set(html.match(/G-[A-Z0-9]+/g) || [])];
+    if (found.length && !(found.length === 1 && found[0] === gaEnvRaw)) {
+      found.forEach(id => { html = html.split(id).join(gaEnvRaw); });
+      console.log('minify  ga      ' + found.join(', ') + ' → ' + gaEnvRaw);
+    }
+  }
   let jsBefore = 0, jsAfter = 0, cssBefore = 0, cssAfter = 0;
   const problems = [];
 

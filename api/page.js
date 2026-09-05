@@ -205,16 +205,30 @@ function page({ title, description, keywords, canonical, path, body, jsonLd, ogI
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
-<meta name="description" content="${esc(description)}">${kw}
-<link rel="canonical" href="${esc(canonical)}">
-${alternates(path || '/')}
+<meta name="description" content="${esc(description)}">${kw}${canonical ? `
+<link rel="canonical" href="${esc(canonical)}">` : ''}
+${canonical ? alternates(path || '/') : ''}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NipCoupon">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${esc(canonical)}">
 <meta property="og:locale" content="${esc((lang || DEFAULT_LOCALE) === 'ar' ? 'ar_AE' : 'en_US')}">
-${ogImage ? '<meta property="og:image" content="' + esc(ogImage) + '">' : ''}
+${(() => {
+  /* ogImage was a parameter no caller ever passed, so every server-rendered
+     store and coupon page shipped twitter:card=summary_large_image with no
+     image behind it. Shared to Instagram, WhatsApp, Facebook or X those URLs
+     unfurled as a bare text link — the single biggest leak in the social
+     funnel, since /og.png (1200x630, the correct OG size) already exists in
+     the web root and index.html has always referenced it. Default to it so
+     every route unfurls with a card, and let callers override per page later. */
+  const img = ogImage || (SITE + '/og.png');
+  return '<meta property="og:image" content="' + esc(img) + '">\n' +
+         '<meta property="og:image:width" content="1200">\n' +
+         '<meta property="og:image:height" content="630">\n' +
+         '<meta property="og:image:alt" content="' + esc(title) + '">\n' +
+         '<meta name="twitter:image" content="' + esc(img) + '">';
+})()}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
@@ -269,6 +283,38 @@ document.addEventListener('click', function (e) {
     link_url: url,
     outbound: true
   };
+  /* Acquisition channel on the conversion event itself. GA4 attributes the
+     session, but the affiliate click is the revenue moment and it carried no
+     source dimension, so an Instagram-driven conversion was indistinguishable
+     from an organic one in the events table. Read the campaign from the
+     landing URL (persisted for the tab, since the utm_* params are gone once
+     the visitor navigates) and fall back to classifying the referrer. */
+  try {
+    var LS = 'np_acq';
+    var q = new URLSearchParams(location.search);
+    var acq = null;
+    if (q.get('utm_source')) {
+      acq = { source: q.get('utm_source'), medium: q.get('utm_medium') || '', campaign: q.get('utm_campaign') || '' };
+      try { sessionStorage.setItem(LS, JSON.stringify(acq)); } catch (e3) {}
+    } else {
+      try { acq = JSON.parse(sessionStorage.getItem(LS) || 'null'); } catch (e3) {}
+    }
+    if (!acq) {
+      var ref = document.referrer || '';
+      var host = '';
+      try { host = ref ? new URL(ref).hostname.replace(/^www\\./, '') : ''; } catch (e4) {}
+      var social = /instagram|facebook|fb\\.|tiktok|t\\.co|twitter|x\\.com|pinterest|snapchat|whatsapp|telegram|linkedin|reddit/i;
+      var search = /google|bing|yahoo|duckduckgo|yandex|baidu|ecosia/i;
+      acq = {
+        source: host || 'direct',
+        medium: !host ? 'direct' : (social.test(host) ? 'social' : (search.test(host) ? 'organic' : 'referral')),
+        campaign: ''
+      };
+    }
+    params.acq_source = acq.source || '';
+    params.acq_medium = acq.medium || '';
+    params.acq_campaign = acq.campaign || '';
+  } catch (e5) {}
   window.gtag('event', 'click_affiliate', params);
   window.gtag('event', 'select_content', {
     content_type: 'affiliate_link',
@@ -295,7 +341,14 @@ function notFound(res, what) {
   res.end(page({
     title: 'Not found — NipCoupon',
     description: 'That page does not exist.',
-    canonical: SITE + '/',
+    /* A 404 body was being served with robots "index,follow" and a canonical
+       pointing at the homepage. That is the classic soft-404 signal: Google is
+       told the page is indexable and that its canonical is "/", so expired or
+       mistyped deal URLs can end up consolidating into the homepage instead of
+       dropping out of the index. The HTTP status alone is not enough once a
+       canonical contradicts it. */
+    robots: 'noindex,follow',
+    canonical: '',
     path: '/',
     body: '<h1>Not found</h1><p>We could not find that ' + esc(what) + '.</p><p><a class="btn" href="/">Browse all deals</a></p>'
   }));
@@ -439,10 +492,42 @@ ${(function () {
             : 'https://schema.org/InStock',
           ...(c.code ? { category: 'Coupon', identifier: c.code } : {}),
           ...(c.expires ? { priceValidUntil: c.expires, validThrough: c.expires } : {}),
+          /* price is REQUIRED whenever priceCurrency is present — Google drops
+             the whole Offer from rich-result eligibility if one appears without
+             the other. A coupon has no price of its own: the saving is applied
+             to the merchant's basket, so 0 is the honest value and is what
+             schema.org expects for a free-to-claim offer. */
+          price: 0,
           ...(profile.currency ? { priceCurrency: profile.currency } : {}),
+          /* Surface the discount itself so the snippet can show "30% off"
+             rather than just a title. */
+          ...(Number(c.value) > 0
+            ? { discount: Number(c.value), discountCurrency: profile.currency || 'USD' }
+            : {}),
           seller: { '@type': 'Organization', name: storeName },
           isPartOf: { '@id': SITE + '/#website' }
         },
+        /* Ratings drive the star snippet. The data carries a real rating and a
+           usage count for every coupon, and both were being thrown away.
+           aggregateRating must hang off a node Google accepts it on — attaching
+           it directly to an Offer is invalid — so it goes on the Product that
+           represents this deal, which references the Offer above. */
+        ...(!expired && Number(c.rating) > 0 && Number(c.uses) > 0 ? [{
+          '@type': 'Product',
+          '@id': canonical + '#product',
+          name: c.title || storeName + ' offer',
+          description: desc,
+          url: canonical,
+          brand: { '@type': 'Brand', name: storeName },
+          offers: { '@id': canonical + '#offer' },
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: Number(c.rating).toFixed(1),
+            reviewCount: Number(c.uses),
+            bestRating: '5',
+            worstRating: '1'
+          }
+        }] : []),
         breadcrumbs([
           { name: 'Home', url: SITE + '/' },
           { name: storeName, url: SITE + '/store/' + encodeURIComponent(store.id || '') },

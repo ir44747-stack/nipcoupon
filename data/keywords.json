@@ -251,6 +251,54 @@
         "boxing day sale"
       ],
       "weight": 1.5
+    },
+    {
+      "id": "spring-sale",
+      "name": "Spring sale",
+      "start": "04-01",
+      "end": "04-14",
+      "terms": [
+        "spring sale",
+        "spring discount code",
+        "april promo code"
+      ],
+      "weight": 1.1
+    },
+    {
+      "id": "eid-shopping-late-april",
+      "name": "Late April clearance",
+      "start": "04-15",
+      "end": "04-30",
+      "terms": [
+        "april clearance sale",
+        "end of season sale",
+        "mid season sale code"
+      ],
+      "weight": 1.0
+    },
+    {
+      "id": "autumn-sale",
+      "name": "Autumn sale",
+      "start": "10-01",
+      "end": "10-14",
+      "terms": [
+        "autumn sale",
+        "october promo code",
+        "fall discount code"
+      ],
+      "weight": 1.1
+    },
+    {
+      "id": "pre-black-friday",
+      "name": "Pre-Black Friday / Halloween",
+      "start": "10-15",
+      "end": "11-04",
+      "terms": [
+        "halloween deals",
+        "early black friday deals",
+        "pre black friday sale"
+      ],
+      "weight": 1.15
     }
   ],
   "longTail": [

@@ -55,7 +55,10 @@ const CONFIG_KEYS = new Set([
   'CJ_PUBLISHER_ID',
   'CJ_PROPERTY_ID',
   'DEALS_FEED_URL',
-  'LINK_GUARD_ALLOWLIST'
+  'LINK_GUARD_ALLOWLIST',
+  /* Public by design — it ships in the page. Listed so `status()` reports it
+     alongside the other config and it is never mistaken for a secret. */
+  'GA_MEASUREMENT_ID'
 ]);
 
 /* ── Local .env (dev only; Vercel already injects) ────────────────────────── */
