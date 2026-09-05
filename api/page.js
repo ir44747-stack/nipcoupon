@@ -139,6 +139,125 @@ function intentKeywords(baseCsv, subject, stamp) {
   return out.slice(0, 28).join(', ');
 }
 
+/* ══════════════════════════════════════════════════════ UI components ═══ */
+
+/* Typographic store tile. Most stores ship no logo file, so the mark is the
+   abbreviation on the brand colour — same treatment as .store-logo in the SPA,
+   so a visitor moving between the two sees one product. */
+function logoTile(store, name) {
+  const label = String(store.abbr || name || '?').slice(0, 4).toUpperCase();
+  const bg = /^#[0-9a-f]{3,8}$/i.test(String(store.color || '')) ? store.color : '#1e293b';
+  const fg = /^#[0-9a-f]{3,8}$/i.test(String(store.fg || '')) ? store.fg : '#ffffff';
+  const size = label.length >= 4 ? '1.05rem' : label.length === 3 ? '1.25rem' : '1.45rem';
+  return '<div class="logo" style="background:' + esc(bg) + ';color:' + esc(fg) +
+    ';font-size:' + size + '" aria-hidden="true"><span>' + esc(label) + '</span></div>';
+}
+
+/* Rating as a pill. Kept text-based rather than drawn stars: it reads in every
+   locale, survives a failed font load, and matches the aggregateRating we
+   already emit in JSON-LD so the page and the structured data cannot disagree. */
+function ratingPill(rating, reviews) {
+  const r = Number(rating);
+  if (!(r > 0)) return '';
+  const n = Number(reviews) || 0;
+  return '<span class="pill star">&#9733; <b>' + r.toFixed(1) + '</b>' +
+    (n > 0 ? ' <span style="opacity:.75">(' + fmtNum(n) + ' reviews)</span>' : '') + '</span>';
+}
+
+function fmtNum(n) {
+  const v = Number(n) || 0;
+  if (v >= 1000000) return (v / 1000000).toFixed(v % 1000000 === 0 ? 0 : 1) + 'M';
+  if (v >= 1000) return (v / 1000).toFixed(v % 1000 === 0 ? 0 : 1) + 'k';
+  return String(v);
+}
+
+/* "Verified 3 hours ago" — from the real verifiedHoursAgo field, not invented. */
+function verifiedAgo(hours) {
+  const h = Number(hours);
+  if (!(h >= 0)) return '';
+  if (h < 1) return 'just now';
+  if (h === 1) return '1 hour ago';
+  if (h < 24) return h + ' hours ago';
+  const d = Math.round(h / 24);
+  return d === 1 ? 'yesterday' : d + ' days ago';
+}
+
+/* Community proof. Uses the genuine .uses count and .verifiedHoursAgo stamp —
+   no fabricated "X shoppers in the last Y minutes" ticker, because nothing in
+   the dataset records live redemptions and inventing one would be a lie told
+   to every visitor. */
+function socialProof(c) {
+  const uses = Number(c.uses) || 0;
+  const ago = verifiedAgo(c.verifiedHoursAgo);
+  const bits = [];
+  if (uses > 0) bits.push('Used <b>' + fmtNum(uses) + '</b> times');
+  if (ago) bits.push('last verified <b>' + esc(ago) + '</b>');
+  return bits.length ? '<p class="social">' + bits.join(' &middot; ') + '</p>' : '';
+}
+
+/* Discount headline for the card's left rail. Prefers the curated badge. */
+function dealValue(c) {
+  const badge = String(c.badge || '').trim();
+  if (badge) {
+    const m = badge.match(/^(\S+)\s*(.*)$/);
+    return '<b>' + esc(m ? m[1] : badge) + '</b><i>' + esc(m && m[2] ? m[2] : (c.type === 'code' ? 'code' : 'deal')) + '</i>';
+  }
+  return '<b>' + esc(c.type === 'code' ? 'CODE' : 'DEAL') + '</b><i>offer</i>';
+}
+
+/* Tag row. Every tag is backed by a field: verified, hot -> Staff Pick,
+   addedDaysAgo <= 7 -> New, type -> Code/Deal. */
+function dealTags(c) {
+  const out = [];
+  /* Key off verifiedHoursAgo, not .verified: _data.js normalises rows and drops
+     the boolean, so testing it silently hid the Verified tag on every card.
+     A timestamp is the stronger claim anyway — it says when, not just whether. */
+  if (Number(c.verifiedHoursAgo) >= 0) out.push('<span class="tag v">&#10003; Verified</span>');
+  if (c.hot) out.push('<span class="tag hot">Staff pick</span>');
+  if (Number(c.addedDaysAgo) >= 0 && Number(c.addedDaysAgo) <= 7) out.push('<span class="tag new">New</span>');
+  out.push('<span class="tag">' + (c.type === 'code' ? 'Promo code' : 'Deal') + '</span>');
+  return '<div class="tags">' + out.join('') + '</div>';
+}
+
+/* The reveal control. With JS the button hides and the dashed code box takes
+   its place; without JS both render and the code is simply visible. */
+function revealCta(c, target, storeName) {
+  const ga = ' data-ga-store="' + esc(storeName) + '" data-ga-coupon="' + esc(c.id || '') +
+    '" data-ga-code="' + esc(c.code || '') + '"';
+  if (!target) return '<span class="meta">Temporarily unavailable</span>';
+  const label = c.code ? 'Get code' : 'Get deal';
+  const btn = '<a class="btn" data-reveal rel="nofollow sponsored noopener" target="_blank" href="' +
+    esc(target) + '"' + ga + '>' + label + '</a>';
+  if (!c.code) return '<div class="reveal">' + btn + '</div>';
+  /* No `hidden` attribute in the markup: with JS disabled that would leave the
+     code permanently invisible and the page useless to the visitor. It is the
+     .js class on <html> (set by a one-line inline script) that collapses the
+     code box, so JS-off users simply see the code and the link side by side. */
+  return '<div class="reveal">' + btn +
+    '<button type="button" class="code" data-code="' + esc(c.code) +
+    '" data-label="Tap to copy" aria-label="Copy code ' + esc(c.code) + '">' +
+    esc(c.code) + '<small>Tap to copy</small></button></div>';
+}
+
+/* Crawlable crumb trail matching the BreadcrumbList JSON-LD. */
+function crumbHtml(trail) {
+  return '<nav class="crumbs" aria-label="Breadcrumb">' + trail.map((t, i) => {
+    const last = i === trail.length - 1;
+    const node = last
+      ? '<span aria-current="page">' + esc(t.name) + '</span>'
+      : '<a href="' + esc(t.href) + '">' + esc(t.name) + '</a>';
+    return (i ? '<i>&#8250;</i>' : '') + node;
+  }).join('') + '</nav>';
+}
+
+const DISCLOSURE = '<div class="disclosure">' +
+  '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+  '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>' +
+  '<span><b style="color:#94a3b8">Affiliate disclosure.</b> NipCoupon may earn a commission when you ' +
+  'buy through links on this page. It never changes the price you pay, and it does not affect which ' +
+  'codes we list or how they are ranked. Codes are re-tested regularly, but merchants can change or ' +
+  'withdraw an offer at any time.</span></div>';
+
 /* BreadcrumbList — renders the crumb trail in the SERP instead of a raw URL. */
 function breadcrumbs(trail) {
   return {
@@ -254,19 +373,269 @@ window.gtag=function gtag(){window.dataLayer.push(arguments);};
 window.gtag('js',new Date());window.gtag('config','${GA_ID}');
 </script>
 <style>
-  body{max-width:820px;margin:0 auto;padding:48px 20px;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#090d16;color:#e2e8f0}
-  a{color:#10b981}
-  .card{background:#1e293b;border:1px solid #334155;border-radius:14px;padding:24px;margin:20px 0}
-  .code{display:inline-block;background:#0f172a;border:1px dashed #10b981;color:#10b981;padding:10px 18px;border-radius:8px;font-weight:800;letter-spacing:.08em;font-size:20px;margin:12px 0}
-  .btn{display:inline-block;background:linear-gradient(135deg,#10b981,#059669);color:#03231b;font-weight:800;padding:14px 26px;border-radius:10px;text-decoration:none}
-  .meta{color:#94a3b8;font-size:14px}
-  .badge{display:inline-block;background:rgba(16,185,129,.15);color:#34d399;padding:4px 12px;border-radius:999px;font-weight:700;font-size:13px}
-  .terms{color:#94a3b8;font-size:13px;margin-top:12px}
+/* Design tokens mirror index.html :root so the SSR routes and the SPA are the
+   same product. Previously these pages shipped ~10 lines of CSS — a bare
+   820px column — while the SPA had a full dark design system. */
+:root{
+  --bg:#090d16;--bg-2:#0f172a;--card:#1e293b;--card-2:#172033;
+  --border:rgba(148,163,184,.14);--border-strong:rgba(148,163,184,.26);
+  --green:#10b981;--green-soft:rgba(16,185,129,.12);--green-glow:rgba(16,185,129,.35);
+  --blue:#3b82f6;--text:#e8eef7;--muted:#94a3b8;--muted-2:#64748b;
+  --radius:18px;--radius-sm:12px;
+  --shadow:0 18px 40px -18px rgba(2,6,23,.9);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;padding:0;font:16px/1.65 var(--font);color:var(--text);
+  background:var(--bg);
+  /* Depth without going flat black: two faint brand-tinted pools behind an
+     obsidian base, exactly the treatment the SPA uses. */
+  background-image:
+    radial-gradient(900px 480px at 12% -8%,rgba(16,185,129,.10),transparent 60%),
+    radial-gradient(760px 420px at 92% 0%,rgba(59,130,246,.09),transparent 62%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+a{color:var(--green);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3{line-height:1.2;margin:0}
+img{max-width:100%;height:auto}
+:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(59,130,246,.45);border-radius:8px}
+
+/* ── top bar ─────────────────────────────────────────────────────────── */
+.top{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.top a.home{
+  display:inline-flex;align-items:center;gap:8px;color:var(--muted);
+  font-size:14px;font-weight:600;padding:8px 14px;border-radius:999px;
+  border:1px solid var(--border);background:rgba(15,23,42,.6)
+}
+.top a.home:hover{color:var(--text);border-color:var(--border-strong);text-decoration:none}
+
+/* ── breadcrumbs ─────────────────────────────────────────────────────── */
+.crumbs{
+  display:flex;flex-wrap:wrap;align-items:center;gap:7px;
+  font-size:13px;color:var(--muted-2);margin-bottom:18px
+}
+.crumbs a{color:var(--muted)}
+.crumbs span[aria-current]{color:var(--text);font-weight:600}
+.crumbs i{font-style:normal;opacity:.5}
+
+/* ── surfaces ────────────────────────────────────────────────────────── */
+.card{
+  background:linear-gradient(180deg,rgba(30,41,59,.92),rgba(23,32,51,.92));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px;margin:0 0 16px;box-shadow:var(--shadow)
+}
+/* Glassmorphism for the stat rail — translucent over the page gradient. */
+.glass{
+  background:rgba(30,41,59,.55);
+  -webkit-backdrop-filter:blur(14px) saturate(140%);
+  backdrop-filter:blur(14px) saturate(140%);
+  border:1px solid var(--border-strong);
+}
+
+/* ── hero ────────────────────────────────────────────────────────────── */
+.hero{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.logo{
+  width:74px;height:74px;border-radius:20px;flex:none;
+  display:grid;place-items:center;position:relative;overflow:hidden;isolation:isolate;
+  font-weight:900;font-size:1.45rem;letter-spacing:-.03em;color:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.45),0 10px 20px -12px rgba(0,0,0,.8),
+    inset 0 1px 0 rgba(255,255,255,.30),inset 0 0 0 1px rgba(255,255,255,.10)
+}
+.logo::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 42%,rgba(0,0,0,.10))
+}
+.logo span{position:relative;z-index:2}
+.hero-main{flex:1 1 320px;min-width:0}
+h1{font-size:clamp(1.5rem,4vw,2.05rem);font-weight:800;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:10px 0 0;font-size:15px}
+
+/* ── pill badges ─────────────────────────────────────────────────────── */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700;
+  background:rgba(15,23,42,.7);border:1px solid var(--border);color:var(--muted)
+}
+.pill b{color:var(--text);font-weight:800}
+.pill.ok{background:var(--green-soft);border-color:rgba(16,185,129,.32);color:#6ee7b7}
+.pill.star{color:#fbbf24;border-color:rgba(251,191,36,.28);background:rgba(251,191,36,.10)}
+
+/* ── stat rail ───────────────────────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 16px}
+.stat{border-radius:var(--radius-sm);padding:16px 18px}
+.stat .k{
+  display:block;font-size:11px;font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted-2)
+}
+.stat .v{display:block;font-size:1.6rem;font-weight:900;letter-spacing:-.02em;margin-top:6px;color:var(--text)}
+.stat .v.g{color:#34d399}
+.stat .n{display:block;font-size:12px;color:var(--muted-2);margin-top:2px}
+
+/* ── coupon cards ────────────────────────────────────────────────────── */
+.deal{
+  display:flex;gap:18px;align-items:stretch;
+  background:linear-gradient(180deg,rgba(30,41,59,.92),rgba(23,32,51,.92));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;margin:0 0 14px;
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),border-color .22s ease,box-shadow .22s ease
+}
+.deal:hover{transform:translateY(-2px);border-color:rgba(16,185,129,.34);box-shadow:0 22px 44px -22px rgba(2,6,23,.95)}
+.deal-val{
+  flex:none;width:104px;border-radius:14px;text-align:center;
+  /* Column flex, not grid: place-items:center on a two-child grid puts each
+     child in its own stretched row, which stranded the "OFF" label at the
+     bottom of tall cards instead of tucking it under the number. */
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:14px 8px;background:var(--green-soft);border:1px dashed rgba(16,185,129,.42)
+}
+.deal-val b{display:block;font-size:1.5rem;font-weight:900;color:#34d399;line-height:1.05;letter-spacing:-.02em}
+.deal-val i{display:block;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.deal-body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:9px}
+.deal-body h3{font-size:1.06rem;font-weight:700}
+.deal-body h3 a{color:var(--text)}
+.deal-body h3 a:hover{color:#6ee7b7;text-decoration:none}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{
+  font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  padding:4px 9px;border-radius:6px;border:1px solid var(--border);color:var(--muted);background:rgba(15,23,42,.6)
+}
+.tag.v{color:#6ee7b7;border-color:rgba(16,185,129,.34);background:var(--green-soft)}
+.tag.hot{color:#fda4af;border-color:rgba(251,113,133,.32);background:rgba(251,113,133,.10)}
+.tag.new{color:#93c5fd;border-color:rgba(59,130,246,.32);background:rgba(59,130,246,.10)}
+.deal-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:auto;padding-top:4px}
+.social{font-size:12.5px;color:var(--muted-2)}
+.social b{color:#6ee7b7;font-weight:700}
+
+/* ── reveal / CTA ────────────────────────────────────────────────────── */
+.reveal{position:relative;flex:none;min-width:172px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  background:linear-gradient(135deg,#10b981,#059669);color:#03231b;
+  font-weight:800;font-size:14.5px;padding:13px 20px;border-radius:11px;
+  border:0;cursor:pointer;font-family:inherit;text-decoration:none;
+  box-shadow:0 10px 24px -12px var(--green-glow);
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease
+}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.06);box-shadow:0 16px 30px -14px var(--green-glow);text-decoration:none}
+.btn:active{transform:translateY(0)}
+.btn.ghost{
+  background:transparent;color:#6ee7b7;border:1px solid rgba(16,185,129,.42);
+  box-shadow:none;font-weight:700
+}
+.btn.ghost:hover{background:var(--green-soft);filter:none}
+/* Click-to-reveal: the code sits behind the CTA and is swapped in by JS.
+   Rendered in the HTML so it is present for crawlers and for no-JS users. */
+.code{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  background:var(--bg-2);border:1px dashed var(--green);color:#6ee7b7;
+  padding:11px 14px;border-radius:11px;font-weight:800;letter-spacing:.09em;
+  font-size:15px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  cursor:pointer;text-align:left
+}
+.code small{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2);font-weight:700;flex:none}
+.code.copied{border-style:solid;background:var(--green-soft);color:#a7f3d0}
+/* Only collapse the code box when JS can reveal it again; with JS off both the
+   code and the link stay on screen rather than the code being unreachable. */
+.js .reveal .code{display:none}
+.js .reveal.is-open .code{display:flex}
+.js .reveal.is-open .btn[data-reveal]{display:none}
+
+/* ── misc ────────────────────────────────────────────────────────────── */
+.meta{color:var(--muted);font-size:13.5px;margin:0}
+.badge{display:inline-block;background:var(--green-soft);color:#6ee7b7;padding:5px 13px;border-radius:999px;font-weight:800;font-size:12.5px;border:1px solid rgba(16,185,129,.28)}
+.terms{color:var(--muted);font-size:13px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.terms ul{margin:8px 0 0;padding-left:18px}
+.terms li{margin:3px 0}
+h2.sec{font-size:1.15rem;font-weight:800;margin:26px 0 12px;letter-spacing:-.01em}
+.disclosure{
+  display:flex;gap:11px;align-items:flex-start;
+  font-size:12.5px;line-height:1.55;color:var(--muted-2);
+  background:rgba(15,23,42,.5);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:13px 15px;margin:18px 0 0
+}
+.disclosure svg{flex:none;margin-top:1px;opacity:.8}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a{
+  font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;
+  border:1px solid var(--border);background:rgba(15,23,42,.6);color:var(--muted)
+}
+.links a:hover{color:#6ee7b7;border-color:rgba(16,185,129,.34);text-decoration:none}
+
+@media (max-width:640px){
+  .wrap{padding:20px 15px 56px}
+  .deal{flex-wrap:wrap;gap:14px}
+  .deal-val{width:84px}
+  .reveal{min-width:0;width:100%}
+  .logo{width:60px;height:60px;border-radius:17px;font-size:1.2rem}
+  .stat .v{font-size:1.4rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
 </style>${ld}
 </head>
 <body>
-<p class="meta"><a href="/">← NipCoupon</a></p>
+<script>document.documentElement.className+=' js';</script>
+<div class="wrap">
+<div class="top"><a class="home" href="/">&#8592; NipCoupon</a></div>
 ${body}
+</div>
+<script>
+/* Click-to-reveal + copy. The code is always in the HTML (crawlable, and it
+   still works with JS off, where the button is a plain link and the code is
+   visible); JS only upgrades it to reveal-then-copy. */
+(function () {
+  function flash(el, msg) {
+    var prev = el.getAttribute('data-label');
+    el.classList.add('copied');
+    el.querySelector('small').textContent = msg;
+    setTimeout(function () {
+      el.classList.remove('copied');
+      el.querySelector('small').textContent = prev;
+    }, 1800);
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+
+    /* Reveal: swap the CTA for the code, then open the merchant in a new tab
+       so the affiliate click still fires on the same gesture. */
+    var rv = t.closest('[data-reveal]');
+    if (rv) {
+      var wrap = rv.parentNode;
+      if (wrap && wrap.querySelector('.code')) {
+        wrap.classList.add('is-open');
+        var href = rv.getAttribute('href');
+        if (href) window.open(href, '_blank', 'noopener');
+      }
+      return;
+    }
+
+    /* Copy */
+    var code = t.closest('.code');
+    if (code) {
+      var val = code.getAttribute('data-code') || '';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(val).then(function () { flash(code, 'Copied'); },
+          function () { flash(code, 'Press Ctrl+C'); });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = val; ta.setAttribute('readonly', '');
+        ta.style.position = 'absolute'; ta.style.left = '-9999px';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); flash(code, 'Copied'); }
+        catch (err) { flash(code, 'Press Ctrl+C'); }
+        document.body.removeChild(ta);
+      }
+    }
+  });
+})();
+</script>
 <script>
 /* GA4 outbound-click attribution for the server-rendered pages. Delegated so
    it costs one listener regardless of how many links the page carries. */
@@ -442,21 +811,58 @@ module.exports = async function handler(req, res) {
       ? '<p class="meta">Showing the ' + esc(profile.label) + ' storefront (' + esc(profile.currency) + ').</p>'
       : '';
 
+    const cat = categories.find(x => x.id === c.categoryId);
+    const siblingDeals = coupons.filter(x => x.storeId === c.storeId && x.id !== c.id);
+
     const body = `
+${crumbHtml([
+  { name: 'Home', href: '/' },
+  ...(cat ? [{ name: cat.name || cat.id, href: '/category/' + encodeURIComponent(cat.id) }] : []),
+  ...(store.id ? [{ name: storeName, href: '/store/' + encodeURIComponent(store.id) }] : []),
+  { name: c.title || 'Offer' }
+])}
 <div class="card">
-  <span class="badge">${esc(c.badge || (c.type === 'code' ? 'CODE' : 'DEAL'))}</span>
-  <h1>${esc(c.title || storeName + ' offer')}</h1>
-  <p class="meta">${esc(storeName)}${c.expires ? ' · expires ' + esc(c.expires) : ''}${c.linkVerdict ? ' · link ' + esc(c.linkVerdict) : ''}</p>
-  ${c.code ? '<div>Coupon code</div><div class="code">' + esc(c.code) + '</div>' : ''}
-  ${target
-    ? '<p><a class="btn" rel="nofollow sponsored noopener" target="_blank" href="' + esc(target) + '"' +
-      ' data-ga-store="' + esc(storeName) + '" data-ga-coupon="' + esc(c.id || '') + '"' +
-      ' data-ga-code="' + esc(c.code || '') + '">Get this deal at ' + esc(storeName) + '</a></p>'
-    : '<p class="meta">This deal is temporarily unavailable.</p>'}
-  ${geoNote}
-  ${c.terms && c.terms.length ? '<div class="terms">Terms: ' + esc(c.terms.join(' · ')) + '</div>' : ''}
-  <p class="meta" style="margin-top:18px">NipCoupon may earn a commission on qualifying purchases.</p>
+  <div class="hero">
+    ${logoTile(store, storeName)}
+    <div class="hero-main">
+      <h1>${esc(c.title || storeName + ' offer')}</h1>
+      <p class="sub">${esc(storeName)} &middot; verified ${esc(stamp)}</p>
+      <div class="pills">
+        <span class="pill ok">&#10003; Verified offer</span>
+        ${ratingPill(c.rating, c.uses)}
+        ${c.expires ? '<span class="pill">Expires <b>' + esc(c.expires) + '</b></span>' : '<span class="pill">No end date</span>'}
+        ${verifiedAgo(c.verifiedHoursAgo) ? '<span class="pill">Checked <b>' + esc(verifiedAgo(c.verifiedHoursAgo)) + '</b></span>' : ''}
+      </div>
+    </div>
+  </div>
+
+  <div class="deal" style="margin-top:20px">
+    <div class="deal-val">${dealValue(c)}</div>
+    <div class="deal-body">
+      ${dealTags(c)}
+      ${socialProof(c)}
+      ${geoNote}
+    </div>
+    ${revealCta(c, target, storeName)}
+  </div>
+
+  ${c.terms && c.terms.length
+    ? '<div class="terms"><b style="color:#cbd5e1">Terms &amp; conditions</b><ul>' +
+      c.terms.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul></div>'
+    : ''}
+  ${DISCLOSURE}
 </div>
+
+${siblingDeals.length ? `<h2 class="sec">More ${esc(storeName)} offers</h2>
+${siblingDeals.slice(0, 6).map(x => `<div class="deal">
+  <div class="deal-val">${dealValue(x)}</div>
+  <div class="deal-body">
+    <h3><a href="/coupon/${encodeURIComponent(x.id)}">${esc(x.title || storeName + ' offer')}</a></h3>
+    ${dealTags(x)}
+    ${socialProof(x)}
+  </div>
+  <div class="reveal"><a class="btn ghost" href="/coupon/${encodeURIComponent(x.id)}">View offer</a></div>
+</div>`).join('\n')}` : ''}
 ${(function () {
   /* Crawl paths out of the leaf. Without these a /coupon/* page is a dead end:
      Googlebot lands from the sitemap and the only links are outbound affiliate
@@ -465,16 +871,17 @@ ${(function () {
   if (store.id) {
     out.push('<a href="/store/' + encodeURIComponent(store.id) + '">All ' + esc(storeName) + ' codes</a>');
   }
-  const cat = categories.find(x => x.id === c.categoryId);
-  if (cat) {
-    out.push('<a href="/category/' + encodeURIComponent(cat.id) + '">' + esc(cat.name || cat.id) + ' deals</a>');
+  const cc = categories.find(x => x.id === c.categoryId);
+  if (cc) {
+    out.push('<a href="/category/' + encodeURIComponent(cc.id) + '">' + esc(cc.name || cc.id) + ' deals</a>');
   }
   const related = coupons
-    .filter(x => x.id !== c.id && (x.storeId === c.storeId || x.categoryId === c.categoryId))
+    .filter(x => x.id !== c.id && x.storeId !== c.storeId && x.categoryId === c.categoryId)
     .slice(0, 6)
     .map(x => '<a href="/coupon/' + encodeURIComponent(x.id) + '">' + esc(x.title || 'Offer') + '</a>');
-  return '<div class="card"><p class="meta">' + out.join(' · ') + '</p>' +
-    (related.length ? '<p class="meta">Related: ' + related.join(' · ') + '</p>' : '') +
+  return '<h2 class="sec">Keep browsing</h2><div class="card">' +
+    '<div class="links">' + out.join('') + '</div>' +
+    (related.length ? '<div class="links" style="margin-top:10px">' + related.join('') + '</div>' : '') +
     '</div>';
 })()}`;
 
@@ -575,13 +982,13 @@ ${(function () {
       .map(cid => categories.find(x => x.id === cid))
       .filter(Boolean)
       .map(cat => '<a href="/category/' + encodeURIComponent(cat.id) + '">' + esc(cat.name || cat.id) + '</a>')
-      .join(' · ');
+      .join('');
 
     const siblings = stores
       .filter(x => x.id !== s.id && coupons.some(c => c.storeId === x.id))
       .slice(0, 8)
       .map(x => '<a href="/store/' + encodeURIComponent(x.id) + '">' + esc(x.name) + '</a>')
-      .join(' · ');
+      .join('');
 
     /* Monetised outbound link for the store page itself. Without this the
        server-rendered /store/* page had no affiliate link at all: every
@@ -593,24 +1000,77 @@ ${(function () {
     const storeLoc = G.localizeUrl(storeBase, region.code);
     const storeTarget = storeLoc.url || storeBase;
 
+    /* Aggregates for the stat rail. Every figure is computed from fields that
+       exist in the dataset — see the note below on what is deliberately absent. */
+    const codeCount = list.filter(c => c.type === 'code').length;
+    const rated = list.filter(c => Number(c.rating) > 0);
+    const avgRating = rated.length
+      ? rated.reduce((a, c) => a + Number(c.rating), 0) / rated.length
+      : 0;
+    const totalUses = list.reduce((a, c) => a + (Number(c.uses) || 0), 0);
+    const freshest = list.reduce((best, c) => {
+      const h = Number(c.verifiedHoursAgo);
+      return h >= 0 && (best === null || h < best) ? h : best;
+    }, null);
+    /* .value is a bare number whose unit lives in .badge — "30% OFF" vs
+       "$8 OFF". Appending % blindly turned an $8 coupon into "8%", so read the
+       best offer's own badge instead and only report a percentage when the
+       winning badge is actually a percentage. */
+    const pctOffers = list.filter(c => /%/.test(String(c.badge || '')));
+    const topPct = pctOffers.reduce((m, c) => Math.max(m, Number(c.value) || 0), 0);
+    const topBadge = (list.slice().sort((a, b) => (Number(b.value) || 0) - (Number(a.value) || 0))[0] || {}).badge || '';
+
     const body = `
+${crumbHtml([{ name: 'Home', href: '/' }, { name: s.name }])}
 <div class="card">
-  <span class="badge">${list.length} deal${list.length === 1 ? '' : 's'}</span>
-  <h1>${esc(s.name)} discount codes &amp; promo codes — ${esc(stamp)}</h1>
-  <p>${esc(desc)}</p>
+  <div class="hero">
+    ${logoTile(s, s.name)}
+    <div class="hero-main">
+      <h1>Top ${esc(s.name)} promo codes &amp; verified deals</h1>
+      <p class="sub">${esc(desc)}</p>
+      <div class="pills">
+        <span class="pill ok">&#10003; ${list.length} verified offer${list.length === 1 ? '' : 's'}</span>
+        ${avgRating > 0 ? ratingPill(avgRating, totalUses) : ''}
+        ${freshest !== null ? '<span class="pill">Checked <b>' + esc(verifiedAgo(freshest)) + '</b></span>' : ''}
+        <span class="pill">Updated <b>${esc(stamp)}</b></span>
+      </div>
+    </div>
+  </div>
   ${storeTarget
-    ? '<p><a class="btn" rel="nofollow sponsored noopener" target="_blank" href="' + esc(storeTarget) + '"' +
-      ' data-ga-store="' + esc(s.name) + '">Visit ' + esc(s.name) + '</a></p>'
+    ? '<div style="margin-top:18px;max-width:260px"><a class="btn" rel="nofollow sponsored noopener" target="_blank" href="' +
+      esc(storeTarget) + '" data-ga-store="' + esc(s.name) + '">Visit ' + esc(s.name) + '</a></div>'
     : ''}
 </div>
-${list.map(c => `<div class="card">
-  <span class="badge">${esc(c.badge || (c.type === 'code' ? 'CODE' : 'DEAL'))}</span>
-  <h2 style="margin:8px 0"><a href="/coupon/${encodeURIComponent(c.id)}">${esc(c.title)}</a></h2>
-  ${c.code ? '<div class="code">' + esc(c.code) + '</div>' : ''}
-  <p class="meta">${c.expires ? 'expires ' + esc(c.expires) : 'no end date'}</p>
-</div>`).join('\n')}
-${catLinks ? '<div class="card"><p class="meta">Browse categories: ' + catLinks + '</p></div>' : ''}
-${siblings ? '<div class="card"><p class="meta">More stores: ' + siblings + '</p></div>' : ''}`;
+
+${list.length ? `<div class="stats">
+  <div class="stat glass"><span class="k">Working codes</span><span class="v g">${list.length}</span><span class="n">${codeCount} code${codeCount === 1 ? '' : 's'} &middot; ${list.length - codeCount} deal${list.length - codeCount === 1 ? '' : 's'}</span></div>
+  ${avgRating > 0 ? '<div class="stat glass"><span class="k">Shopper rating</span><span class="v">' + avgRating.toFixed(1) + '<span style="font-size:.9rem;color:#64748b">/5</span></span><span class="n">from ' + fmtNum(totalUses) + ' uses</span></div>' : ''}
+  ${topPct > 0
+    ? '<div class="stat glass"><span class="k">Best discount</span><span class="v g">' + esc(String(topPct)) + '%</span><span class="n">highest live saving</span></div>'
+    : (topBadge ? '<div class="stat glass"><span class="k">Best discount</span><span class="v g">' + esc(String(topBadge).replace(/\s*off\s*$/i, '')) + '</span><span class="n">highest live saving</span></div>' : '')}
+  ${freshest !== null ? '<div class="stat glass"><span class="k">Last verified</span><span class="v">' + esc(verifiedAgo(freshest)) + '</span><span class="n">re-tested continuously</span></div>' : ''}
+</div>` : ''}
+
+${list.length ? `<h2 class="sec">${list.length} live ${esc(s.name)} offer${list.length === 1 ? '' : 's'}</h2>` : ''}
+${list.map(c => {
+  const cBase = S.resolveUrl(c.landingUrl, '') || S.resolveUrl(s.url, s.originalUrl || '');
+  const cTarget = G.localizeUrl(cBase, region.code).url || cBase;
+  return `<div class="deal">
+  <div class="deal-val">${dealValue(c)}</div>
+  <div class="deal-body">
+    <h3><a href="/coupon/${encodeURIComponent(c.id)}">${esc(c.title || s.name + ' offer')}</a></h3>
+    ${dealTags(c)}
+    ${socialProof(c)}
+    <div class="deal-foot"><span class="meta">${c.expires ? 'Expires ' + esc(c.expires) : 'No end date'}</span></div>
+  </div>
+  ${revealCta(c, cTarget, s.name)}
+</div>`;
+}).join('\n')}
+
+<div class="card">${DISCLOSURE.replace(' class="disclosure"', ' class="disclosure" style="margin:0;border:0;background:transparent;padding:0"')}</div>
+
+${catLinks ? '<h2 class="sec">Browse categories</h2><div class="card"><div class="links">' + catLinks + '</div></div>' : ''}
+${siblings ? '<h2 class="sec">More stores</h2><div class="card"><div class="links">' + siblings + '</div></div>' : ''}`;
 
     // A store page with no deals is thin content — keep it out of the index.
     return res.end(page({
