@@ -334,7 +334,7 @@ function main() {
     if (!IN_PLACE) {
       ['robots.txt', 'sitemap.xml', 'sitemap-pages.xml', 'sitemap-stores.xml',
        'sitemap-coupons.xml', 'sitemap-all.xml',
-       'vercel.json', 'og.png', 'og.webp', 'favicon.ico']
+       'vercel.json', 'og.png', 'og.webp', 'favicon.ico', 'site.webmanifest']
         .forEach(f => {
           const src = path.join(ROOT, f);
           if (fs.existsSync(src)) fs.copyFileSync(src, path.join(OUT_DIR, f));

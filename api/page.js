@@ -233,6 +233,18 @@ ${(() => {
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="robots" content="${esc(robots || 'index,follow')}">
+<!-- Site icons. These were absent from every server-rendered route, which is
+     ~110 of the site's indexed URLs — only the SPA shell at / declared one.
+     Google picks the favicon from the page it crawls, so store, category and
+     coupon results had no icon to show at all. Same set as index.html. -->
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48.png">
+<link rel="icon" type="image/svg+xml" href="/assets/icons/icon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#090d16">
 <link rel="preconnect" href="https://cdn.viglink.com" crossorigin>
 <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>

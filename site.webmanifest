@@ -1,0 +1,15 @@
+{
+  "name": "NipCoupon — Global Deals. Sniper Precision.",
+  "short_name": "NipCoupon",
+  "description": "Verified promo codes and coupons for global and Middle East stores, updated daily.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#090d16",
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
