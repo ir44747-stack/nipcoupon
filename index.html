@@ -447,6 +447,111 @@ button{cursor:pointer;background:none;border:0}
 .section{padding:clamp(44px,6vw,74px) 0}
 .section-alt{background:linear-gradient(180deg,transparent,rgba(15,23,42,.55),transparent)}
 
+/* ============================================================
+   FEATURED DEALS — the middle marketplace feed between the hero
+   and the brand grid. Richer than a .card: a visual banner with the
+   brand mark, the discount set large, and the conversion triggers
+   (savings, urgency, verified rate) surfaced instead of buried.
+   Reuses the same tokens as everything else so it reads as one product.
+   ============================================================ */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.feat{
+  position:relative;display:flex;flex-direction:column;overflow:hidden;
+  border-radius:var(--radius);border:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(30,41,59,.72),rgba(23,32,51,.62));
+  transition:transform .3s cubic-bezier(.2,.7,.3,1),border-color .3s,box-shadow .3s;
+}
+.feat:hover{transform:translateY(-4px);border-color:rgba(16,185,129,.38);box-shadow:0 26px 52px -26px rgba(2,6,23,.95)}
+.feat:focus-within{border-color:rgba(59,130,246,.5)}
+
+/* Banner: no photography in the dataset, so the "imagery" is generated —
+   the brand colour as a soft wash behind a large mark. Costs no requests,
+   never 404s, and stays on-brand for all 70 stores. */
+.feat-banner{
+  position:relative;height:112px;flex:none;display:flex;align-items:center;gap:14px;
+  padding:0 18px;overflow:hidden;
+  background:
+    radial-gradient(120% 130% at 12% 0%,var(--fb,#1e293b) 0%,transparent 68%),
+    linear-gradient(135deg,rgba(15,23,42,.35),rgba(9,13,22,.85));
+  border-bottom:1px solid var(--border);
+}
+.feat-banner::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.05),transparent 45%,rgba(9,13,22,.5));
+}
+.feat-banner .store-logo{width:56px;height:56px;border-radius:16px;z-index:2}
+.feat-brand{z-index:2;min-width:0}
+.feat-brand b{display:block;font-size:1.02rem;font-weight:800;color:#fff;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feat-brand span{display:block;font-size:12px;color:rgba(255,255,255,.62);margin-top:2px}
+
+/* Discount slab — the single loudest element on the card. */
+.feat-disc{
+  /* Logical inset, not `right`: in RTL the banner content mirrors to the
+     right-hand side, so a physically-right slab landed on top of the store
+     logo and brand name. inset-inline-end follows the writing direction. */
+  position:absolute;inset-inline-end:14px;bottom:-1px;z-index:3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-width:84px;padding:8px 12px 10px;border-radius:14px 14px 0 0;
+  background:linear-gradient(135deg,#10b981,#059669);
+  box-shadow:0 -6px 22px -8px var(--green-glow);
+}
+.feat-disc b{font-size:1.35rem;font-weight:900;color:#03231b;line-height:1;letter-spacing:-.02em}
+.feat-disc span{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(3,35,27,.72);margin-top:3px}
+
+/* Ribbon for the hottest offers. It sits over the banner, so the banner's
+   content is pushed down on hot cards to clear it — otherwise the ribbon
+   overlapped the logo and brand name (badly at 390px, where the banner is
+   shorter). Keeping the ribbon out of flow avoids reflowing the whole row. */
+.feat-banner.has-ribbon{padding-top:26px;align-items:flex-end;padding-bottom:14px}
+.feat-ribbon{
+  position:absolute;inset-inline-start:0;top:12px;z-index:4;
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 11px;border-start-start-radius:0;border-end-start-radius:0;
+  border-start-end-radius:999px;border-end-end-radius:999px;
+  font-size:10.5px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;
+  background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff;
+  box-shadow:0 6px 18px -8px rgba(244,63,94,.8);
+}
+.feat-ribbon svg{width:11px;height:11px}
+
+.feat-body{display:flex;flex-direction:column;gap:11px;padding:16px 18px 18px;flex:1 1 auto}
+.feat-title{font-size:1rem;font-weight:700;line-height:1.4;margin:0}
+.feat-title a{color:var(--text);text-decoration:none}
+.feat-title a:hover{color:#6ee7b7}
+
+/* Value-prop strip: savings, urgency, social proof — the three triggers. */
+.feat-props{display:flex;flex-wrap:wrap;gap:7px}
+.feat-prop{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:700;
+  background:rgba(15,23,42,.66);border:1px solid var(--border);color:var(--muted);
+}
+.feat-prop svg{width:12px;height:12px;flex:none}
+.feat-prop b{color:var(--text);font-weight:800}
+.feat-prop.ok{background:var(--green-soft);border-color:rgba(16,185,129,.3);color:#6ee7b7}
+.feat-prop.ok b{color:#a7f3d0}
+.feat-prop.urgent{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.3);color:#fda4af}
+.feat-prop.urgent b{color:#fecdd3}
+.feat-prop.star{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.28);color:#fcd34d}
+.feat-prop.star b{color:#fde68a}
+
+.feat-foot{display:flex;align-items:center;gap:9px;margin-top:auto;padding-top:3px}
+.feat-foot .btn{flex:1 1 auto;justify-content:center}
+.feat-foot .icon-btn{flex:none}
+
+@media (max-width:520px){
+  .feat-grid{grid-template-columns:1fr;gap:14px}
+  .feat-banner{height:96px;padding:0 14px}
+  /* The short mobile banner has no room for the ribbon above the logo, so
+     give hot cards their own height rather than letting the two collide. */
+  .feat-banner.has-ribbon{height:118px;padding-top:28px;padding-bottom:12px}
+  .feat-banner .store-logo{width:48px;height:48px;border-radius:14px}
+  .feat-disc{min-width:74px;padding:7px 10px 9px}
+  .feat-disc b{font-size:1.15rem}
+  .feat-body{padding:14px 15px 16px}
+}
+
 /* store grid */
 .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:14px}
 .store-card{
@@ -1046,6 +1151,23 @@ select.sel option{background:#0f172a;color:#e2e8f0}
         <div class="stat"><b data-count="89" data-suffix="%">0</b><span data-i18n="hero.stat_success">Success rate</span></div>
         <div class="stat"><b data-count="64" data-suffix="k">0</b><span data-i18n="hero.stat_snipers">Snipers saving</span></div>
       </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURED DEALS ===================== -->
+  <section class="section" id="featured">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <h2 class="section-title" data-i18n="featured.title">Today's Top Verified Deals</h2>
+          <p class="section-sub" data-i18n="featured.sub">Hand-picked by our snipers — highest value, freshly re-tested, ending soonest. Tap any card to grab the code.</p>
+        </div>
+        <a class="btn btn-outline btn-sm" href="#deals" data-scroll-deals>
+          <span data-i18n="featured.all">Browse all deals</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+      <div class="feat-grid" id="featGrid"></div>
     </div>
   </section>
 
@@ -1695,6 +1817,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
     renderLangUI();
     renderRegionUI();
     renderStores();
+    renderFeatured();
     renderCats();
     renderCatFilters();
     renderHeroChips();
@@ -1915,6 +2038,119 @@ select.sel option{background:#0f172a;color:#e2e8f0}
     COUPONS.forEach(c => { if (inRegion(c)) m[c.s] = (m[c.s] || 0) + 1; });
     return m;
   }
+  /* Featured feed. Ranks the in-region catalogue by a blend of the signals we
+     actually hold — discount size, freshness of verification, popularity and
+     rating — then shows the top 6. Deliberately NOT filtered by the deal-grid
+     state: this is a shop window above the fold, so it must not empty out when
+     someone types in the search box. */
+  function featuredPicks(n) {
+    const ranked = COUPONS
+      .filter(inRegion)
+      .filter(c => !c.e || daysLeft(c.e) > 0)          // never feature a dead code
+      .map(function (c) {
+        const d = c.e ? daysLeft(c.e) : 999;
+        let score = 0;
+        score += Math.min(Number(c.o) || 0, 100) * 1.2;  // headline discount
+        /* Modest nudge only. At +45 the 11 `hot` rows swamped everything and
+           the feed showed a Hot ribbon on 5 of 6 cards, which trains people to
+           ignore it — a badge on almost everything signals nothing. */
+        score += c.hot ? 12 : 0;
+        score += Math.max(0, 24 - (Number(c.v) || 0)) * 1.5; // recently re-verified
+        score += Math.min((Number(c.u) || 0) / 500, 30);  // popularity, capped
+        score += (Number(c.r) || 0) * 6;                  // shopper rating
+        if (d <= 7) score += 18;                          // genuine urgency
+        return { c: c, score: score };
+      })
+      .sort((a, b) => b.score - a.score)
+      .map(x => x.c);
+
+    /* One offer per brand and at most two per category, so the window reads as
+       a marketplace rather than four near-identical software subscriptions.
+       Backfill from the leftovers if the spread leaves us short. */
+    const want = n || 6;
+    const picked = [], rest = [];
+    ranked.forEach(function (c) {
+      const brandSeen = picked.some(y => y.s === c.s);
+      const catCount = picked.filter(y => y.cat === c.cat).length;
+      if (!brandSeen && catCount < 2 && picked.length < want) picked.push(c);
+      else rest.push(c);
+    });
+    while (picked.length < want && rest.length) picked.push(rest.shift());
+    return picked;
+  }
+
+  function featCard(c) {
+    const st = STORES[c.s] || {};
+    const isFav = favs.indexOf(c.id) > -1;
+    const d = c.e ? daysLeft(c.e) : 999;
+    const v = verifiedLabel(c.v);
+
+    /* Split the curated badge so the number can be set large and its unit
+       small — "30% OFF" -> "30%" + "OFF". Falls back to the offer type. */
+    const tk = String(c.b || '').trim().split(/\s+/).filter(Boolean);
+    const big = tk.length ? tk[0] : (c.t === 'code' ? 'CODE' : 'DEAL');
+    const small = tk.length > 1 ? tk.slice(1).join(' ') : (c.t === 'code' ? 'code' : 'deal');
+
+    const props = [];
+    props.push('<span class="feat-prop ok">' +
+      svg('<path d="M20 6L9 17l-5-5"/>') + esc(v.t) + '</span>');
+    if (d <= 7) {
+      props.push('<span class="feat-prop urgent">' +
+        svg('<path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/>') +
+        '<b>' + esc(expiryText(c.e)) + '</b></span>');
+    }
+    if (c.r > 0) {
+      props.push('<span class="feat-prop star">' +
+        svg('<path d="M12 2l3 6.5 7 1-5.2 5 1.3 7L12 18l-6.1 3.5L7.2 14.5 2 9.5l7-1L12 2z"/>') +
+        '<b>' + c.r.toFixed(1) + '</b></span>');
+    }
+    if (c.u > 0) {
+      props.push('<span class="feat-prop">' +
+        svg('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>') +
+        '<b>' + fmtUses(c.u) + '</b>&nbsp;' + esc(t('featured.used', 'used')) + '</span>');
+    }
+
+    return '' +
+    '<article class="feat" data-id="' + c.id + '">' +
+      '<div class="feat-banner' + (c.hot ? ' has-ribbon' : '') + '" style="--fb:' + esc(st.color || '#1e293b') + '33">' +
+        (c.hot ? '<span class="feat-ribbon">' +
+          svg('<path d="M12 2s5 4 5 9a5 5 0 0 1-10 0c0-2 1-3 1-3s4 2 4-6z"/>') +
+          esc(t('featured.hot', 'Hot deal')) + '</span>' : '') +
+        logoHTML(c.s) +
+        '<div class="feat-brand"><b>' + esc(c.s) + '</b><span>' + esc(CAT_NAME[c.cat] || '') + '</span></div>' +
+        '<div class="feat-disc"><b>' + esc(big) + '</b><span>' + esc(small) + '</span></div>' +
+      '</div>' +
+      '<div class="feat-body">' +
+        '<h3 class="feat-title"><a href="#" data-details="' + c.id + '">' + esc(c.ti) + '</a></h3>' +
+        '<div class="feat-props">' + props.join('') + '</div>' +
+        '<div class="feat-foot">' +
+          '<button class="btn btn-primary" data-get="' + c.id + '" data-url="' + esc(buildStoreUrl(c)) + '" ' +
+              'aria-label="' + (c.t === 'code'
+                ? esc(t('card.get_code_aria', 'Get code {code} — copies it and opens {store} in a new tab', { code:c.c, store:c.s }))
+                : esc(t('card.get_deal_aria', 'Get deal — opens {store} in a new tab', { store:c.s }))) + '">' +
+            svg('<path d="M9 11V7a3 3 0 0 1 6 0v4"/><rect x="4" y="11" width="16" height="10" rx="2"/>') +
+            '<span class="btn-label">' + (c.t === 'code' ? t('card.get_code', 'Get Code') : t('card.get_deal', 'Get Deal')) + '</span>' +
+          '</button>' +
+          '<button class="icon-btn' + (isFav ? ' is-on' : '') + '" data-fav="' + c.id + '" aria-pressed="' + isFav + '" ' +
+            'title="' + esc(t('card.save', 'Save this coupon')) + '" aria-label="' + esc(t('card.save_aria', 'Save coupon')) + '">' +
+            svg('<path d="M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 0 0 0-7.8z"/>') +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderFeatured() {
+    const box = $('#featGrid');
+    if (!box) return;
+    const picks = featuredPicks(6);
+    const sec = $('#featured');
+    /* Hide the whole section rather than leave an empty heading if a region
+       has no live offers. */
+    if (sec) sec.hidden = !picks.length;
+    box.innerHTML = picks.map(featCard).join('');
+  }
+
   function renderStores() {
     const counts = storeCounts();
     // only show brands that actually ship to / operate in the selected region
@@ -2047,6 +2283,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
 
     renderRegionUI();
     renderStores();
+    renderFeatured();
     renderCats();
     renderCatFilters();
     renderHeroChips();
@@ -2511,14 +2748,15 @@ select.sel option{background:#0f172a;color:#e2e8f0}
     else { favs.push(id); toast(t('toast.saved_title', 'Saved'), t('toast.saved_text', 'Coupon added to your saved list.'), ''); }
     saveFavs();
     updateFavUI();
-    if (state.favsOnly) render(true); else {
-      const card = $('.card[data-id="' + id + '"]');
-      if (card) {
-        const btn = $('[data-fav="' + id + '"]', card);
-        const on = favs.indexOf(id) > -1;
-        if (btn) { btn.classList.toggle('is-on', on); btn.setAttribute('aria-pressed', String(on)); }
-      }
-    }
+    if (state.favsOnly) render(true);
+    /* Sync every button for this coupon, not just the one in the deal grid:
+       the same offer can appear in the featured feed and the modal at the
+       same time, and updating only .card left those stale. */
+    const on = favs.indexOf(id) > -1;
+    $$('[data-fav="' + id + '"]').forEach(function (btn) {
+      btn.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
   }
   function updateFavUI() {
     const btn = $('#favBtn');
@@ -2975,6 +3213,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
     renderLangUI();
     renderRegionUI();
     renderStores();
+    renderFeatured();
     renderCats();
     renderCatFilters();
     renderHeroChips();
