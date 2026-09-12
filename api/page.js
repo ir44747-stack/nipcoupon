@@ -258,6 +258,58 @@ const DISCLOSURE = '<div class="disclosure">' +
   'codes we list or how they are ranked. Codes are re-tested regularly, but merchants can change or ' +
   'withdraw an offer at any time.</span></div>';
 
+/* ══════════════════════════════════════════════════════════ blog ═══════ */
+
+/* Guides live in data/posts.json, loaded once per cold start. Kept out of
+   _data.js because the coupon catalogue is fetched and merged at request time,
+   while editorial content is static and should not pay that cost. */
+let POSTS_CACHE = null;
+function loadPosts() {
+  if (POSTS_CACHE) return POSTS_CACHE;
+  try {
+    const raw = require('fs').readFileSync(
+      require('path').join(__dirname, '..', 'data', 'posts.json'), 'utf8');
+    const doc = JSON.parse(raw);
+    POSTS_CACHE = (doc.posts || []).slice().sort(
+      (a, b) => String(b.published || '').localeCompare(String(a.published || '')));
+  } catch (e) {
+    POSTS_CACHE = [];   // a missing guides file must not take the site down
+  }
+  return POSTS_CACHE;
+}
+
+function readableDate(iso) {
+  const t = Date.parse(String(iso || ''));
+  if (Number.isNaN(t)) return '';
+  const d = new Date(t);
+  return MONTHS[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear();
+}
+
+/* Render the block list. Everything is escaped — post bodies are data, so they
+   are never treated as markup even though they live in the repo. */
+function renderBlocks(blocks) {
+  return blocks.map(function (b) {
+    if (b.t === 'p')  return '<p>' + esc(b.v) + '</p>';
+    if (b.t === 'h2') return '<h2 class="sec">' + esc(b.v) + '</h2>';
+    if (b.t === 'h3') return '<h3 style="margin:18px 0 8px;font-size:1.02rem">' + esc(b.v) + '</h3>';
+    if (b.t === 'ul') return '<ul class="guide-list">' +
+      (b.v || []).map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>';
+    if (b.t === 'faq') return '';   // rendered together in the FAQ section below
+    return '';
+  }).join('\n') + faqSection(blocks);
+}
+
+/* The visible FAQ. Must exist on the page for the FAQPage JSON-LD to be legal:
+   Google requires the question and answer to be visible to the user. */
+function faqSection(blocks) {
+  const faqs = blocks.filter(b => b.t === 'faq' && b.q && b.a);
+  if (!faqs.length) return '';
+  return '\n<h2 class="sec">Frequently asked questions</h2>\n' +
+    faqs.map(f =>
+      '<details class="faq"><summary>' + esc(f.q) + '</summary><p>' + esc(f.a) + '</p></details>'
+    ).join('\n');
+}
+
 /* BreadcrumbList — renders the crumb trail in the SERP instead of a raw URL. */
 function breadcrumbs(trail) {
   return {
@@ -565,6 +617,24 @@ h2.sec{font-size:1.15rem;font-weight:800;margin:26px 0 12px;letter-spacing:-.01e
   border:1px solid var(--border);background:rgba(15,23,42,.6);color:var(--muted)
 }
 .links a:hover{color:#6ee7b7;border-color:rgba(16,185,129,.34);text-decoration:none}
+
+/* ── guides ──────────────────────────────────────────────────────────── */
+.card p{color:#cbd5e1;line-height:1.72}
+.guide-list{margin:10px 0 0;padding-inline-start:20px;color:#cbd5e1;line-height:1.7}
+.guide-list li{margin:7px 0}
+.faq{
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:rgba(15,23,42,.5);margin:0 0 9px;overflow:hidden
+}
+.faq summary{
+  cursor:pointer;padding:14px 16px;font-weight:700;color:var(--text);
+  list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';color:var(--green);font-weight:800;font-size:1.15rem;flex:none;line-height:1}
+.faq[open] summary::after{content:'\u2212'}
+.faq summary:hover{color:#6ee7b7}
+.faq p{margin:0;padding:0 16px 15px;font-size:14.5px;color:var(--muted)}
 
 @media (max-width:640px){
   .wrap{padding:20px 15px 56px}
@@ -1096,6 +1166,35 @@ ${siblings ? '<h2 class="sec">More stores</h2><div class="card"><div class="link
             }))
           }
         },
+        /* AggregateOffer summarises the whole store page in one node, so a
+           SERP entry can show "N offers" instead of only what the first coupon
+           says. offerCount is the honest count of live offers; the price range
+           is 0 because a coupon costs nothing to claim — the discount applies
+           to the merchant's basket, not to us. Percentage values are not
+           prices, so they are deliberately not used here. */
+        ...(list.length ? [{
+          '@type': 'AggregateOffer',
+          '@id': canonical + '#offers',
+          url: canonical,
+          offerCount: list.length,
+          lowPrice: 0,
+          highPrice: 0,
+          ...(profile.currency ? { priceCurrency: profile.currency } : {}),
+          availability: 'https://schema.org/InStock',
+          offeredBy: { '@type': 'Organization', name: s.name },
+          offers: list.slice(0, 25).map(c => ({
+            '@type': 'Offer',
+            '@id': SITE + '/coupon/' + encodeURIComponent(c.id) + '#offer',
+            url: SITE + '/coupon/' + encodeURIComponent(c.id),
+            name: c.title || (s.name + ' offer'),
+            price: 0,
+            ...(profile.currency ? { priceCurrency: profile.currency } : {}),
+            ...(c.code ? { category: 'Coupon', identifier: c.code } : {}),
+            ...(c.expires ? { validThrough: c.expires } : {}),
+            availability: 'https://schema.org/InStock',
+            seller: { '@type': 'Organization', name: s.name }
+          }))
+        }] : []),
         breadcrumbs([
           { name: 'Home', url: SITE + '/' },
           { name: s.name, url: canonical }
@@ -1178,6 +1277,135 @@ ${otherCats ? '<div class="card"><p class="meta">Other categories: ' + otherCats
         breadcrumbs([
           { name: 'Home', url: SITE + '/' },
           { name: catName, url: canonical }
+        ])
+      ])
+    }));
+  }
+
+  /* ── /blog and /blog/:slug ─────────────────────────────────────────────── */
+  if (type === 'blog') {
+    const posts = loadPosts();
+
+    /* Index */
+    if (!id) {
+      const stamp = monthYear();
+      const title = clampTitle('Saving Guides & Coupon Tips — NipCoupon');
+      const desc = clampDesc('Practical guides to using promo codes, saving at the checkout and shopping safely online. Updated ' + stamp + ' by NipCoupon.');
+      const canonical = SITE + '/blog';
+
+      const body = `
+${crumbHtml([{ name: 'Home', href: '/' }, { name: 'Guides' }])}
+<div class="card">
+  <h1>Saving guides</h1>
+  <p class="sub">How to get more out of a promo code, what to do when one fails, and how discount sites actually work.</p>
+</div>
+${posts.map(p => `<article class="deal">
+  <div class="deal-body">
+    <h2 class="feat-title" style="font-size:1.08rem"><a href="/blog/${encodeURIComponent(p.slug)}">${esc(p.title)}</a></h2>
+    <p class="meta">${esc(p.description)}</p>
+    <div class="deal-foot">
+      <span class="meta">${esc(readableDate(p.updated || p.published))} &middot; ${esc(String(p.readMinutes || 4))} min read</span>
+    </div>
+  </div>
+</article>`).join('\n')}
+${DISCLOSURE}`;
+
+      return res.end(page({
+        title, description: desc, canonical, path: '/blog', lang, body,
+        robots: 'index,follow',
+        jsonLd: graph([
+          {
+            '@type': 'CollectionPage',
+            '@id': canonical + '#page',
+            url: canonical,
+            name: title,
+            description: desc,
+            isPartOf: { '@id': SITE + '/#website' },
+            mainEntity: {
+              '@type': 'ItemList',
+              numberOfItems: posts.length,
+              itemListElement: posts.map((p, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                url: SITE + '/blog/' + encodeURIComponent(p.slug),
+                name: p.title
+              }))
+            }
+          },
+          breadcrumbs([
+            { name: 'Home', url: SITE + '/' },
+            { name: 'Guides', url: canonical }
+          ])
+        ])
+      }));
+    }
+
+    /* Single post */
+    const post = posts.find(p => p.slug === id);
+    if (!post) return notFound(res, 'guide');
+
+    const canonical = SITE + '/blog/' + encodeURIComponent(post.slug);
+    const title = clampTitle(post.title + ' — NipCoupon');
+    const desc = clampDesc(post.description);
+    const faqs = (post.body || []).filter(b => b.t === 'faq' && b.q && b.a);
+
+    const body = `
+${crumbHtml([
+  { name: 'Home', href: '/' },
+  { name: 'Guides', href: '/blog' },
+  { name: post.title }
+])}
+<article class="card">
+  <h1>${esc(post.title)}</h1>
+  <p class="sub">${esc(readableDate(post.updated || post.published))} &middot; ${esc(String(post.readMinutes || 4))} min read &middot; ${esc(post.author || 'NipCoupon')}</p>
+  ${renderBlocks(post.body || [])}
+  ${DISCLOSURE}
+</article>
+<h2 class="sec">Keep browsing</h2>
+<div class="card"><div class="links">
+  <a href="/blog">All guides</a>
+  ${posts.filter(p => p.slug !== post.slug).map(p =>
+    '<a href="/blog/' + encodeURIComponent(p.slug) + '">' + esc(p.title) + '</a>').join('')}
+</div></div>`;
+
+    return res.end(page({
+      title, description: desc, canonical, path: '/blog/' + post.slug, lang, body,
+      robots: 'index,follow',
+      jsonLd: graph([
+        {
+          '@type': 'Article',
+          '@id': canonical + '#article',
+          headline: clampTitle(post.title, 110),
+          description: post.description,
+          url: canonical,
+          datePublished: post.published,
+          dateModified: post.updated || post.published,
+          inLanguage: lang || DEFAULT_LOCALE,
+          author: { '@type': 'Organization', name: post.author || 'NipCoupon', url: SITE + '/' },
+          publisher: { '@id': SITE + '/#organization' },
+          isPartOf: { '@id': SITE + '/#website' },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+          image: SITE + '/og.png',
+          ...(post.tags && post.tags.length ? { keywords: post.tags.join(', ') } : {})
+        },
+        /* FAQPage only when the post actually renders those questions on the
+           page. Google requires the answer to be visible to the user; emitting
+           FAQ markup for content that is not there is a structured-data
+           violation, not a shortcut to a bigger SERP listing. */
+        ...(faqs.length ? [{
+          '@type': 'FAQPage',
+          '@id': canonical + '#faq',
+          isPartOf: { '@id': canonical + '#article' },
+          mainEntity: faqs.map(f => ({
+            '@type': 'Question',
+            name: f.q,
+            acceptedAnswer: { '@type': 'Answer', text: f.a }
+          }))
+        }] : []),
+        breadcrumbs([
+          { name: 'Home', url: SITE + '/' },
+          { name: 'Guides', url: SITE + '/blog' },
+          { name: post.title, url: canonical }
         ])
       ])
     }));

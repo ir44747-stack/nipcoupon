@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "note": "Saving guides rendered at /blog and /blog/:slug by api/page.js. Body is an ordered list of blocks: p (paragraph), h2/h3 (heading), ul (bullet list), faq (question/answer pair rendered into the page AND into FAQPage JSON-LD). Keep faq answers self-contained — Google will surface them standalone.",
+  "updatedAt": "2026-09-12",
+  "posts": [
+    {
+      "slug": "how-to-use-a-coupon-code",
+      "title": "How to use a coupon code (and what to do when it fails)",
+      "description": "A step-by-step guide to applying promo codes at checkout, plus the seven most common reasons a valid code gets rejected — and how to fix each one.",
+      "published": "2026-08-14",
+      "updated": "2026-09-12",
+      "author": "NipCoupon Editorial",
+      "readMinutes": 5,
+      "tags": ["guide", "coupons", "checkout"],
+      "body": [
+        { "t": "p", "v": "A promo code is only worth something if it survives checkout. Most codes that people report as \"not working\" are in fact valid — they are simply being applied to a basket that does not qualify. This guide covers the mechanics first, then the failure modes." },
+        { "t": "h2", "v": "Applying a code, step by step" },
+        { "t": "ul", "v": [
+          "Copy the code before you leave the deal page. Codes are case-sensitive and a trailing space will break the match on many checkout forms.",
+          "Add everything you intend to buy to the basket first. Minimum-spend thresholds are checked at the moment the code is applied, not at payment.",
+          "Find the promo field. It is often collapsed behind a link labelled \"Have a code?\", \"Gift card or discount code\", or shown only on the payment step.",
+          "Paste, apply, and confirm the basket total actually changed before paying. A code that is accepted but discounts nothing usually means it applied to an excluded item."
+        ] },
+        { "t": "h2", "v": "Why a valid code still gets rejected" },
+        { "t": "p", "v": "In our testing, rejections cluster into a small number of causes. Working through them in order resolves most cases in under a minute." },
+        { "t": "ul", "v": [
+          "Minimum spend not met — the single most common cause. Check the terms on the deal page.",
+          "Excluded products. Sale items, gift cards, subscriptions and newly released lines are excluded far more often than shoppers expect.",
+          "First-order-only codes used on an existing account.",
+          "Region mismatch. A code issued for the UK storefront will not apply on the US one, even for the same brand.",
+          "One code per order. If a discount is already applied, remove it before trying another.",
+          "Expired despite the listed date. Merchants can withdraw an offer early without notice.",
+          "Account-locked codes tied to a specific email address or loyalty tier."
+        ] },
+        { "t": "h2", "v": "Codes versus automatic deals" },
+        { "t": "p", "v": "Not every offer needs a code. A deal applies its discount automatically once you reach the merchant through the offer link, with nothing to paste. If an offer on NipCoupon shows \"Get Deal\" rather than \"Get Code\", there is no code to enter — the price is already reduced when the page loads." },
+        { "t": "faq", "q": "Why is my coupon code not working?", "a": "The most common reason is that the basket does not meet the minimum spend, or contains items the offer excludes — typically sale items, gift cards and subscriptions. Also check that the code has not expired, that you are on the right regional storefront, and that no other discount is already applied, since most merchants allow only one code per order." },
+        { "t": "faq", "q": "Where do I enter a promo code at checkout?", "a": "Most stores place the promo field on the basket or payment page, often collapsed behind a link labelled \"Have a code?\" or \"Gift card or discount code\". Paste the code, apply it, and confirm the order total changes before completing payment." },
+        { "t": "faq", "q": "Do I need a code for every offer?", "a": "No. Offers marked \"Get Deal\" apply automatically when you reach the store through the offer link — there is nothing to paste. Only offers marked \"Get Code\" require entering a code at checkout." },
+        { "t": "faq", "q": "Can I use more than one coupon code on the same order?", "a": "Usually not. The large majority of retailers accept a single promo code per order. Where stacking is allowed it is normally a code plus a separate offer such as free delivery, rather than two percentage discounts." }
+      ]
+    },
+    {
+      "slug": "how-to-save-money-on-amazon",
+      "title": "How to save money on Amazon in 2026",
+      "description": "Nine reliable ways to pay less on Amazon — from clippable coupons and warehouse deals to subscription discounts most shoppers never switch on.",
+      "published": "2026-08-27",
+      "updated": "2026-09-12",
+      "author": "NipCoupon Editorial",
+      "readMinutes": 6,
+      "tags": ["guide", "amazon", "savings"],
+      "body": [
+        { "t": "p", "v": "Amazon rarely runs sitewide promo codes. The savings are real, but they are spread across features most shoppers never enable. These are the ones worth the effort." },
+        { "t": "h2", "v": "Clippable coupons" },
+        { "t": "p", "v": "Many listings carry a coupon you must tick on the product page before adding to basket. The discount is not applied automatically and disappears if you buy through a saved basket link without ticking it first." },
+        { "t": "h2", "v": "Warehouse and renewed" },
+        { "t": "p", "v": "Amazon Warehouse sells customer returns graded by condition, frequently at 20 to 40 percent below new, with the same returns window. Renewed covers professionally refurbished items and carries a separate guarantee. For electronics that live in a case, the cosmetic grading rarely matters." },
+        { "t": "h2", "v": "Subscribe and Save" },
+        { "t": "p", "v": "Recurring deliveries of consumables discount further as the number of items in a single monthly delivery rises. Grouping deliveries into one date is what unlocks the larger tier — splitting them across the month forfeits it." },
+        { "t": "h2", "v": "Timing" },
+        { "t": "ul", "v": [
+          "Prime Day and Black Friday are genuine, but check price history before assuming a deal badge means a low price.",
+          "Lightning deals rotate quickly; add to basket to hold the price for a short window while you decide.",
+          "Prices on high-turnover items move daily. If you are not in a hurry, waiting a week often costs nothing."
+        ] },
+        { "t": "h2", "v": "Student and trial pricing" },
+        { "t": "p", "v": "Prime Student runs at a reduced rate with an extended free trial. If you only need fast delivery for a single purchase, a free trial timed to the order is legitimate and costs nothing, provided you cancel before it renews." },
+        { "t": "faq", "q": "Does Amazon accept promo codes?", "a": "Amazon accepts codes far less often than most retailers, and sitewide codes are rare. Most Amazon savings come from clippable coupons on the product page, Subscribe and Save, Warehouse deals and time-limited events rather than from a code entered at checkout." },
+        { "t": "faq", "q": "Are Amazon Warehouse items reliable?", "a": "Warehouse items are customer returns graded by condition and sold with the same returns window as new stock. Items graded \"Used - Like New\" or \"Very Good\" are typically cosmetically marked at most. The saving is usually between 20 and 40 percent against the new price." },
+        { "t": "faq", "q": "When is the best time to buy on Amazon?", "a": "Prime Day in summer and the Black Friday to Cyber Monday window offer the deepest discounts across categories. Outside those events, prices on high-turnover items change daily, so checking price history before buying is more reliable than waiting for a sale badge." }
+      ]
+    },
+    {
+      "slug": "are-coupon-sites-safe",
+      "title": "Are coupon sites safe? How affiliate discounts actually work",
+      "description": "What happens when you click a coupon link, how these sites make money, whether it costs you anything, and the warning signs of a site worth avoiding.",
+      "published": "2026-09-04",
+      "updated": "2026-09-12",
+      "author": "NipCoupon Editorial",
+      "readMinutes": 4,
+      "tags": ["guide", "trust", "affiliate"],
+      "body": [
+        { "t": "p", "v": "Coupon sites are free to use and there is a straightforward reason why. Understanding it makes it much easier to judge which ones to trust." },
+        { "t": "h2", "v": "How the money works" },
+        { "t": "p", "v": "When you click through to a retailer and buy something, the retailer pays the referring site a commission — typically a small percentage of the order. That commission comes out of the retailer's marketing budget. It is not added to your total, and the price you pay is identical to arriving at the store directly." },
+        { "t": "h2", "v": "What this means for you" },
+        { "t": "ul", "v": [
+          "You are never charged for a code. Any site asking for payment to reveal one should be closed immediately.",
+          "A legitimate site discloses its affiliate relationship. If you cannot find that disclosure, treat the rankings with suspicion.",
+          "Commission can create an incentive to rank high-paying merchants above genuinely better offers. Good sites separate the two; that is what a disclosure statement is for."
+        ] },
+        { "t": "h2", "v": "Warning signs" },
+        { "t": "p", "v": "Be wary of any site that asks you to install a browser extension before showing a code, requires an account to view discounts, shows codes with no expiry or verification date, or lists hundreds of codes per store with no indication of which were recently tested. Volume is easy to fake; recency is not." },
+        { "t": "h2", "v": "Your data" },
+        { "t": "p", "v": "Clicking an offer link passes a referral identifier to the retailer so the sale can be attributed. It does not pass your name, email or payment details — the site never sees them. Browser extensions are a different matter, since they can read pages as you browse; install those only from publishers you actively trust." },
+        { "t": "faq", "q": "Are coupon websites safe to use?", "a": "Reputable coupon sites are safe. They are free, they never need your payment details, and clicking an offer passes only an anonymous referral identifier to the retailer so the sale can be credited. Avoid any site that charges to reveal a code, forces an account to view discounts, or requires a browser extension before showing anything." },
+        { "t": "faq", "q": "Do coupon sites make the price higher?", "a": "No. The commission a retailer pays comes from its marketing budget, not from your order. The price is the same as going to the store directly — using a verified code makes it lower." },
+        { "t": "faq", "q": "How does NipCoupon make money?", "a": "When you use an offer link and complete a purchase, the retailer pays us a commission. It never changes the price you pay, and it does not determine which codes we list or how they are ranked. Every page carries this disclosure." }
+      ]
+    }
+  ]
+}

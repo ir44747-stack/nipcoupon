@@ -18,6 +18,14 @@
     {
       "source": "/category/:id",
       "destination": "/api/page?type=category&id=:id"
+    },
+    {
+      "source": "/blog",
+      "destination": "/api/page?type=blog"
+    },
+    {
+      "source": "/blog/:id",
+      "destination": "/api/page?type=blog&id=:id"
     }
   ],
   "crons": [

@@ -181,6 +181,41 @@ stores.filter(s => (perStore[s.id] || 0) > 0).forEach(s => {
   });
 });
 
+/* Saving guides. Editorial content changes rarely, so lastmod comes straight
+   from the post's own `updated` field rather than a content hash — the author
+   is the authority on whether a guide materially changed, and monthly is an
+   honest changefreq for a page that is not regenerated nightly. */
+(function addGuides() {
+  let posts = [];
+  try {
+    posts = (JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'posts.json'), 'utf8')).posts) || [];
+  } catch (e) { return; }        // no guides file, nothing to add
+  if (!posts.length) return;
+
+  const newest = posts
+    .map(p => String(p.updated || p.published || today()))
+    .sort()
+    .pop();
+
+  urls.push({
+    kind: 'guide',
+    loc: SITE + '/blog',
+    lastmod: newest,
+    changefreq: 'weekly',
+    priority: '0.6'
+  });
+
+  posts.forEach(p => {
+    urls.push({
+      kind: 'guide',
+      loc: SITE + '/blog/' + encodeURIComponent(p.slug),
+      lastmod: String(p.updated || p.published || today()),
+      changefreq: 'monthly',
+      priority: '0.6'
+    });
+  });
+})();
+
 /* Individual offers. Fingerprint covers everything the rendered page shows, so
    a re-verified-but-unchanged offer keeps its existing lastmod. */
 fresh.forEach(c => {
@@ -288,7 +323,7 @@ function urlsetFor(list) {
 }
 
 const sections = [
-  { file: 'sitemap-pages.xml', list: urls.filter(u => u.kind === 'home' || u.kind === 'category') },
+  { file: 'sitemap-pages.xml', list: urls.filter(u => u.kind === 'home' || u.kind === 'category' || u.kind === 'guide') },
   { file: 'sitemap-stores.xml', list: urls.filter(u => u.kind === 'store') },
   { file: 'sitemap-coupons.xml', list: urls.filter(u => u.kind === 'coupon') }
 ].filter(s => s.list.length);

@@ -133,12 +133,19 @@ const server = http.createServer(async (req, res) => {
     }
 
     /* 3 — mirror the vercel.json rewrites so /coupon/:id works locally */
-    const seo = /^\/(coupon|store|category)\/([^/]+)$/.exec(pathname);
+    const seo = /^\/(coupon|store|category|blog)\/([^/]+)$/.exec(pathname);
     if (seo) {
       const file = path.join(API_DIR, 'page.js');
       if (fs.existsSync(file)) {
         return invoke(file, req, url, { type: seo[1], id: decodeURIComponent(seo[2]) }, res);
       }
+    }
+
+    /* /blog index — no id. Kept separate from the pattern above so the bare
+       path does not fall through to the static handler and 404. */
+    if (pathname === '/blog' || pathname === '/blog/') {
+      const file = path.join(API_DIR, 'page.js');
+      if (fs.existsSync(file)) return invoke(file, req, url, { type: 'blog' }, res);
     }
 
     if (pathname.startsWith('/api/')) {
