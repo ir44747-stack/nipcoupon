@@ -302,8 +302,19 @@ function main() {
   try {
     const m = html.match(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi) || [];
     m.forEach(tag => {
+      const open = (tag.match(/^<script[^>]*>/i) || [''])[0];
       const body = tag.replace(/^<script[^>]*>/i, '').replace(/<\/script>$/i, '');
-      if (body.trim()) new Function(body);
+      if (!body.trim()) return;
+      /* Data blocks are not JavaScript. application/ld+json (and any other
+         non-JS type) must be validated as JSON — running it through
+         new Function() throws on the first `:` and failed the whole gate,
+         silently shipping the unminified file. */
+      const type = (open.match(/\btype\s*=\s*["']?([^"'\s>]+)/i) || [, ''])[1].toLowerCase();
+      if (type && !/^(module|text\/javascript|application\/javascript)$/.test(type)) {
+        if (/json/.test(type)) JSON.parse(body);
+        return;
+      }
+      new Function(body);
     });
   } catch (err) {
     verified = false;

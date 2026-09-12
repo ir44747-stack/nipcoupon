@@ -788,7 +788,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
 }
 .socials a:hover{color:#6ee7b7;border-color:rgba(16,185,129,.5);transform:translateY(-3px);background:rgba(16,185,129,.1)}
 .socials svg{width:18px;height:18px}
-.foot-col h4{font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#fff;margin-bottom:16px}
+.foot-col h3{font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#fff;margin-bottom:16px}
 .foot-col ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .foot-col a{font-size:.88rem;color:var(--muted);transition:.2s}
 .foot-col a:hover{color:#6ee7b7;transform:translateX(3px);display:inline-block}
@@ -990,6 +990,60 @@ select.sel option{background:#0f172a;color:#e2e8f0}
   [dir="rtl"] .toasts{left:12px;right:12px;align-items:stretch}
 }
 </style>
+
+<!-- Structured data for the homepage. The ~110 server-rendered routes have
+     carried a JSON-LD graph for a while, but the root URL — the page that
+     actually ranks for the brand query and the one Google treats as the site's
+     entity home — had none at all. The @id values match api/page.js siteSchema()
+     exactly, so every page on the site references one WebSite and one
+     Organization node rather than declaring competing duplicates.
+
+     No SearchAction: the storefront filters client-side and never writes ?q= to
+     the URL, so advertising a sitelinks searchbox would point Google at a query
+     string this site does not consume.
+
+     ItemList describes what the page genuinely is — a curated list of offer
+     pages — and links to the canonical /coupon/* URLs where the full Offer and
+     AggregateRating markup already lives. It is populated at runtime from the
+     same featured picks the user sees, so the markup can never describe offers
+     the page does not show. -->
+<script type="application/ld+json" id="homeLd">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://nipcoupon.vercel.app/#website",
+      "url": "https://nipcoupon.vercel.app/",
+      "name": "NipCoupon",
+      "description": "Verified promo codes, coupons and deals from global brands.",
+      "inLanguage": ["en", "ar"],
+      "publisher": { "@id": "https://nipcoupon.vercel.app/#organization" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://nipcoupon.vercel.app/#organization",
+      "name": "NipCoupon",
+      "url": "https://nipcoupon.vercel.app/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://nipcoupon.vercel.app/assets/logo.png"
+      },
+      "description": "Global coupon aggregator — verified promo codes and deals."
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": "https://nipcoupon.vercel.app/#webpage",
+      "url": "https://nipcoupon.vercel.app/",
+      "name": "NipCoupon — Global Promo Codes & Discount Deals",
+      "description": "Find working promo codes, verified discounts, and save money across top international brands today with NipCoupon.",
+      "isPartOf": { "@id": "https://nipcoupon.vercel.app/#website" },
+      "about": { "@id": "https://nipcoupon.vercel.app/#organization" },
+      "inLanguage": "en"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <a class="skip" href="#deals" data-i18n="a11y.skip">Skip to deals</a>
@@ -1287,7 +1341,7 @@ select.sel option{background:#0f172a;color:#e2e8f0}
         </div>
       </div>
       <div class="foot-col">
-        <h4 data-i18n="foot.quick">Quick Links</h4>
+        <h3 data-i18n="foot.quick">Quick Links</h3>
         <ul>
           <li><a href="#deals" data-i18n="foot.trending">Trending Deals</a></li>
           <li><a href="#stores" data-i18n="foot.top_stores">Top Stores</a></li>
@@ -1298,11 +1352,11 @@ select.sel option{background:#0f172a;color:#e2e8f0}
         </ul>
       </div>
       <div class="foot-col">
-        <h4 data-i18n="foot.categories">Categories</h4>
+        <h3 data-i18n="foot.categories">Categories</h3>
         <ul id="footCats"></ul>
       </div>
       <div class="foot-col">
-        <h4 data-i18n="foot.company">Company</h4>
+        <h3 data-i18n="foot.company">Company</h3>
         <ul>
           <li><a href="#about" data-i18n="foot.about">About NipCoupon</a></li>
           <li><a href="#terms" data-i18n="foot.terms">Terms of Use</a></li>
@@ -2149,6 +2203,38 @@ select.sel option{background:#0f172a;color:#e2e8f0}
        has no live offers. */
     if (sec) sec.hidden = !picks.length;
     box.innerHTML = picks.map(featCard).join('');
+    syncHomeItemList(picks);
+  }
+
+  /* Keep the homepage ItemList in step with what is actually on screen.
+     Writing it at runtime rather than hard-coding it means the structured data
+     can never advertise an offer the page does not show — which is exactly the
+     mismatch that gets a site's rich results pulled. Each entry points at the
+     canonical /coupon/* URL, where the full Offer + AggregateRating graph
+     already lives, instead of restating that markup here. */
+  function syncHomeItemList(picks) {
+    const tag = document.getElementById('homeLd');
+    if (!tag || !picks || !picks.length) return;
+    let doc;
+    try { doc = JSON.parse(tag.textContent); } catch (e) { return; }
+    const graph = (doc['@graph'] || []).filter(n => n['@type'] !== 'ItemList');
+    graph.push({
+      '@type': 'ItemList',
+      '@id': 'https://nipcoupon.vercel.app/#featured',
+      name: "Today's top verified deals",
+      numberOfItems: picks.length,
+      itemListOrder: 'https://schema.org/ItemListOrderDescending',
+      itemListElement: picks.map(function (c, i) {
+        return {
+          '@type': 'ListItem',
+          position: i + 1,
+          url: 'https://nipcoupon.vercel.app/coupon/' + encodeURIComponent(c.id),
+          name: c.ti || (c.s + ' offer')
+        };
+      })
+    });
+    doc['@graph'] = graph;
+    tag.textContent = JSON.stringify(doc);
   }
 
   function renderStores() {
