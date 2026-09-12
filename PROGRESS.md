@@ -12,21 +12,21 @@ Build is `node scripts/build-analytics.js && node scripts/build-sitemap.js && no
 
 | Area | Status | Where |
 |---|---|---|
-| Dynamic per-page titles | ✅ | `api/page.js` — 115 unique titles, all ≤62 chars, month+year stamped |
-| Dynamic meta descriptions | ✅ | `api/page.js` + `scripts/keyword-sync.js` — 115 unique, ≤155 chars |
+| Dynamic per-page titles | ✅ | `api/page.js` — 115 unique, ≤62 chars. Stores: `[Store] Coupon Code [Month Year] — Exclusive [N]% Off \| NIPCOUPON` |
+| Dynamic meta descriptions | ✅ | 115 unique, ≤155. Stores: "Get the latest verified [Store] promo codes … for [Year]" |
 | OpenGraph + Twitter cards | ✅ | `api/page.js` — `og:image` 1200×630 on every route |
-| Freshness signals | ✅ | "Verified Today" / "Checked 2 hours ago" from `verifiedHoursAgo` |
+| Freshness signals | ✅ | "Verified Today" badge (≤24h) + "Last checked [today's date]" on store and coupon pages |
 | Offer schema | ✅ | 40/40 coupon pages — `price`, `priceCurrency`, `validThrough`, `seller` |
 | AggregateRating | ✅ | 40/40 via a `Product` node (invalid directly on `Offer`) |
 | **AggregateOffer** | ✅ | store pages — `offerCount` + up to 25 nested offers |
-| **FAQPage** | ✅ | guide pages — only where the Q&A is visibly rendered |
+| **FAQPage** | ✅ | 70/70 store pages + guides — generated per store, only where the Q&A is visibly rendered |
 | **Article** | ✅ | guide pages — `datePublished`, `dateModified`, publisher |
 | BreadcrumbList | ✅ | every SSR route, matching the visible crumb trail |
 | Organization + WebSite | ✅ | shared `@id` graph across SSR **and** homepage |
 | CollectionPage | ✅ | store, category, blog index, homepage |
 | robots.txt | ✅ | allows all, disallows `/api/`, lists 4 sitemaps |
 | sitemap (generated) | ✅ | `scripts/build-sitemap.js` — 90 URLs, 4-file index, nightly in CI |
-| Affiliate compliance | ✅ | `rel="nofollow sponsored noopener"` on every outbound link |
+| Affiliate compliance | ✅ | `rel="nofollow sponsored noopener noreferrer"` — 150/150 outbound links, SSR + SPA |
 | Click tracking | ✅ | GA4 `click_affiliate` fires before redirect, with acquisition channel |
 | Heading hierarchy | ✅ | 115/115 SSR routes + homepage: one H1, zero skipped levels |
 | **Blog / guides engine** | ✅ | `/blog` + `/blog/:slug` from `data/posts.json` |

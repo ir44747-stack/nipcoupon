@@ -4,6 +4,55 @@ Chronological record of automated changes. Newest first.
 
 ---
 
+## 2026-09-12 — SEO plan adapted to the vanilla stack (round 2)
+
+Second pass on the same plan, this time closing the gaps that remained after the
+first adaptation. Stack unchanged: vanilla JS + serverless. No Next.js, no
+migration, trax50-sneakers untouched.
+
+### Step 1 — store title & description patterns
+- Titles now follow the requested pattern:
+  `[Store] Coupon Code [Month Year] — Exclusive [N]% Off | NIPCOUPON`.
+  `clampTitle()` trims on a word boundary at ~62 chars, so on long store names the
+  ` | NIPCOUPON` suffix is dropped rather than the keyword being cut mid-phrase.
+- **Only percentage badges feed the `[N]%` slot.** AliExpress' best offer is
+  "$8 OFF" — a cash amount. Rendering that as "8% Off" would be a false claim in
+  the single string every searcher reads, so those stores get the plain title.
+- Descriptions follow: "Get the latest verified [Store] promo codes and discount
+  deals for [Year]. N codes tested [Month Year] — save money today on NipCoupon!"
+- Verified: 70/70 unique titles, 0 over 62 chars, 0 descriptions over 155.
+
+### Step 1 — freshness signals
+- "Verified Today" pill when the freshest offer was checked within 24h.
+- "Last checked [today's date]" on store and coupon pages. Honest because
+  `daily-growth.yml` re-verifies nightly; if that automation is removed, this
+  must be removed with it.
+
+### Step 2 — FAQPage on store pages
+- `storeFaqs()` generates four questions per store from that store's real
+  catalogue — offer count, code-vs-deal split, verification recency, cost — so the
+  text is specific rather than the same boilerplate across 70 pages.
+- Rendered into visible `<details>` **and** into JSON-LD from one array.
+  Verified across all 70 stores: 0 questions and 0 answers missing from the
+  rendered HTML.
+
+### Step 4 — affiliate link compliance
+- Added `noreferrer` to the SSR affiliate links (previously
+  `nofollow sponsored noopener`).
+- The SPA's coupon-modal anchor carried only `noopener noreferrer` — it has a real
+  `href`, so crawlers were free to follow a monetised link. Now
+  `nofollow sponsored noopener noreferrer`.
+- Verified: 150/150 outbound sovrn.co anchors carry all four tokens.
+
+### Verification
+119 routes render, 0 errors, 0 bad JSON-LD · 119/119 exactly one H1, zero skipped
+heading levels · store schema now
+`WebSite, Organization, CollectionPage, AggregateOffer, FAQPage, BreadcrumbList` ·
+coupon price and aggregateRating 40/40 · build exit 0, verify gate passed, −26.1% ·
+validate --strict and check-geo green · i18n parity 223/223.
+
+---
+
 ## 2026-09-12 — SEO engine: blog, FAQPage, AggregateOffer
 
 **Context.** The requested plan specified Next.js 15 paths (`app/stores/[slug]/page.tsx`,

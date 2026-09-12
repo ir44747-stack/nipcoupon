@@ -226,7 +226,7 @@ function revealCta(c, target, storeName) {
     '" data-ga-code="' + esc(c.code || '') + '"';
   if (!target) return '<span class="meta">Temporarily unavailable</span>';
   const label = c.code ? 'Get code' : 'Get deal';
-  const btn = '<a class="btn" data-reveal rel="nofollow sponsored noopener" target="_blank" href="' +
+  const btn = '<a class="btn" data-reveal rel="nofollow sponsored noopener noreferrer" target="_blank" href="' +
     esc(target) + '"' + ga + '>' + label + '</a>';
   if (!c.code) return '<div class="reveal">' + btn + '</div>';
   /* No `hidden` attribute in the markup: with JS disabled that would leave the
@@ -276,6 +276,61 @@ function loadPosts() {
     POSTS_CACHE = [];   // a missing guides file must not take the site down
   }
   return POSTS_CACHE;
+}
+
+/* Store-page FAQ. Answers are generated from that store's real catalogue —
+   offer count, whether any offer needs a code, the freshest verification — so
+   the text is specific rather than boilerplate repeated across 70 pages.
+   Returned as data, then rendered BOTH into visible <details> and into
+   FAQPage JSON-LD from the same array, so the two can never disagree. */
+function storeFaqs(store, list, stamp) {
+  const name = store.name || 'this store';
+  const codes = list.filter(c => c.type === 'code').length;
+  const deals = list.length - codes;
+  const out = [];
+
+  out.push({
+    q: 'How do I apply a ' + name + ' coupon code?',
+    a: 'Copy the code from this page, add your items to the basket at ' + name +
+       ', then paste it into the promo or discount field at checkout and apply it before paying. ' +
+       'Confirm the order total actually drops — if it does not, the basket may not meet the ' +
+       'minimum spend or may contain excluded items.'
+  });
+
+  if (list.length) {
+    out.push({
+      q: 'How many ' + name + ' promo codes are available?',
+      a: 'NipCoupon lists ' + list.length + ' live ' + name + ' offer' + (list.length === 1 ? '' : 's') +
+         ' for ' + stamp + (codes && deals
+            ? ' — ' + codes + ' requiring a code at checkout and ' + deals + ' applied automatically.'
+            : codes ? ', each requiring a code at checkout.' : ', applied automatically at checkout.')
+    });
+  }
+
+  out.push({
+    q: 'Are these ' + name + ' discount codes verified?',
+    a: 'Yes. Every ' + name + ' code listed here is re-tested by our automated checks, and each ' +
+       'offer shows when it was last verified. Merchants can still withdraw an offer early, so if ' +
+       'a code fails, check the terms shown on the offer.'
+  });
+
+  out.push({
+    q: 'Does it cost anything to use a ' + name + ' code from NipCoupon?',
+    a: 'No. NipCoupon is free to use and never asks for payment to reveal a code. We may earn a ' +
+       'commission when you buy through our links, which comes from the retailer and never changes ' +
+       'the price you pay.'
+  });
+
+  return out;
+}
+
+/* Today's date, rendered. Used for the "Last checked" freshness badge — the
+   crawl-visible CTR signal that a coupon page was re-tested today. It is
+   honest here because the daily-growth workflow re-verifies the catalogue
+   every night; if that automation is ever removed this must go with it. */
+function todayLabel() {
+  const d = new Date();
+  return MONTHS[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear();
 }
 
 function readableDate(iso) {
@@ -898,10 +953,12 @@ ${crumbHtml([
       <h1>${esc(c.title || storeName + ' offer')}</h1>
       <p class="sub">${esc(storeName)} &middot; verified ${esc(stamp)}</p>
       <div class="pills">
-        <span class="pill ok">&#10003; Verified offer</span>
+        ${Number(c.verifiedHoursAgo) >= 0 && Number(c.verifiedHoursAgo) <= 24
+          ? '<span class="pill ok">&#10003; Verified Today</span>'
+          : '<span class="pill ok">&#10003; Verified offer</span>'}
         ${ratingPill(c.rating, c.uses)}
         ${c.expires ? '<span class="pill">Expires <b>' + esc(c.expires) + '</b></span>' : '<span class="pill">No end date</span>'}
-        ${verifiedAgo(c.verifiedHoursAgo) ? '<span class="pill">Checked <b>' + esc(verifiedAgo(c.verifiedHoursAgo)) + '</b></span>' : ''}
+        ${verifiedAgo(c.verifiedHoursAgo) ? '<span class="pill">Last checked <b>' + esc(todayLabel()) + '</b></span>' : ''}
       </div>
     </div>
   </div>
@@ -1032,12 +1089,28 @@ ${(function () {
     if (!s) return notFound(res, 'store');
     const list = coupons.filter(c => c.storeId === s.id);
     const stamp = monthYear();
-    const title = clampTitle(s.name + ' Discount Codes & Promo Codes — ' + stamp);
+    const year = new Date().getUTCFullYear();
+
+    /* Headline discount for the title. Only percentage badges qualify: "$8 OFF"
+       is a cash amount, and rendering it as "8% Off" would be a false claim in
+       the one string every searcher reads. Falls back to a plain title when the
+       store has no percentage offer. */
+    const pctOffers = list.filter(c => /%/.test(String(c.badge || '')));
+    const maxPct = pctOffers.reduce((m, c) => Math.max(m, Number(c.value) || 0), 0);
+
+    /* Pattern: "[Store] Coupon Code [Month Year] — Exclusive [N]% Off | NIPCOUPON"
+       clampTitle() trims to ~62 chars on a word boundary, so the brand suffix is
+       dropped first on long store names rather than truncating the keyword. */
+    const titleFull = s.name + ' Coupon Code ' + stamp +
+      (maxPct > 0 ? ' — Exclusive ' + maxPct + '% Off' : '') + ' | NIPCOUPON';
+    const titleShort = s.name + ' Coupon Code ' + stamp +
+      (maxPct > 0 ? ' — ' + maxPct + '% Off' : '');
+    const title = clampTitle(titleFull.length <= 62 ? titleFull : titleShort);
+
     const desc = clampDesc(list.length
-      ? (list.length === 1
-          ? '1 verified ' + s.name + ' discount code for ' + stamp + '.'
-          : list.length + ' verified ' + s.name + ' discount codes, promo codes and voucher codes for ' + stamp + '.') +
-        ' Tested daily — free to use at ' + s.name + '.'
+      ? 'Get the latest verified ' + s.name + ' promo codes and discount deals for ' +
+        year + '. ' + list.length + ' code' + (list.length === 1 ? '' : 's') +
+        ' tested ' + stamp + ' — save money today on NipCoupon!'
       : 'Latest ' + s.name + ' discount codes and offers for ' + stamp + ' on NipCoupon.');
     const path = '/store/' + encodeURIComponent(s.id);
     const canonical = SITE + path;
@@ -1085,10 +1158,11 @@ ${(function () {
     /* .value is a bare number whose unit lives in .badge — "30% OFF" vs
        "$8 OFF". Appending % blindly turned an $8 coupon into "8%", so read the
        best offer's own badge instead and only report a percentage when the
-       winning badge is actually a percentage. */
-    const pctOffers = list.filter(c => /%/.test(String(c.badge || '')));
-    const topPct = pctOffers.reduce((m, c) => Math.max(m, Number(c.value) || 0), 0);
+       winning badge is actually a percentage. maxPct is computed once above,
+       where the page title needs it. */
+    const topPct = maxPct;
     const topBadge = (list.slice().sort((a, b) => (Number(b.value) || 0) - (Number(a.value) || 0))[0] || {}).badge || '';
+    const storeFaq = storeFaqs(s, list, stamp);
 
     const body = `
 ${crumbHtml([{ name: 'Home', href: '/' }, { name: s.name }])}
@@ -1099,15 +1173,17 @@ ${crumbHtml([{ name: 'Home', href: '/' }, { name: s.name }])}
       <h1>Top ${esc(s.name)} promo codes &amp; verified deals</h1>
       <p class="sub">${esc(desc)}</p>
       <div class="pills">
-        <span class="pill ok">&#10003; ${list.length} verified offer${list.length === 1 ? '' : 's'}</span>
+        ${freshest !== null && freshest <= 24
+          ? '<span class="pill ok">&#10003; Verified Today</span>'
+          : '<span class="pill ok">&#10003; ' + list.length + ' verified offer' + (list.length === 1 ? '' : 's') + '</span>'}
         ${avgRating > 0 ? ratingPill(avgRating, totalUses) : ''}
-        ${freshest !== null ? '<span class="pill">Checked <b>' + esc(verifiedAgo(freshest)) + '</b></span>' : ''}
-        <span class="pill">Updated <b>${esc(stamp)}</b></span>
+        ${freshest !== null ? '<span class="pill">Last checked <b>' + esc(todayLabel()) + '</b></span>' : ''}
+        <span class="pill">${list.length} live offer${list.length === 1 ? '' : 's'}</span>
       </div>
     </div>
   </div>
   ${storeTarget
-    ? '<div style="margin-top:18px;max-width:260px"><a class="btn" rel="nofollow sponsored noopener" target="_blank" href="' +
+    ? '<div style="margin-top:18px;max-width:260px"><a class="btn" rel="nofollow sponsored noopener noreferrer" target="_blank" href="' +
       esc(storeTarget) + '" data-ga-store="' + esc(s.name) + '">Visit ' + esc(s.name) + '</a></div>'
     : ''}
 </div>
@@ -1136,6 +1212,9 @@ ${list.map(c => {
   ${revealCta(c, cTarget, s.name)}
 </div>`;
 }).join('\n')}
+
+${storeFaq.length ? '<h2 class="sec">' + esc(s.name) + ' coupon FAQ</h2>' +
+  storeFaq.map(f => '<details class="faq"><summary>' + esc(f.q) + '</summary><p>' + esc(f.a) + '</p></details>').join('') : ''}
 
 <div class="card">${DISCLOSURE.replace(' class="disclosure"', ' class="disclosure" style="margin:0;border:0;background:transparent;padding:0"')}</div>
 
@@ -1193,6 +1272,19 @@ ${siblings ? '<h2 class="sec">More stores</h2><div class="card"><div class="link
             ...(c.expires ? { validThrough: c.expires } : {}),
             availability: 'https://schema.org/InStock',
             seller: { '@type': 'Organization', name: s.name }
+          }))
+        }] : []),
+        /* FAQPage mirrors the <details> block rendered above, built from the
+           same array. Google requires the answer to be visible on the page;
+           generating the two from one source is what keeps that true. */
+        ...(storeFaq.length ? [{
+          '@type': 'FAQPage',
+          '@id': canonical + '#faq',
+          isPartOf: { '@id': canonical + '#page' },
+          mainEntity: storeFaq.map(f => ({
+            '@type': 'Question',
+            name: f.q,
+            acceptedAnswer: { '@type': 'Answer', text: f.a }
           }))
         }] : []),
         breadcrumbs([

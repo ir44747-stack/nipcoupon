@@ -2822,7 +2822,10 @@ select.sel option{background:#0f172a;color:#e2e8f0}
       '</ul></div>' +
       '<div class="modal-actions">' +
         '<button class="btn btn-outline" data-fav="' + c.id + '">' + esc(t('modal.save', 'Save coupon')) + '</button>' +
-        '<a class="btn btn-blue" href="' + esc(buildStoreUrl(c)) + '" target="_blank" rel="noopener noreferrer" ' +
+        /* nofollow + sponsored are required on monetised outbound links: this
+           anchor carries a real href, so crawlers follow it unless told not to.
+           noopener/noreferrer stay for tab-nabbing and referrer hygiene. */
+        '<a class="btn btn-blue" href="' + esc(buildStoreUrl(c)) + '" target="_blank" rel="nofollow sponsored noopener noreferrer" ' +
           'data-visit="' + esc(c.s) + '" data-url="' + esc(buildStoreUrl(c)) + '" data-visit-id="' + esc(c.id) + '" data-code="' + esc(c.t === 'code' ? c.c : '') + '">' +
           esc(t('modal.open', 'Open {store}', { store: c.s })) + ' <svg class="btn-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4L11 13"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg></a>' +
       '</div>';
