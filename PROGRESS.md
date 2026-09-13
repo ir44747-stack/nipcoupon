@@ -45,6 +45,31 @@ Build is `node scripts/build-analytics.js && node scripts/build-sitemap.js && no
 
 ---
 
+---
+
+## Monitoring & governance
+
+| Routine | Mechanism | Cadence |
+|---|---|---|
+| Health check (syntax, JSON, routes, schema, affiliate rel, headings, meta, sitemap, live probes) | `.github/workflows/health-check.yml` → `scripts/health-check.js --live` | every 6h + on every push to `main` |
+| Keyword rotation + sitemap rebuild | `daily-growth.yml` | 00:00 UTC daily |
+| Sovrn catalogue sync | `sync-coupons.yml` | 02:00 UTC daily |
+
+Run it by hand any time with `npm run health` (local) or `npm run health:live`
+(also probes production). Exit 0 = healthy, 1 = at least one failure.
+
+On failure the workflow opens a GitHub issue labelled `health-check`, reuses
+that same issue while the failure persists, and closes it automatically once
+the checks pass again — so a broken deploy notifies once, not every six hours.
+
+**Scheduling note.** An AI agent has no background process and cannot wake
+itself on a timer; it runs only when invoked. Recurring monitoring therefore
+lives in GitHub Actions, where the schedule is real and auditable. An agent
+session reviews the results, diagnoses anything the automated checks flag, and
+makes the judgement calls a script cannot.
+
+---
+
 ## Platform
 
 | Area | Status |

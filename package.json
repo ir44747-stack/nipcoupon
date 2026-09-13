@@ -5,7 +5,6 @@
   "description": "NipCoupon — Global Deals, Sniper Precision. A static coupon aggregator with a serverless deals API.",
   "scripts": {
     "build": "node scripts/build-analytics.js && node scripts/build-sitemap.js && node scripts/minify.js",
-    "growth": "node scripts/fetch-sovrn.js",
     "build-analytics": "node scripts/build-analytics.js",
     "build-analytics:check": "node scripts/build-analytics.js --check",
     "build-sitemap": "node scripts/build-sitemap.js",
@@ -19,6 +18,10 @@
     "fetch-sovrn": "node scripts/fetch-sovrn.js",
     "fetch-sovrn:dry": "node scripts/fetch-sovrn.js --dry-run",
     "geo:check": "node scripts/check-geo.js",
+    "growth": "node scripts/fetch-sovrn.js",
+    "health": "node scripts/health-check.js",
+    "health:json": "node scripts/health-check.js --json",
+    "health:live": "node scripts/health-check.js --live",
     "keywords": "node scripts/keyword-sync.js",
     "keywords:dry": "node scripts/keyword-sync.js --dry-run",
     "links:guard": "node scripts/link-guard.js",

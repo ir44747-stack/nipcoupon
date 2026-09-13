@@ -4,6 +4,57 @@ Chronological record of automated changes. Newest first.
 
 ---
 
+## 2026-09-13 — Supervisor routine: automated health check
+
+Full audit run against the directive's three monitoring areas. **No defects
+found in the platform** — nothing needed fixing, so nothing was changed in the
+site itself. What was missing was the monitoring apparatus, which is what this
+commit adds.
+
+### Audit result (all green)
+- 34 JS files + 3 inline scripts parse; 16 JSON files valid; i18n parity 223/223.
+- 119 routes render, 0 errors, 0 bad JSON-LD, 0 dangling `@id`.
+- `AggregateOffer` on 40/70 stores — correct, the other 30 have no live offers
+  and are already `noindex,follow` as thin content.
+- `FAQPage` on 70/70 stores + 3/3 guides, `Article` on 3/3 guides,
+  `Offer.price` and `aggregateRating` 40/40.
+- 0 FAQ items present in schema but missing from the visible page.
+- 150/150 outbound links carry `nofollow sponsored noopener noreferrer`.
+- 119/119 exactly one H1, zero skipped heading levels, zero over-length meta.
+- 183 sitemap lastmod values, 0 in the future. 14/14 live routes correct,
+  homepage 200 in 0.20s. Link guard: 0 dead, 7 sandbox timeouts.
+- Both nightly workflows green (`Daily Growth` #17, `Sync coupons` #15).
+
+### Added
+- `scripts/health-check.js` — one command covering syntax, JSON, every rendered
+  route, schema validity, FAQ visibility, affiliate `rel` compliance, heading
+  hierarchy, meta length, duplicate titles, sitemap sanity, and optional live
+  probes. Exit 0/1, `--json` for machine consumption.
+- `.github/workflows/health-check.yml` — runs it every 6 hours and on every push
+  to `main`. On failure it opens a `health-check` issue, reuses it while the
+  failure persists, and auto-closes when green again.
+- `npm run health`, `health:live`, `health:json`.
+
+### Bug found in my own check, before it shipped
+The first version matched affiliate links with `/sovrn\.co/`. In CI there is no
+`SOVRN_API_KEY`, so `store.url` keeps its `${SOVRN_API_KEY}` placeholder and
+resolves to the bare merchant domain — the literal string `sovrn.co` never
+appears, and the check reported a cheerful `0/0 compliant` while inspecting
+nothing. It now matches any external anchor and skips internal links, so it sees
+all 150. Verified by deliberately stripping the `rel` tokens from `api/page.js`
+and confirming the check fails with named routes, then restoring.
+
+A check that silently passes is worse than no check, because it is trusted.
+
+### Note on the hourly cadence
+Set to every 6 hours, not hourly. The catalogue only changes when
+`daily-growth` (00:00) or `sync-coupons` (02:00) runs, so hourly checks would
+re-verify an unchanged repo 22 times a day; and the same failure re-notified
+every hour is one incident, not twenty-four. Easy to raise if the data ever
+starts updating intra-day.
+
+---
+
 ## 2026-09-12 — SEO plan adapted to the vanilla stack (round 2)
 
 Second pass on the same plan, this time closing the gaps that remained after the
