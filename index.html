@@ -2698,6 +2698,41 @@ select.sel option{background:#0f172a;color:#e2e8f0}
         link_url:      url,
         outbound:      true
       };
+
+      /* Acquisition channel on the conversion event itself.
+         api/page.js already does this for the ~110 SSR routes, but the SPA —
+         the highest-traffic surface — did not, so an Instagram-driven sale on
+         the homepage was indistinguishable from an organic one in the events
+         table. GA4 attributes the *session*; this attributes the click, which
+         is the revenue moment. Read utm_* from the landing URL and persist for
+         the tab, because those params are gone after the first navigation. */
+      try {
+        const LS = 'np_acq';
+        const qp = new URLSearchParams(location.search);
+        let acq = null;
+        if (qp.get('utm_source')) {
+          acq = { source: qp.get('utm_source'), medium: qp.get('utm_medium') || '', campaign: qp.get('utm_campaign') || '' };
+          try { sessionStorage.setItem(LS, JSON.stringify(acq)); } catch (e) { /* private mode */ }
+        } else {
+          try { acq = JSON.parse(sessionStorage.getItem(LS) || 'null'); } catch (e) { acq = null; }
+        }
+        if (!acq) {
+          const ref = document.referrer || '';
+          let host = '';
+          try { host = ref ? new URL(ref).hostname.replace(/^www\./, '') : ''; } catch (e) { /* opaque referrer */ }
+          const social = /instagram|facebook|fb\.|tiktok|t\.co|twitter|x\.com|pinterest|snapchat|whatsapp|telegram|linkedin|reddit/i;
+          const search = /google|bing|yahoo|duckduckgo|yandex|baidu|ecosia/i;
+          acq = {
+            source: host || 'direct',
+            medium: !host ? 'direct' : (social.test(host) ? 'social' : (search.test(host) ? 'organic' : 'referral')),
+            campaign: ''
+          };
+        }
+        params.acq_source   = acq.source || '';
+        params.acq_medium   = acq.medium || '';
+        params.acq_campaign = acq.campaign || '';
+      } catch (e) { /* attribution must never block the click */ }
+
       if (typeof window.gtag === 'function') {
         window.gtag('event', 'click_affiliate', params);
         /* Standard GA4 engagement event so this also lands in the built-in reports. */
