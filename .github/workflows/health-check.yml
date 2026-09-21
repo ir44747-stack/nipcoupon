@@ -59,6 +59,14 @@ jobs:
           node scripts/health-check.js --live 2>&1 | tee /tmp/health.txt
 
 
+
+      # Inventory + alerts. Non-blocking on WARNING, but a CRITICAL alert
+      # (rejected offers, empty catalogue) exits 1 and opens the incident issue
+      # through the same path as a failed health check.
+      - name: Inventory alerts
+        if: always()
+        run: node scripts/inventory.js --alerts
+
       # Content differentiation. Not a gate — a low score is a signal to add
       # real store facts, not a reason to fail the build. Runs here so the
       # number is tracked over time in the job log rather than measured once.

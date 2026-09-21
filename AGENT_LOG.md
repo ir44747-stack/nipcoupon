@@ -4,6 +4,60 @@ Chronological record of automated changes. Newest first.
 
 ---
 
+## 2026-09-21 — Multi-source offer architecture
+
+Made inventory source-independent so a new provider can be attached without
+touching the rest of the site. No new provider was connected — none has
+credentials — and no offer was invented.
+
+### Discovery that changed the picture
+The 30 stores with ZERO offers are exactly the 30 carrying a real `sovrnEpc`
+(0.08-0.63) plus `sovrnGroupId` and `sovrnVerified: true`. They came from a
+Sovrn **merchant** feed. So Sovrn ingestion is not blocked in general — only
+coupon syndication is. We are already being paid per click on the stores we
+have the least to show for. moo-com (0.628), rocketlanguages (0.538) and
+lightsonline (0.465) are the clearest examples: highest EPC, nothing to click.
+
+That also means `offerScore()`'s EPC term is not dead code — it activates the
+moment any of those 30 stores receives an offer.
+
+### Added
+- `data/sources.json` — source registry. Each entry carries adapter, priority,
+  trust, enabled flag, required credential and status. Sovrn coupon API is
+  recorded as `not-entitled` with the probe evidence and an explicit
+  "do not re-probe on a schedule" note.
+- `api/_offers.js` — the source-independent layer:
+  - `canonical()` maps any adapter's row to one internal schema (storeId,
+    source, externalOfferId, code, title, value, type, originalUrl,
+    trackingUrl, expires, terms, verifiedAt, verificationStatus, lastSeenAt,
+    sourcePriority, sovrnEpc). Absent data stays null — `sovrnEpc: null` means
+    "nobody told us", not "earns nothing".
+  - `gate()` returns PENDING / VERIFIED / EXPIRED / REJECTED / UNKNOWN with
+    reasons. Only gate() may assign VERIFIED, and only from a real timestamp
+    inside a 48h window. A feed claiming its own offer is verified is ignored.
+  - `reconcile()` dedupes by storeId+code (case-insensitive) or storeId+title
+    for deals, prefers VERIFIED then fresher then lower sourcePriority, and
+    keeps the losing record under `alternates` so provenance survives. Nothing
+    is deleted; EXPIRED and REJECTED are retained for analytics and filtered at
+    render.
+- `scripts/inventory.js` — per-store dashboard and alerts. CRITICAL exits 1 and
+  opens an incident through the existing health-check path.
+- `data/offers-manual.json` — the only hand-entry point, with instructions.
+  Manual records pass the same gate; nothing is published for being typed in.
+
+### Bug found in my own gate before it shipped
+"type=deal carrying a code" passed as VERIFIED. `canonical()` blanks `code` for
+a deal, so the gate never saw the contradiction — the feed was saying two
+different things and the normalisation hid it. Now the raw value is retained
+internally for the check. Verified across 13 adversarial cases: 13/13 correct.
+
+### Not changed
+Sovrn monetisation stays exactly as it was and is still verified working.
+Store index state is unchanged at 40/30, so no indexing instability was
+introduced.
+
+---
+
 ## 2026-09-21 — Phase 3: store-page value, offer scoring, index gating
 
 Goal was inventory growth and breaking the 93% overlap. Inventory turned out to

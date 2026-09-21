@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "note": "Manually verified offers. This file is the ONLY place a human adds inventory by hand. Records here go through exactly the same quality gate as any feed — see api/_offers.js gate(). Nothing is published because it was typed here; it is published because it passes.",
+  "howToAdd": [
+    "1. Confirm the code at the merchant yourself. Do not copy it from another coupon site.",
+    "2. Add a record below with storeId matching data/stores.json, and verifiedAt set to the ISO timestamp of YOUR check.",
+    "3. Set expires to the date the merchant states. Leave it null if the merchant does not publish one — do not guess.",
+    "4. Put every published restriction in terms[]. These drive the store page's troubleshooting section, so paraphrasing changes what shoppers are told.",
+    "5. Run `npm run inventory` — a REJECTED status means the record is wrong, not that the gate is wrong.",
+    "6. Re-verify before the 48h window lapses, or the offer degrades to UNKNOWN and stops being presented as verified."
+  ],
+  "fields": {
+    "storeId": "required — must exist in data/stores.json",
+    "title": "required — what the shopper gets, in plain words",
+    "type": "'code' or 'deal'",
+    "code": "required when type=code, must be absent when type=deal",
+    "value": "numeric discount; 30 for 30% off, 8 for $8 off",
+    "badge": "display label, e.g. '30% OFF'",
+    "expires": "YYYY-MM-DD as published by the merchant, or null",
+    "terms": "array of the merchant's published conditions, verbatim",
+    "verifiedAt": "ISO timestamp of the human check",
+    "externalOfferId": "optional provider reference",
+    "regions": "optional, defaults to ['GLOBAL']"
+  },
+  "offers": []
+}

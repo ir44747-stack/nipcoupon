@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "note": "Registry of offer sources. A source is DISABLED until its credentials exist and its entitlement is confirmed — enabling one here does not grant access, it only tells the pipeline to try. `priority` breaks ties when two sources supply the same store+code: lower number wins. `trust` decides whether an offer from this source may be published as VERIFIED without an independent re-check.",
+  "updatedAt": "2026-09-21",
+  "sources": [
+    {
+      "id": "manual",
+      "label": "Manually verified",
+      "adapter": "file",
+      "input": "data/offers-manual.json",
+      "priority": 1,
+      "trust": "high",
+      "enabled": true,
+      "requiresCredential": null,
+      "status": "active",
+      "note": "Human-checked offers. Highest priority because a person confirmed the code at the merchant. Still passes the same quality gate as every other source — manual data does not bypass validation."
+    },
+    {
+      "id": "sovrn-coupons",
+      "label": "Sovrn Product Promo Codes API",
+      "adapter": "sovrn",
+      "input": "viglink.io/coupons/product",
+      "priority": 2,
+      "trust": "high",
+      "enabled": false,
+      "requiresCredential": "SOVRN_SECRET_KEY + account entitlement",
+      "status": "not-entitled",
+      "note": "Endpoint reachable but returns 401 for this account across every documented auth method (probed 2026-09-21: query param, secret_key param, Bearer, secret, X-Secret-Key, HTTP basic). This is an account entitlement, not a wiring fault. Do NOT re-probe on a schedule. Flip `enabled` to true only after Sovrn confirms coupon-API access."
+    },
+    {
+      "id": "sovrn-feed",
+      "label": "Sovrn / third-party JSON deal feed",
+      "adapter": "sovrn-offers-url",
+      "input": "env:SOVRN_OFFERS_URL",
+      "priority": 3,
+      "trust": "medium",
+      "enabled": false,
+      "requiresCredential": "SOVRN_OFFERS_URL",
+      "status": "awaiting-feed-url",
+      "note": "scripts/fetch-sovrn.js --mode=offers already ingests any JSON deal feed from this variable. Needs only a URL — no code change."
+    },
+    {
+      "id": "cj",
+      "label": "CJ Affiliate (Commission Junction)",
+      "adapter": "cj",
+      "input": "env:CJ_GRAPHQL_URL",
+      "priority": 4,
+      "trust": "medium",
+      "enabled": false,
+      "requiresCredential": "CJ_ACCESS_TOKEN + CJ_PUBLISHER_ID",
+      "status": "awaiting-credential",
+      "note": "scripts/fetch-cj.js exists and is wired for CJ's GraphQL link-search. Requires an approved CJ publisher account; approval is per-advertiser, so coverage depends on which merchants accept the application."
+    },
+    {
+      "id": "offers-api",
+      "label": "Generic authorised offers endpoint",
+      "adapter": "offers-api",
+      "input": "env:OFFERS_API_URL",
+      "priority": 5,
+      "trust": "medium",
+      "enabled": false,
+      "requiresCredential": "OFFERS_API_URL + OFFERS_API_KEY",
+      "status": "awaiting-credential",
+      "note": "scripts/sync-offers.js already implements fetch -> normalise -> link-guard -> merge with snapshot fallback. Any provider exposing JSON can be attached here without new code."
+    }
+  ]
+}
