@@ -30,6 +30,8 @@
     "predeploy": "node scripts/predeploy.js",
     "preview": "node scripts/preview-server.js",
     "prune": "node scripts/validate.js --prune",
+    "quality": "node scripts/content-quality.js",
+    "quality:json": "node scripts/content-quality.js --json",
     "secrets:audit": "node scripts/purge-secrets.js",
     "secrets:purge": "node scripts/purge-secrets.js --fix",
     "sovrn:revert": "node scripts/fetch-sovrn.js --revert",

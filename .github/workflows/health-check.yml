@@ -58,6 +58,16 @@ jobs:
           set -o pipefail
           node scripts/health-check.js --live 2>&1 | tee /tmp/health.txt
 
+
+      # Content differentiation. Not a gate — a low score is a signal to add
+      # real store facts, not a reason to fail the build. Runs here so the
+      # number is tracked over time in the job log rather than measured once.
+      - name: Store page content quality
+        if: always()
+        env:
+          SOVRN_API_KEY: ${{ secrets.SOVRN_API_KEY }}
+        run: node scripts/content-quality.js || true
+
       # Only reached when the step above exits non-zero. Opens one issue per
       # incident and reuses it while the failure persists, so a broken deploy
       # does not generate an issue every six hours.

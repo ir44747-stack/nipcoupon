@@ -295,6 +295,114 @@ function loadPosts() {
    the text is specific rather than boilerplate repeated across 70 pages.
    Returned as data, then rendered BOTH into visible <details> and into
    FAQPage JSON-LD from the same array, so the two can never disagree. */
+/* ── offer quality score ─────────────────────────────────────────────────────
+ * Internal ranking signal only. It is NOT a verification claim: a high score
+ * means "this offer looks most useful to show first", never "we confirmed this
+ * works". The only honest verification signal on the page stays the
+ * verifiedHoursAgo timestamp, which comes from the automated re-check.
+ *
+ * Every factor is a field that actually exists. No modelled or imputed inputs,
+ * because a score built on guesses would quietly reorder the page for reasons
+ * nobody can audit. sovrnEpc is read when present but is absent for all stores
+ * today, so it contributes nothing yet — wiring it now means the score improves
+ * automatically if affiliate performance data ever lands.
+ */
+function offerScore(c, store) {
+  let s = 0;
+  const h = Number(c.verifiedHoursAgo);
+  if (h >= 0) s += Math.max(0, 48 - h) * 0.6;          // freshness, decays over 2 days
+  s += Math.min(Number(c.value) || 0, 100) * 0.8;       // headline discount
+  s += Math.min((Number(c.uses) || 0) / 400, 40);       // demonstrated engagement, capped
+  s += (Number(c.rating) || 0) * 8;                     // shopper rating
+  if (c.code) s += 10;                                  // a code is more actionable than a deal
+  if (c.hot) s += 12;                                   // editorial flag
+  if ((c.terms || []).length) s += 6;                   // documented conditions = more trustworthy
+  const d = c.expires ? daysUntil(c.expires) : null;
+  if (d !== null && d >= 0 && d <= 7) s += 15;          // genuine urgency
+  if (d !== null && d < 0) s -= 1000;                   // expired never ranks
+  const epc = Number(store && store.sovrnEpc);
+  if (epc > 0) s += Math.min(epc * 10, 30);             // affiliate performance, when available
+  return Math.round(s * 10) / 10;
+}
+
+function daysUntil(iso) {
+  const t = Date.parse(String(iso) + 'T23:59:59Z');
+  if (Number.isNaN(t)) return null;
+  return Math.ceil((t - Date.now()) / 86400000);
+}
+
+/* ── indexability gate ───────────────────────────────────────────────────────
+ * A store page earns indexing; it does not get it for existing. Requires a
+ * live offer AND something store-specific to say. Returning the reason makes
+ * the decision auditable instead of a silent boolean, and keeps the rule in
+ * one place so index/noindex cannot drift between the page and the sitemap.
+ *
+ * Deliberately conservative: the inputs (offer count, published conditions)
+ * change only when the catalogue changes, so a page cannot flip index state
+ * from one crawl to the next on noise. */
+function storeIndexable(store, list) {
+  if (!list.length) return { ok: false, why: 'no live offers' };
+  const live = list.filter(c => !c.expires || (daysUntil(c.expires) || 0) >= 0);
+  if (!live.length) return { ok: false, why: 'all offers expired' };
+  const facts = live.reduce((n, c) => n + (c.terms || []).length, 0);
+  if (!facts && live.length < 2) {
+    return { ok: false, why: 'single offer with no published conditions — nothing store-specific to rank' };
+  }
+  return { ok: true, why: live.length + ' live offer(s), ' + facts + ' published condition(s)' };
+}
+
+/* ── "why isn't my code working?" ────────────────────────────────────────────
+ * Derived ONLY from the terms already attached to that store's live offers.
+ * Nothing is inferred about the merchant: if a coupon says "Valid on orders
+ * over $60", that is a real minimum-spend restriction and we surface it. If a
+ * store's offers carry no classifiable conditions we say so plainly rather
+ * than padding the page with generic advice — a fabricated merchant
+ * restriction is worse than no section, because a shopper will act on it.
+ *
+ * This is also the main lever against the ~93% token overlap between store
+ * pages: the copy below is generated from 117 distinct condition strings that
+ * already differ per store, not from a template with the name swapped in. */
+const TROUBLE_RULES = [
+  { id: 'minimum spend',      rx: /over \$|orders? over|min(imum)?\.? (spend|order)|min\. spend/i,
+    label: 'The basket is below the minimum spend',
+    help: 'Add enough to clear the threshold shown in the offer terms — the code is checked when you apply it, not at payment.' },
+  { id: 'product exclusions', rx: /exclud|not valid on|does not apply|excluding/i,
+    label: 'Some items in the basket are excluded',
+    help: 'Sale stock, gift cards and newly released lines are the usual exclusions. Remove excluded items and re-apply.' },
+  { id: 'new customers only', rx: /new (customer|member|user)|first order|first-time/i,
+    label: 'The offer is for first orders only',
+    help: 'An existing account will be rejected even with a valid code.' },
+  { id: 'usage limit',        rx: /per (account|member|customer|user)|one redemption|limited to \d+ uses/i,
+    label: 'The per-account usage limit is reached',
+    help: 'This code can only be redeemed a set number of times per account.' },
+  { id: 'account required',   rx: /membership required|members? only|sign.?in|account required/i,
+    label: 'You need to be signed in',
+    help: 'The discount is tied to a membership or account, so it will not apply to a guest checkout.' },
+  { id: 'not stackable',      rx: /not stackable|cannot be combined|non-stackable/i,
+    label: 'Another discount is already applied',
+    help: 'Remove the existing promotion first — this offer cannot be combined with it.' },
+  { id: 'region restricted',  rx: /\b(uae|qatar|ksa|saudi|gcc|uk|us|eu)\b/i,
+    label: 'The offer is limited to certain countries',
+    help: 'Check you are on the storefront the offer was issued for; regional sites do not share codes.' },
+  { id: 'discount cap',       rx: /max discount|capped at|up to \w+ \d+/i,
+    label: 'The discount is capped',
+    help: 'The percentage applies only up to a maximum value, so a large basket saves less than the headline figure.' }
+];
+
+/* Returns the reasons actually evidenced by this store's offer terms, each
+   paired with the verbatim term it came from so the claim is auditable. */
+function troubleshootReasons(list) {
+  const seen = new Map();
+  (list || []).forEach(c => {
+    (c.terms || []).forEach(t => {
+      TROUBLE_RULES.forEach(r => {
+        if (r.rx.test(t) && !seen.has(r.id)) seen.set(r.id, { rule: r, evidence: t });
+      });
+    });
+  });
+  return [...seen.values()];
+}
+
 function storeFaqs(store, list, stamp) {
   const name = store.name || 'this store';
   const codes = list.filter(c => c.type === 'code').length;
@@ -1216,7 +1324,7 @@ ${list.length ? `<div class="stats">
 </div>` : ''}
 
 ${list.length ? `<h2 class="sec">${list.length} live ${esc(s.name)} offer${list.length === 1 ? '' : 's'}</h2>` : ''}
-${list.map(c => {
+${list.slice().sort((a, b) => offerScore(b, s) - offerScore(a, s)).map(c => {
   const cBase = S.resolveUrl(c.landingUrl, '') || S.resolveUrl(s.url, s.originalUrl || '');
   const cTarget = G.localizeUrl(cBase, region.code).url || cBase;
   return `<div class="deal">
@@ -1231,6 +1339,29 @@ ${list.map(c => {
 </div>`;
 }).join('\n')}
 
+${(function () {
+  /* Store-specific troubleshooting. Every bullet is backed by a term printed
+     verbatim underneath it, so a shopper can see exactly which offer the
+     restriction came from. Where the data carries no conditions we say that,
+     rather than inventing merchant rules. */
+  const reasons = troubleshootReasons(list);
+  if (!list.length) return '';
+  const head = '<h2 class="sec">Why isn\'t my ' + esc(s.name) + ' code working?</h2>';
+  if (!reasons.length) {
+    return head + '<div class="card"><p class="meta">The ' +
+      (list.length === 1 ? 'offer listed here carries' : 'offers listed here carry') +
+      ' no published conditions, so there is ' +
+      'nothing store-specific we can confirm. The usual causes are an expired code, ' +
+      'items the promotion excludes, or a discount already applied to the basket. ' +
+      'Every offer above shows when it was last verified.</p></div>';
+  }
+  return head + '<div class="card"><ul class="guide-list">' + reasons.map(r =>
+    '<li><b style="color:#cbd5e1">' + esc(r.rule.label) + '.</b> ' + esc(r.rule.help) +
+    '<br><span class="meta" style="font-size:12.5px">From the offer terms: &ldquo;' +
+    esc(r.evidence) + '&rdquo;</span></li>'
+  ).join('') + '</ul></div>';
+})()}
+
 ${storeFaq.length ? '<h2 class="sec">' + esc(s.name) + ' coupon FAQ</h2>' +
   storeFaq.map(f => '<details class="faq"><summary>' + esc(f.q) + '</summary><p>' + esc(f.a) + '</p></details>').join('') : ''}
 
@@ -1242,7 +1373,9 @@ ${siblings ? '<h2 class="sec">More stores</h2><div class="card"><div class="link
     // A store page with no deals is thin content — keep it out of the index.
     return res.end(page({
       title, description: desc, keywords: kw, canonical, path, lang, body,
-      robots: list.length ? 'index,follow' : 'noindex,follow',
+      /* One gate, one rule — see storeIndexable(). Keeping the decision in a
+         named function stops the page and the sitemap drifting apart. */
+      robots: storeIndexable(s, list).ok ? 'index,follow' : 'noindex,follow',
       jsonLd: graph([
         {
           '@type': 'CollectionPage',

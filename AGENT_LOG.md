@@ -4,6 +4,66 @@ Chronological record of automated changes. Newest first.
 
 ---
 
+## 2026-09-21 — Phase 3: store-page value, offer scoring, index gating
+
+Goal was inventory growth and breaking the 93% overlap. Inventory turned out to
+be blocked upstream; the overlap was not, so that is where the work went.
+
+### Sovrn coupon syndication — investigated, BLOCKED
+Probed the Product Promo Codes API (viglink.io/coupons/product) with the site
+key and the secret key across six auth methods: query param, secret_key param,
+Bearer, `secret`, X-Secret-Key, and HTTP basic. Every one returns **401**. The
+endpoint itself is reachable — omitting params returns a descriptive 400 naming
+`product_url` and `api_key` — so this is an entitlement decision on Sovrn's
+side, not a wiring bug. Monetisation is unaffected and still verified working
+(valid key -> 302, invalid -> 400).
+
+Conclusion: **offer inventory cannot grow from Sovrn today.** No offer was
+invented to compensate. Needs Sovrn to enable coupon-API access on the account,
+or a separate feed via SOVRN_OFFERS_URL, which fetch-sovrn.js already supports.
+
+### Store-specific troubleshooting — implemented
+The 40 live offers carry **117 distinct condition strings** that already differ
+per store and were being rendered only as a terms list on the coupon page.
+`troubleshootReasons()` classifies them against 8 patterns (minimum spend,
+exclusions, new-customer, usage limit, account required, non-stackable, region,
+discount cap) and renders a "Why isn't my [Store] code working?" section.
+
+Each bullet prints the verbatim term it was derived from, so every claim is
+auditable against the data. 25 of 40 stocked stores produce at least one
+reason; the other 15 get an explicit statement that no conditions are published
+rather than generic filler. Nothing is inferred about a merchant.
+
+Measured: median unique tokens per indexed store page **17 -> 34**, median
+unique share **9.2% -> 16.6%**, Amazon-vs-Nike token overlap **93% -> 84%**.
+
+### scripts/content-quality.js — new
+Renders all 70 store pages, derives the shared boilerplate as tokens appearing
+on more than half of them, and reports per page: word count, unique tokens,
+unique %, offers, published conditions, FAQ count, troubleshooting reasons, and
+index state. `--min=N` can fail CI, but it is wired into the 6-hourly workflow
+non-blocking: a low score means "add real facts", not "break the build".
+
+### offerScore() — internal ranking only
+Blends verification freshness, discount, engagement, rating, code-vs-deal,
+editorial flag, documented conditions and genuine urgency; expired offers score
+-1000 so they can never rank. Reads `sovrnEpc` when present — absent for every
+store today, so it contributes nothing yet and will improve the ordering
+automatically if affiliate performance data ever lands.
+
+Explicitly **not** a verification claim. The only verification signal shown to
+users remains the `verifiedHoursAgo` timestamp from the automated re-check.
+
+### storeIndexable() — one gate, auditable
+Indexing now requires a live offer AND something store-specific to say, and
+returns the reason rather than a bare boolean. Both the page's robots tag and
+the sitemap read the same function, so they cannot drift. Inputs change only
+when the catalogue changes, so pages cannot flip index state on crawl noise.
+Verified: 40 index / 30 noindex — identical to before, so no instability was
+introduced.
+
+---
+
 ## 2026-09-21 — Full A-to-Z audit
 
 Audited code, data, links, icons, automation, security, SEO, performance and the
