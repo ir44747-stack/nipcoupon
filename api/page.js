@@ -301,8 +301,14 @@ function storeFaqs(store, list, stamp) {
   const deals = list.length - codes;
   const out = [];
 
+  /* "a Amazon coupon" appeared on 16 of 70 store pages and, worse, inside the
+     FAQPage schema — the exact string Google may surface as a rich result.
+     Article agreement is by first letter; ASOS and e.l.f. are read aloud
+     letter-first so the vowel rule holds for them too. */
+  const article = /^[aeiou]/i.test(name) ? 'an' : 'a';
+
   out.push({
-    q: 'How do I apply a ' + name + ' coupon code?',
+    q: 'How do I apply ' + article + ' ' + name + ' coupon code?',
     a: 'Copy the code from this page, add your items to the basket at ' + name +
        ', then paste it into the promo or discount field at checkout and apply it before paying. ' +
        'Confirm the order total actually drops — if it does not, the basket may not meet the ' +
@@ -327,7 +333,7 @@ function storeFaqs(store, list, stamp) {
   });
 
   out.push({
-    q: 'Does it cost anything to use a ' + name + ' code from NipCoupon?',
+    q: 'Does it cost anything to use ' + article + ' ' + name + ' code from NipCoupon?',
     a: 'No. NipCoupon is free to use and never asks for payment to reveal a code. We may earn a ' +
        'commission when you buy through our links, which comes from the retailer and never changes ' +
        'the price you pay.'
