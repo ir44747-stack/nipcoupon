@@ -4,6 +4,68 @@ Chronological record of automated changes. Newest first.
 
 ---
 
+## 2026-09-21 — Full A-to-Z audit
+
+Audited code, data, links, icons, automation, security, SEO, performance and the
+end-to-end user journey. Four real defects found and fixed; everything else was
+already healthy and was left alone.
+
+### Fixed
+1. **21 store URLs wasted a redirect hop** (39 of 70 redirected; 21 were safely
+   canonicalisable). Mostly a missing `www`. Every hop is latency on a monetised
+   click and a weaker affiliate handoff. Rewrote `originalUrl` and kept the
+   `?u=` payload inside the Sovrn wrapper in sync, preserving the
+   `${SOVRN_API_KEY}` placeholder. Re-probed: 21/21 now resolve in 0 hops.
+   Deliberately skipped cross-domain, query-adding and path-deepening redirects
+   (e.g. `spotify.com` -> `open.spotify.com`, `norton.com` -> `us.norton.com`)
+   because those change the destination, not just its canonical form.
+2. **Apple rendered as the text "APPL".** `logoTile()` fell back to slicing the
+   store name whenever `abbr` was empty, ignoring the `glyph` SVG the record
+   actually carries — the SPA honoured it, the SSR pages did not, so the two
+   surfaces disagreed on the brand's identity. Now renders the SVG, with an
+   `^<svg` guard so a data file cannot inject markup.
+3. **Expired offers were never removed.** `build-sitemap` hid them from the
+   sitemap but the pages stayed live and the homepage kept listing them, so a
+   shopper could reach a code that cannot work. Added `prune` +
+   `validate` + sitemap-rebuild steps to `daily-growth.yml`. Prune keys off a
+   confirmed expiry date only, never a link probe, so a flaky network can never
+   delete live revenue. Removes 0 today; acts when offers genuinely lapse.
+4. **A failed nightly push reported success.** The commit step used
+   `... || (git commit && git push)` with no `pipefail`, so a rejected push
+   exited 0 and the sync silently persisted nothing. Now fails loudly with
+   `::error::`.
+5. **No clickjacking protection.** Added `X-Frame-Options: SAMEORIGIN` and
+   `Cross-Origin-Opener-Policy` — the site could be framed and an attacker could
+   overlay the affiliate CTA.
+
+### Verified healthy, no change made
+- 34 JS files + 3 inline scripts parse; 16 JSON files valid; i18n 223/223.
+- Data: 0 duplicate ids/names/URLs/codes/titles, 0 orphans, 0 bad category or
+  region refs, 0 expired, 0 type/code mismatches, 0 ratings out of range.
+- 119 routes render, 0 errors, 0 bad JSON-LD, 0 missing canonical, 0 thin pages,
+  97 internal links all resolving.
+- Security: no secret reachable from the browser, no 32-hex key in the client
+  bundle, `api/_*.js` unroutable, `npm audit` 0 vulnerabilities, all 26
+  `innerHTML` writes escaped.
+- Journey tested in a real browser, desktop and mobile: search (incl. typo and
+  empty states), filters, reveal, copy-to-clipboard, and the affiliate open —
+  tracking fires before the redirect.
+
+### Flagged, not "fixed"
+- **7 merchant URLs returned curl status 000** (TLS handshake, exit 35).
+  Investigated rather than pruned: DNS resolves, a direct `openssl s_client`
+  handshake succeeds, and the same merchants return 302 through the Sovrn
+  wrapper. This is sandbox egress, not dead merchants. No data touched.
+- **SSR routes are never CDN-cached** (`x-vercel-cache: MISS` on every hit,
+  `max-age=0` overriding the function's `s-maxage=3600`). Cause: every SSR path
+  passes through `middleware.js` for geo routing, and Vercel disables the CDN
+  for middleware-handled responses. Platform behaviour, not a code bug. TTFB is
+  still 0.14-0.29s, so this is a cost/scale concern rather than a user-facing
+  one. Fixing it means dropping geo routing or moving it client-side — a product
+  decision, not a safe unilateral change.
+
+---
+
 ## 2026-09-13 — Supervisor routine: automated health check
 
 Full audit run against the directive's three monitoring areas. **No defects

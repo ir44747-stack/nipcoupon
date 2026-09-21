@@ -145,12 +145,24 @@ function intentKeywords(baseCsv, subject, stamp) {
    abbreviation on the brand colour — same treatment as .store-logo in the SPA,
    so a visitor moving between the two sees one product. */
 function logoTile(store, name) {
-  const label = String(store.abbr || name || '?').slice(0, 4).toUpperCase();
   const bg = /^#[0-9a-f]{3,8}$/i.test(String(store.color || '')) ? store.color : '#1e293b';
   const fg = /^#[0-9a-f]{3,8}$/i.test(String(store.fg || '')) ? store.fg : '#ffffff';
+  const open = '<div class="logo" style="background:' + esc(bg) + ';color:' + esc(fg);
+
+  /* A store may ship an inline SVG mark instead of an abbreviation — Apple has
+     one and an empty `abbr`, so the old code fell through to slicing the name
+     and rendered "APPL" next to an Apple heading. The SPA already honours
+     `glyph`; the SSR tile did not, so the two surfaces disagreed on the brand's
+     visual identity. Only <svg> markup is accepted, so this cannot become an
+     HTML injection point via the data file. */
+  const glyph = String(store.glyph || '').trim();
+  if (/^<svg[\s>]/i.test(glyph) && !/<script/i.test(glyph)) {
+    return open + '" aria-hidden="true">' + glyph + '</div>';
+  }
+
+  const label = String(store.abbr || name || '?').slice(0, 4).toUpperCase();
   const size = label.length >= 4 ? '1.05rem' : label.length === 3 ? '1.25rem' : '1.45rem';
-  return '<div class="logo" style="background:' + esc(bg) + ';color:' + esc(fg) +
-    ';font-size:' + size + '" aria-hidden="true"><span>' + esc(label) + '</span></div>';
+  return open + ';font-size:' + size + '" aria-hidden="true"><span>' + esc(label) + '</span></div>';
 }
 
 /* Rating as a pill. Kept text-based rather than drawn stars: it reads in every

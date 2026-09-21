@@ -655,7 +655,7 @@
       "abbr": "roc",
       "color": "#30cf9f",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Frocketlanguages.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.rocketlanguages.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -665,7 +665,7 @@
       "sovrnGroupId": 31,
       "sovrnEpc": 0.538,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/rocketlanguages-com/e5227c2a4f64a54365897c3a0dd0f26103c7089c.jpg",
-      "originalUrl": "https://rocketlanguages.com",
+      "originalUrl": "https://www.rocketlanguages.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -675,7 +675,7 @@
       "abbr": "lig",
       "color": "#cf8530",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Flightsonline.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.lightsonline.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -685,7 +685,7 @@
       "sovrnGroupId": 356,
       "sovrnEpc": 0.465,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/lightsonline/cdc5025dba2c73b6406189f32a424efc72898964.jpg",
-      "originalUrl": "https://lightsonline.com",
+      "originalUrl": "https://www.lightsonline.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -695,7 +695,7 @@
       "abbr": "pro",
       "color": "#3ecf30",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fproflowers.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.proflowers.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -705,7 +705,7 @@
       "sovrnGroupId": 379,
       "sovrnEpc": 0.313,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/proflowers/b5d13ff280208d47c3fa3d88ca45f4641f0a11d3.jpg",
-      "originalUrl": "https://proflowers.com",
+      "originalUrl": "https://www.proflowers.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -715,7 +715,7 @@
       "abbr": "jos",
       "color": "#cf8230",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fjosbank.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.josbank.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -725,7 +725,7 @@
       "sovrnGroupId": 268,
       "sovrnEpc": 0.298,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/jos-a-bank/dd49355e8a980066a888d7c219437c5b91884e80.png",
-      "originalUrl": "https://josbank.com",
+      "originalUrl": "https://www.josbank.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -775,7 +775,7 @@
       "abbr": "bro",
       "color": "#cfb930",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fbrownells.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.brownells.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -785,7 +785,7 @@
       "sovrnGroupId": 340,
       "sovrnEpc": 0.214,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/brownells/5be95909d5609740a344ffd8ebb8d67a4a650e9d.jpg",
-      "originalUrl": "https://brownells.com",
+      "originalUrl": "https://www.brownells.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -815,7 +815,7 @@
       "abbr": "vis",
       "color": "#30cfc4",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fvistaprint.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.vistaprint.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -825,7 +825,7 @@
       "sovrnGroupId": 275,
       "sovrnEpc": 0.168,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/vistaprint/9002804cb38a08c749f24a9c32e0ae829fc22c6c.gif",
-      "originalUrl": "https://vistaprint.com",
+      "originalUrl": "https://www.vistaprint.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -855,7 +855,7 @@
       "abbr": "gla",
       "color": "#30cf72",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fglassesusa.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.glassesusa.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -865,7 +865,7 @@
       "sovrnGroupId": 54,
       "sovrnEpc": 0.149,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/glassesusa/1cde4668ca44045685b39bfdb77430843ac37132.png",
-      "originalUrl": "https://glassesusa.com",
+      "originalUrl": "https://www.glassesusa.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -875,7 +875,7 @@
       "abbr": "ske",
       "color": "#cfa430",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fskechers.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.skechers.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -885,7 +885,7 @@
       "sovrnGroupId": 355,
       "sovrnEpc": 0.142,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/skechers/0b0db4fb4e665e86e831239a8cf2d2466706dcef.png",
-      "originalUrl": "https://skechers.com",
+      "originalUrl": "https://www.skechers.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -895,7 +895,7 @@
       "abbr": "wal",
       "color": "#30cf46",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwalmart.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.walmart.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -905,7 +905,7 @@
       "sovrnGroupId": 384,
       "sovrnEpc": 0.14,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/walmart/a223a22d797cc092521c680108c4c568489b55e9.png",
-      "originalUrl": "https://walmart.com",
+      "originalUrl": "https://www.walmart.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -935,7 +935,7 @@
       "abbr": "anc",
       "color": "#8230cf",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Farchives.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.archives.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -945,7 +945,7 @@
       "sovrnGroupId": 99,
       "sovrnEpc": 0.126,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/ancestry/8e8b4157bc723d37d59681654d0a63858dd6f37d.jpg",
-      "originalUrl": "https://archives.com",
+      "originalUrl": "https://www.archives.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -955,7 +955,7 @@
       "abbr": "hot",
       "color": "#30cfc9",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fhotels.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.hotels.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -965,7 +965,7 @@
       "sovrnGroupId": 102,
       "sovrnEpc": 0.124,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/hotels-com/2eaf2b6f198cc5b3e4cf931442af1d821b3bc9ef.jpg",
-      "originalUrl": "https://hotels.com",
+      "originalUrl": "https://www.hotels.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -975,7 +975,7 @@
       "abbr": "lig",
       "color": "#3092cf",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Flightinthebox.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.lightinthebox.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -985,7 +985,7 @@
       "sovrnGroupId": 21,
       "sovrnEpc": 0.105,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/light-in-the-box/e23e7158a04f40ffc631183701353791afcede1a.jpg",
-      "originalUrl": "https://lightinthebox.com",
+      "originalUrl": "https://www.lightinthebox.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -995,7 +995,7 @@
       "abbr": "won",
       "color": "#cfa430",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwondershare.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.wondershare.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1005,7 +1005,7 @@
       "sovrnGroupId": 117,
       "sovrnEpc": 0.105,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/wondershare/2d63210a60fd121929a52a26407d29bbcdab3c9d.png",
-      "originalUrl": "https://wondershare.com",
+      "originalUrl": "https://www.wondershare.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -1015,7 +1015,7 @@
       "abbr": "way",
       "color": "#3830cf",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fperigold.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.perigold.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1025,7 +1025,7 @@
       "sovrnGroupId": 184,
       "sovrnEpc": 0.103,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/wayfair/ba97def195243fdb4dcd5354f38e7827ea7cae4d.png",
-      "originalUrl": "https://perigold.com",
+      "originalUrl": "https://www.perigold.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -1035,7 +1035,7 @@
       "abbr": "1in",
       "color": "#30b7cf",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2F1ink.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.1ink.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1045,7 +1045,7 @@
       "sovrnGroupId": 227,
       "sovrnEpc": 0.097,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/1ink/bbbf1398edc03b3662b2115201e97ab9fa25f139.png",
-      "originalUrl": "https://1ink.com",
+      "originalUrl": "https://www.1ink.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -1075,7 +1075,7 @@
       "abbr": "sea",
       "color": "#b230cf",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fsearspartsdirect.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.searspartsdirect.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1085,7 +1085,7 @@
       "sovrnGroupId": 155,
       "sovrnEpc": 0.093,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/sears-parts-direct/76a5f6830445086c4d6a740b2d8ea7f1fda10181.png",
-      "originalUrl": "https://searspartsdirect.com",
+      "originalUrl": "https://www.searspartsdirect.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -1095,7 +1095,7 @@
       "abbr": "cab",
       "color": "#cf3630",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fcabelas.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.cabelas.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1105,7 +1105,7 @@
       "sovrnGroupId": 163,
       "sovrnEpc": 0.089,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/cabela-s/7056ade6769b8da2682d9ae7c1730220d57914c9.png",
-      "originalUrl": "https://cabelas.com",
+      "originalUrl": "https://www.cabelas.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -1115,7 +1115,7 @@
       "abbr": "new",
       "color": "#30cf8f",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Ffoodsaver.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.foodsaver.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1125,7 +1125,7 @@
       "sovrnGroupId": 210,
       "sovrnEpc": 0.089,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/newell-brands-food-and-appliances/2687c74c9387ae5083d8c224e6e4bf04250f0aa2.png",
-      "originalUrl": "https://foodsaver.com",
+      "originalUrl": "https://www.foodsaver.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -1135,7 +1135,7 @@
       "abbr": "cal",
       "color": "#b7cf30",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fcalendars.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.calendars.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1145,7 +1145,7 @@
       "sovrnGroupId": 108,
       "sovrnEpc": 0.087,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/calendars/68d626f9f856c7e469df32e9896294ea3f97f29b.jpg",
-      "originalUrl": "https://calendars.com",
+      "originalUrl": "https://www.calendars.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -1195,7 +1195,7 @@
       "abbr": "vid",
       "color": "#cf3830",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fvideobuster.de&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.videobuster.de&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1205,7 +1205,7 @@
       "sovrnGroupId": 247,
       "sovrnEpc": 0.082,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/videobuster-de/91e3787900a416c29bbf4f3496e3e3e874ff5ef5.jpg",
-      "originalUrl": "https://videobuster.de",
+      "originalUrl": "https://www.videobuster.de",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     },
@@ -1215,7 +1215,7 @@
       "abbr": "zap",
       "color": "#30bccf",
       "fg": "#0b1220",
-      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fzappos.com&cuid=nipcoupon",
+      "url": "https://sovrn.co/?key=${SOVRN_API_KEY}&u=https%3A%2F%2Fwww.zappos.com&cuid=nipcoupon",
       "affiliateTag": "",
       "regions": [
         "GLOBAL"
@@ -1225,7 +1225,7 @@
       "sovrnGroupId": 192,
       "sovrnEpc": 0.081,
       "logo": "https://commerce-images.sovrn.co/merchant/logo/official/240x120/zappos/942ad990447902a263286a25a70dde99b0b983b3.jpg",
-      "originalUrl": "https://zappos.com",
+      "originalUrl": "https://www.zappos.com",
       "affiliateSource": "sovrn",
       "sovrnVerified": true
     }

@@ -54,9 +54,41 @@ jobs:
           fi
           npm run growth
 
+      # Drop offers whose expiry has passed. Without this the catalogue only
+      # ever grows: build-sitemap already hides expired coupons from the
+      # sitemap, but the pages stayed live and the homepage kept listing them,
+      # so shoppers hit codes that cannot work. --prune rewrites coupons.json;
+      # it removes an offer only on a confirmed expiry date, never on a link
+      # probe, so a flaky network can never delete live revenue.
+      - name: Prune expired offers
+        run: |
+          set -o pipefail
+          npm run prune 2>&1 | tee /tmp/prune.log
+
+      - name: Verify data still valid after prune
+        run: |
+          set -o pipefail
+          npm run validate 2>&1 | tee /tmp/validate.log
+
+      - name: Rebuild sitemap after prune
+        run: npm run build-sitemap
+
       - name: Commit and push changes if any
         run: |
+          # pipefail matters here: without it a rejected `git push` inside the
+          # `||` chain still exits 0, so a sync that pushed nothing reported
+          # success and nobody found out for days.
+          set -o pipefail
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: automated SEO and growth sync [skip ci]" && git push)
+          if git diff --quiet && git diff --staged --quiet; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git commit -m "chore: automated SEO and growth sync [skip ci]"
+          if ! git push; then
+            echo "::error::git push failed — the sync produced changes that were NOT persisted."
+            exit 1
+          fi
+          echo "pushed $(git rev-parse --short HEAD)"
