@@ -1,13 +1,13 @@
 {
-  "updated": "2026-09-30T00:15:15.732Z",
+  "updated": "2026-10-01T00:16:02.960Z",
   "entries": {
     "home": {
-      "hash": "a584d07e0b3da71f",
-      "lastmod": "2026-09-02"
+      "hash": "bb7c8cb22e81406c",
+      "lastmod": "2026-10-01"
     },
     "category:tech": {
-      "hash": "d34e86c9f8df3e76",
-      "lastmod": "2026-09-02"
+      "hash": "62fa890482cf7daa",
+      "lastmod": "2026-10-01"
     },
     "category:fashion": {
       "hash": "f5d0aae538a1330e",
@@ -83,10 +83,6 @@
     },
     "store:dell": {
       "hash": "6e52dbfda69f607f",
-      "lastmod": "2026-09-02"
-    },
-    "store:lenovo": {
-      "hash": "3df4fbacd437c03e",
       "lastmod": "2026-09-02"
     },
     "store:logitech": {
@@ -264,10 +260,6 @@
     "coupon:c20": {
       "hash": "a189a17415e52443",
       "lastmod": "2026-08-22"
-    },
-    "coupon:c21": {
-      "hash": "77b6b095c64fd2a8",
-      "lastmod": "2026-08-23"
     },
     "coupon:c22": {
       "hash": "60e106d9b2ffb7c9",
