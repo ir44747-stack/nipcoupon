@@ -1,17 +1,17 @@
 {
-  "updated": "2026-10-01T00:16:02.960Z",
+  "updated": "2026-10-02T04:11:24.890Z",
   "entries": {
     "home": {
-      "hash": "bb7c8cb22e81406c",
-      "lastmod": "2026-10-01"
+      "hash": "3823d9fd4eab7443",
+      "lastmod": "2026-10-02"
     },
     "category:tech": {
       "hash": "62fa890482cf7daa",
       "lastmod": "2026-10-01"
     },
     "category:fashion": {
-      "hash": "f5d0aae538a1330e",
-      "lastmod": "2026-09-02"
+      "hash": "dd6348eadd72b4f5",
+      "lastmod": "2026-10-02"
     },
     "category:travel": {
       "hash": "b52d13defe6150a2",
@@ -59,10 +59,6 @@
     },
     "store:zara": {
       "hash": "3b1a7f4c66a854ee",
-      "lastmod": "2026-09-02"
-    },
-    "store:asos": {
-      "hash": "ab6e63bfedf49568",
       "lastmod": "2026-09-02"
     },
     "store:ounass": {
@@ -296,10 +292,6 @@
     "coupon:c30": {
       "hash": "cf2cbdb73e6f284e",
       "lastmod": "2026-09-01"
-    },
-    "coupon:c31": {
-      "hash": "d5a828a2cee0048e",
-      "lastmod": "2026-08-03"
     },
     "coupon:c32": {
       "hash": "a070bf2da9d4753d",

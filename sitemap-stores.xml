@@ -84,15 +84,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nipcoupon.vercel.app/store/asos</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/store/asos?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/store/asos?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://nipcoupon.vercel.app/store/asos"/>
-    <lastmod>2026-09-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://nipcoupon.vercel.app/store/ounass</loc>
     <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/store/ounass?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/store/ounass?lang=en"/>
