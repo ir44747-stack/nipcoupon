@@ -575,34 +575,6 @@
       "verified": true
     },
     {
-      "id": "c21",
-      "storeId": "lenovo",
-      "categoryId": "tech",
-      "type": "code",
-      "badge": "40% OFF",
-      "value": 40,
-      "title": "40% off ThinkPad & Legion with student verification",
-      "verifiedHoursAgo": 6,
-      "expires": "2026-10-01",
-      "uses": 1890,
-      "rating": 4.5,
-      "addedDaysAgo": 10,
-      "code": "THINK40",
-      "terms": [
-        "Student status verification required",
-        "Excludes clearance and refurbished",
-        "Limited to 1 unit per student"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c21",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c21",
-      "categoryPath": "/category/tech",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c22",
       "storeId": "emirates",
       "categoryId": "travel",
