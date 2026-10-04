@@ -825,35 +825,6 @@
       "verified": true
     },
     {
-      "id": "c31",
-      "storeId": "asos",
-      "categoryId": "fashion",
-      "type": "code",
-      "badge": "20% OFF",
-      "value": 20,
-      "title": "20% student discount + free next-day delivery",
-      "verifiedHoursAgo": 3,
-      "expires": "2026-10-02",
-      "uses": 4610,
-      "rating": 4.4,
-      "addedDaysAgo": 30,
-      "code": "ASOS20",
-      "terms": [
-        "Valid student email required",
-        "Premier delivery signup needed",
-        "Excludes sale items over 70% off"
-      ],
-      "regions": [
-        "GB",
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c31",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c31",
-      "categoryPath": "/category/fashion",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c32",
       "storeId": "careem",
       "categoryId": "travel",
