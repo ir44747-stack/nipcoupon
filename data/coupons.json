@@ -373,35 +373,6 @@
       "verified": true
     },
     {
-      "id": "c14",
-      "storeId": "hostinger",
-      "categoryId": "software",
-      "type": "code",
-      "badge": "78% OFF",
-      "value": 78,
-      "title": "Up to 78% off web hosting + free domain",
-      "verifiedHoursAgo": 9,
-      "expires": "2026-10-05",
-      "uses": 5120,
-      "rating": 4.6,
-      "addedDaysAgo": 17,
-      "code": "HOST78",
-      "hot": true,
-      "terms": [
-        "48-month plan for maximum saving",
-        "Free domain for the first year",
-        "Renews at regular price"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c14",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c14",
-      "categoryPath": "/category/software",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c15",
       "storeId": "namshi",
       "categoryId": "fashion",
