@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-07T04:26:57.431Z",
+  "updated": "2026-10-08T04:38:05.984Z",
   "entries": {
     "home": {
-      "hash": "4c4c0397d58bf237",
-      "lastmod": "2026-10-05"
+      "hash": "14cad8cd15fdaf5a",
+      "lastmod": "2026-10-08"
     },
     "category:tech": {
       "hash": "62fa890482cf7daa",
@@ -22,8 +22,8 @@
       "lastmod": "2026-09-02"
     },
     "category:software": {
-      "hash": "cd08d6d287b657fe",
-      "lastmod": "2026-10-05"
+      "hash": "c76848fc374c99bb",
+      "lastmod": "2026-10-08"
     },
     "store:amazon": {
       "hash": "f88484f3af26f850",
@@ -145,10 +145,6 @@
       "hash": "17363021fe946526",
       "lastmod": "2026-09-02"
     },
-    "store:microsoft-365": {
-      "hash": "c7dc1e8002992ba2",
-      "lastmod": "2026-09-02"
-    },
     "store:nordvpn": {
       "hash": "c1c70b3f73df8745",
       "lastmod": "2026-09-02"
@@ -256,10 +252,6 @@
     "coupon:c23": {
       "hash": "ffa955b714869b92",
       "lastmod": "2026-08-25"
-    },
-    "coupon:c24": {
-      "hash": "e80721e24ae6fee4",
-      "lastmod": "2026-08-26"
     },
     "coupon:c25": {
       "hash": "911cec24b1adf2db",

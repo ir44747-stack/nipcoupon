@@ -273,15 +273,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nipcoupon.vercel.app/store/microsoft-365</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/store/microsoft-365?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/store/microsoft-365?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://nipcoupon.vercel.app/store/microsoft-365"/>
-    <lastmod>2026-09-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://nipcoupon.vercel.app/store/nordvpn</loc>
     <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/store/nordvpn?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/store/nordvpn?lang=en"/>
