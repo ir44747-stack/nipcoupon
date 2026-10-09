@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-08T04:38:05.984Z",
+  "updated": "2026-10-09T04:41:03.341Z",
   "entries": {
     "home": {
-      "hash": "14cad8cd15fdaf5a",
-      "lastmod": "2026-10-08"
+      "hash": "7e56bccd222442d6",
+      "lastmod": "2026-10-09"
     },
     "category:tech": {
       "hash": "62fa890482cf7daa",
@@ -14,8 +14,8 @@
       "lastmod": "2026-10-02"
     },
     "category:travel": {
-      "hash": "b52d13defe6150a2",
-      "lastmod": "2026-09-02"
+      "hash": "e96d61d1c02c159a",
+      "lastmod": "2026-10-09"
     },
     "category:gaming": {
       "hash": "896af4f1ab21b1fe",
@@ -111,10 +111,6 @@
     },
     "store:careem": {
       "hash": "9785c16584346545",
-      "lastmod": "2026-09-02"
-    },
-    "store:uber": {
-      "hash": "7829821a85dcb812",
       "lastmod": "2026-09-02"
     },
     "store:steam": {
@@ -300,10 +296,6 @@
     "coupon:c37": {
       "hash": "32e27aebe4e9b599",
       "lastmod": "2026-08-09"
-    },
-    "coupon:c38": {
-      "hash": "5a39444907f1c89c",
-      "lastmod": "2026-08-10"
     },
     "coupon:c39": {
       "hash": "a38fc171977e977e",
