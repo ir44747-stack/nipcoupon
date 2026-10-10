@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-09T04:41:03.341Z",
+  "updated": "2026-10-10T04:26:50.096Z",
   "entries": {
     "home": {
-      "hash": "7e56bccd222442d6",
-      "lastmod": "2026-10-09"
+      "hash": "4bc352939a51e5df",
+      "lastmod": "2026-10-10"
     },
     "category:tech": {
       "hash": "62fa890482cf7daa",
@@ -22,8 +22,8 @@
       "lastmod": "2026-09-02"
     },
     "category:software": {
-      "hash": "c76848fc374c99bb",
-      "lastmod": "2026-10-08"
+      "hash": "bb020913d8ab0830",
+      "lastmod": "2026-10-10"
     },
     "store:amazon": {
       "hash": "f88484f3af26f850",
@@ -145,10 +145,6 @@
       "hash": "c1c70b3f73df8745",
       "lastmod": "2026-09-02"
     },
-    "store:canva": {
-      "hash": "a1fc858a06837b72",
-      "lastmod": "2026-09-02"
-    },
     "store:notion": {
       "hash": "9928dd11a19f6daf",
       "lastmod": "2026-09-02"
@@ -232,10 +228,6 @@
     "coupon:c18": {
       "hash": "364d7b71a396c67a",
       "lastmod": "2026-08-20"
-    },
-    "coupon:c19": {
-      "hash": "4de8ae04f2094671",
-      "lastmod": "2026-08-21"
     },
     "coupon:c20": {
       "hash": "a189a17415e52443",

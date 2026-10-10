@@ -273,15 +273,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nipcoupon.vercel.app/store/canva</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/store/canva?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/store/canva?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://nipcoupon.vercel.app/store/canva"/>
-    <lastmod>2026-09-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://nipcoupon.vercel.app/store/notion</loc>
     <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/store/notion?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/store/notion?lang=en"/>

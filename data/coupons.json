@@ -603,34 +603,6 @@
       "verified": true
     },
     {
-      "id": "c24",
-      "storeId": "microsoft-365",
-      "categoryId": "software",
-      "type": "code",
-      "badge": "3 MO FREE",
-      "value": 35,
-      "title": "3 months free on annual Microsoft 365 plans",
-      "verifiedHoursAgo": 9,
-      "expires": "2026-10-08",
-      "uses": 3040,
-      "rating": 4.4,
-      "addedDaysAgo": 7,
-      "code": "M365FREE",
-      "terms": [
-        "New and returning subscribers",
-        "Annual commitment required",
-        "Family plan limited to 6 people"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c24",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c24",
-      "categoryPath": "/category/software",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c25",
       "storeId": "airbnb",
       "categoryId": "travel",
