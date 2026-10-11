@@ -952,33 +952,6 @@
       "verified": true
     },
     {
-      "id": "c38",
-      "storeId": "uber",
-      "categoryId": "travel",
-      "type": "deal",
-      "badge": "1 MO FREE",
-      "value": 60,
-      "title": "One month of Uber One free — zero delivery fees",
-      "verifiedHoursAgo": 5,
-      "expires": "2026-10-09",
-      "uses": 5150,
-      "rating": 4.4,
-      "addedDaysAgo": 23,
-      "terms": [
-        "New Uber One members",
-        "Auto-renews unless cancelled",
-        "Minimum order value applies"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c38",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c38",
-      "categoryPath": "/category/travel",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c39",
       "storeId": "spotify",
       "categoryId": "software",
