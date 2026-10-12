@@ -165,15 +165,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nipcoupon.vercel.app/store/emirates</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/store/emirates?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/store/emirates?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://nipcoupon.vercel.app/store/emirates"/>
-    <lastmod>2026-09-02</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://nipcoupon.vercel.app/store/expedia</loc>
     <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/store/expedia?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/store/expedia?lang=en"/>

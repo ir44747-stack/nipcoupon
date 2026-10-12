@@ -491,34 +491,6 @@
       "verified": true
     },
     {
-      "id": "c19",
-      "storeId": "canva",
-      "categoryId": "software",
-      "type": "code",
-      "badge": "60% OFF",
-      "value": 60,
-      "title": "60% off Canva Pro annual for new teams",
-      "verifiedHoursAgo": 8,
-      "expires": "2026-10-10",
-      "uses": 6210,
-      "rating": 4.7,
-      "addedDaysAgo": 12,
-      "code": "CANVA60",
-      "terms": [
-        "New Canva Pro customers only",
-        "Annual billing required",
-        "Team plan seats limited to 5"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c19",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c19",
-      "categoryPath": "/category/software",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c20",
       "storeId": "hm",
       "categoryId": "fashion",
