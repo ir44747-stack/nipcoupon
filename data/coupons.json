@@ -518,35 +518,6 @@
       "verified": true
     },
     {
-      "id": "c22",
-      "storeId": "emirates",
-      "categoryId": "travel",
-      "type": "code",
-      "badge": "10% OFF",
-      "value": 10,
-      "title": "10% off flex fares + extra baggage allowance",
-      "verifiedHoursAgo": 7,
-      "expires": "2026-10-12",
-      "uses": 1620,
-      "rating": 4.3,
-      "addedDaysAgo": 9,
-      "code": "EK10",
-      "terms": [
-        "Flex and Flex Plus fares only",
-        "Emirates Skywards number required",
-        "Blackout dates apply"
-      ],
-      "regions": [
-        "AE",
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c22",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c22",
-      "categoryPath": "/category/travel",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c23",
       "storeId": "xbox",
       "categoryId": "gaming",

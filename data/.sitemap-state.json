@@ -1,17 +1,17 @@
 {
-  "updated": "2026-10-13T05:35:10.004Z",
+  "updated": "2026-10-14T03:38:29.613Z",
   "entries": {
     "home": {
-      "hash": "5e3976aaddf184c2",
-      "lastmod": "2026-10-12"
+      "hash": "a6bceb3c50808414",
+      "lastmod": "2026-10-14"
     },
     "category:tech": {
       "hash": "62fa890482cf7daa",
       "lastmod": "2026-10-01"
     },
     "category:fashion": {
-      "hash": "dd6348eadd72b4f5",
-      "lastmod": "2026-10-02"
+      "hash": "baa558082dbbf33c",
+      "lastmod": "2026-10-14"
     },
     "category:travel": {
       "hash": "b8cb2521a53b9bc5",
@@ -63,10 +63,6 @@
     },
     "store:ounass": {
       "hash": "c53c7547a858e5c2",
-      "lastmod": "2026-09-02"
-    },
-    "store:farfetch": {
-      "hash": "44f7f69375315ef6",
       "lastmod": "2026-09-02"
     },
     "store:samsung": {
@@ -284,10 +280,6 @@
     "coupon:c39": {
       "hash": "a38fc171977e977e",
       "lastmod": "2026-08-11"
-    },
-    "coupon:c40": {
-      "hash": "64e9766970745d2e",
-      "lastmod": "2026-08-12"
     }
   }
 }
