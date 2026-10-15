@@ -75,15 +75,6 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://nipcoupon.vercel.app/coupon/c9</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/coupon/c9?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/coupon/c9?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://nipcoupon.vercel.app/coupon/c9"/>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://nipcoupon.vercel.app/coupon/c10</loc>
     <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/coupon/c10?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/coupon/c10?lang=en"/>
