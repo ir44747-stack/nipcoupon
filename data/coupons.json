@@ -921,32 +921,6 @@
       "categoryPath": "/category/software",
       "source": "local",
       "verified": true
-    },
-    {
-      "id": "c40",
-      "storeId": "farfetch",
-      "categoryId": "fashion",
-      "type": "code",
-      "badge": "15% OFF",
-      "value": 15,
-      "title": "15% off your first order across 1,400 boutiques",
-      "verifiedHoursAgo": 11,
-      "expires": "2026-10-14",
-      "uses": 1470,
-      "rating": 4.3,
-      "addedDaysAgo": 21,
-      "code": "FFNEW15",
-      "terms": [
-        "New Farfetch customers"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c40",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c40",
-      "categoryPath": "/category/fashion",
-      "source": "local",
-      "verified": true
     }
   ]
 }
