@@ -229,35 +229,6 @@
       "verified": true
     },
     {
-      "id": "c9",
-      "storeId": "nordvpn",
-      "categoryId": "software",
-      "type": "code",
-      "badge": "68% OFF",
-      "value": 68,
-      "title": "68% off the 2-year plan + 3 extra months free",
-      "verifiedHoursAgo": 2,
-      "expires": "2026-10-15",
-      "uses": 6740,
-      "rating": 4.8,
-      "addedDaysAgo": 22,
-      "code": "NORD68",
-      "hot": true,
-      "terms": [
-        "New customers only",
-        "30-day money-back guarantee",
-        "Auto-renews at standard rate"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c9",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c9",
-      "categoryPath": "/category/software",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c10",
       "storeId": "samsung",
       "categoryId": "tech",
