@@ -599,34 +599,6 @@
       "verified": true
     },
     {
-      "id": "c28",
-      "storeId": "expedia",
-      "categoryId": "travel",
-      "type": "code",
-      "badge": "15% OFF",
-      "value": 15,
-      "title": "Save an extra 15% on flight + hotel bundles",
-      "verifiedHoursAgo": 8,
-      "expires": "2026-10-18",
-      "uses": 2530,
-      "rating": 4.3,
-      "addedDaysAgo": 3,
-      "code": "BUNDLE15",
-      "terms": [
-        "Both flight and hotel must be booked together",
-        "Coupon applied before taxes",
-        "Not valid on package holidays"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c28",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c28",
-      "categoryPath": "/category/travel",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c29",
       "storeId": "epic-games",
       "categoryId": "gaming",
