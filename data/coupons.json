@@ -406,34 +406,6 @@
       "verified": true
     },
     {
-      "id": "c17",
-      "storeId": "agoda",
-      "categoryId": "travel",
-      "type": "code",
-      "badge": "12% OFF",
-      "value": 12,
-      "title": "12% off hotels worldwide with VIP member code",
-      "verifiedHoursAgo": 3,
-      "expires": "2026-10-20",
-      "uses": 4930,
-      "rating": 4.4,
-      "addedDaysAgo": 14,
-      "code": "AGODA12",
-      "terms": [
-        "Applies to prepaid bookings",
-        "Excludes taxes and service fees",
-        "Capped at $60 per booking"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c17",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c17",
-      "categoryPath": "/category/travel",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c18",
       "storeId": "razer",
       "categoryId": "gaming",
