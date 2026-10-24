@@ -783,33 +783,6 @@
       "verified": true
     },
     {
-      "id": "c37",
-      "storeId": "shopify",
-      "categoryId": "software",
-      "type": "deal",
-      "badge": "$1/MO",
-      "value": 75,
-      "title": "$1/month for your first 3 months of Shopify",
-      "verifiedHoursAgo": 10,
-      "expires": "2026-10-22",
-      "uses": 1980,
-      "rating": 4.5,
-      "addedDaysAgo": 24,
-      "terms": [
-        "New stores only",
-        "Then standard plan pricing",
-        "Payment gateway fees still apply"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c37",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c37",
-      "categoryPath": "/category/software",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c39",
       "storeId": "spotify",
       "categoryId": "software",
