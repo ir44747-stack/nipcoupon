@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-24T03:23:13.768Z",
+  "updated": "2026-10-25T03:18:49.345Z",
   "entries": {
     "home": {
-      "hash": "5d60ce57bf06e93e",
-      "lastmod": "2026-10-22"
+      "hash": "73cba4034d1b6cf2",
+      "lastmod": "2026-10-25"
     },
     "category:tech": {
       "hash": "62fa890482cf7daa",
@@ -18,8 +18,8 @@
       "lastmod": "2026-10-20"
     },
     "category:gaming": {
-      "hash": "896af4f1ab21b1fe",
-      "lastmod": "2026-09-02"
+      "hash": "a8032c09c0b127ba",
+      "lastmod": "2026-10-25"
     },
     "category:software": {
       "hash": "cd32fb78bf124f3c",
@@ -111,10 +111,6 @@
     },
     "store:razer": {
       "hash": "425bd05b972ae22d",
-      "lastmod": "2026-09-02"
-    },
-    "store:epic-games": {
-      "hash": "e437388ae64b6363",
       "lastmod": "2026-09-02"
     },
     "store:instant-gaming": {
@@ -216,10 +212,6 @@
     "coupon:c27": {
       "hash": "3473e14d2caf198d",
       "lastmod": "2026-08-29"
-    },
-    "coupon:c29": {
-      "hash": "ab859bad0382f2dc",
-      "lastmod": "2026-08-31"
     },
     "coupon:c30": {
       "hash": "cf2cbdb73e6f284e",
