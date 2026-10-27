@@ -571,34 +571,6 @@
       "verified": true
     },
     {
-      "id": "c29",
-      "storeId": "epic-games",
-      "categoryId": "gaming",
-      "type": "code",
-      "badge": "10% OFF",
-      "value": 10,
-      "title": "10% off any game or add-on over $14.99",
-      "verifiedHoursAgo": 6,
-      "expires": "2026-10-25",
-      "uses": 5340,
-      "rating": 4.5,
-      "addedDaysAgo": 2,
-      "code": "EPIC10",
-      "terms": [
-        "One code per purchase",
-        "Excludes in-game currency",
-        "Valid on pre-orders"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c29",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c29",
-      "categoryPath": "/category/gaming",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c30",
       "storeId": "apple",
       "categoryId": "tech",
