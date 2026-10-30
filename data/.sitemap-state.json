@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-29T04:29:44.739Z",
+  "updated": "2026-10-30T04:29:25.666Z",
   "entries": {
     "home": {
-      "hash": "73cba4034d1b6cf2",
-      "lastmod": "2026-10-25"
+      "hash": "006c12ad076da2cb",
+      "lastmod": "2026-10-30"
     },
     "category:tech": {
       "hash": "62fa890482cf7daa",
@@ -22,8 +22,8 @@
       "lastmod": "2026-10-25"
     },
     "category:software": {
-      "hash": "cd32fb78bf124f3c",
-      "lastmod": "2026-10-22"
+      "hash": "fe2befa53bc406f3",
+      "lastmod": "2026-10-30"
     },
     "store:amazon": {
       "hash": "f88484f3af26f850",
@@ -123,10 +123,6 @@
     },
     "store:notion": {
       "hash": "9928dd11a19f6daf",
-      "lastmod": "2026-09-02"
-    },
-    "store:spotify": {
-      "hash": "3d34c1a51c45c147",
       "lastmod": "2026-09-02"
     },
     "store:talabat": {
@@ -236,10 +232,6 @@
     "coupon:c36": {
       "hash": "1e1689c471a199c2",
       "lastmod": "2026-08-08"
-    },
-    "coupon:c39": {
-      "hash": "a38fc171977e977e",
-      "lastmod": "2026-08-11"
     }
   }
 }
