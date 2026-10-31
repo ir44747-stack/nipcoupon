@@ -1,9 +1,9 @@
 {
-  "updated": "2026-10-30T04:29:25.666Z",
+  "updated": "2026-10-31T04:11:11.999Z",
   "entries": {
     "home": {
-      "hash": "006c12ad076da2cb",
-      "lastmod": "2026-10-30"
+      "hash": "d384ee6ad79cf5cb",
+      "lastmod": "2026-10-31"
     },
     "category:tech": {
       "hash": "62fa890482cf7daa",
@@ -14,8 +14,8 @@
       "lastmod": "2026-10-14"
     },
     "category:travel": {
-      "hash": "56a9c285cdef7a72",
-      "lastmod": "2026-10-20"
+      "hash": "7e7118429b23006d",
+      "lastmod": "2026-10-31"
     },
     "category:gaming": {
       "hash": "a8032c09c0b127ba",
@@ -81,10 +81,6 @@
       "hash": "358fdecb2f80d74f",
       "lastmod": "2026-09-02"
     },
-    "store:booking-com": {
-      "hash": "da5b88b3cf830540",
-      "lastmod": "2026-09-02"
-    },
     "store:qatar-airways": {
       "hash": "9fb2ff36171eb0e4",
       "lastmod": "2026-09-02"
@@ -140,10 +136,6 @@
     "coupon:c3": {
       "hash": "96a91314ab5bc328",
       "lastmod": "2026-08-05"
-    },
-    "coupon:c4": {
-      "hash": "f6a5e434edce99a9",
-      "lastmod": "2026-09-02"
     },
     "coupon:c5": {
       "hash": "16306cff758c1bf4",

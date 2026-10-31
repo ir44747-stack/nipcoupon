@@ -30,15 +30,6 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://nipcoupon.vercel.app/coupon/c4</loc>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/coupon/c4?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/coupon/c4?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://nipcoupon.vercel.app/coupon/c4"/>
-    <lastmod>2026-09-02</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://nipcoupon.vercel.app/coupon/c5</loc>
     <xhtml:link rel="alternate" hreflang="ar" href="https://nipcoupon.vercel.app/coupon/c5?lang=ar"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://nipcoupon.vercel.app/coupon/c5?lang=en"/>
