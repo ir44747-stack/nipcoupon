@@ -87,33 +87,6 @@
       "verified": true
     },
     {
-      "id": "c4",
-      "storeId": "booking-com",
-      "categoryId": "travel",
-      "type": "deal",
-      "badge": "25% OFF",
-      "value": 25,
-      "title": "Genius members: up to 25% off stays worldwide",
-      "verifiedHoursAgo": 3,
-      "expires": "2026-10-31",
-      "uses": 7410,
-      "rating": 4.7,
-      "addedDaysAgo": 27,
-      "terms": [
-        "Genius account required",
-        "Participating properties only",
-        "Discount applied at property checkout"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c4",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c4",
-      "categoryPath": "/category/travel",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c5",
       "storeId": "adobe",
       "categoryId": "software",
