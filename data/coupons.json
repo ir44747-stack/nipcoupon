@@ -544,33 +544,6 @@
       "verified": true
     },
     {
-      "id": "c30",
-      "storeId": "apple",
-      "categoryId": "tech",
-      "type": "deal",
-      "badge": "15% OFF",
-      "value": 15,
-      "title": "Education pricing: up to 15% off + gift card",
-      "verifiedHoursAgo": 12,
-      "expires": "2026-11-15",
-      "uses": 3120,
-      "rating": 4.4,
-      "addedDaysAgo": 1,
-      "terms": [
-        "Students, teachers and staff eligible",
-        "Verification via UNiDAYS or student ID",
-        "Gift card value varies by product"
-      ],
-      "regions": [
-        "GLOBAL"
-      ],
-      "canonicalPath": "/coupon/c30",
-      "canonicalUrl": "https://nipcoupon.vercel.app/coupon/c30",
-      "categoryPath": "/category/tech",
-      "source": "local",
-      "verified": true
-    },
-    {
       "id": "c32",
       "storeId": "careem",
       "categoryId": "travel",
